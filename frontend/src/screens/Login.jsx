@@ -20,9 +20,9 @@ const Login = () => {
   }
 
   return (
-    <div className='flex flex-row h-screen bg-gradient-to-b from-indigo-500 via-purple-500 to-pink-500'>
-      <div className='m-auto flex flex-row h-80'>
-        <form onSubmit={handleSubmit(onSubmit)} className='flex flex-col p-3 px-8 bg-white rounded-l-md justify-between items-center'>
+    <div className='flex flex-row h-screen bg-gradient-to-bl to-purple-500 from-purple-900  '>
+      <div className='m-auto flex flex-row h-96'>
+        <form onSubmit={handleSubmit(onSubmit)} className='flex flex-col p-3 px-10 bg-white rounded-l-md justify-between items-center'>
           <div className='flex flex-col gap-3'>
             <div className='text-center pt-6'>LOGIN</div>
 
@@ -61,7 +61,9 @@ const Login = () => {
             <div>Não tem conta? <Link className="text-blue-600" to="/register">Signup</Link></div>
           </div>
         </form>
-        <div className='bg-black w-80 rounded-r-md'>Welcome</div>
+        <div className='bg-black w-96 rounded-r-md bg-[url("/images/geometric.jpg")] bg-cover'>
+          <div className='text-white p-3 mt-28 text-center text-5xl'> Welcome </div>
+        </div>
       </div>
     </div>
   )
