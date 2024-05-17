@@ -53,7 +53,8 @@ const Login = () => {
           </div>
           <button type='submit' className={`${isSubmitting ? 'bg-gray-600' : 'bg-black cursor-pointer'} text-white p-1 rounded-md`}>Login</button>
           {errors.root && <div className='text-red-500'>{errors.root.message}</div>}
-          
+          <div>Não tem conta? <Link className="text-blue-600" to="/register">Signup</Link></div>
+
         </form>
       </div>
     </div>
