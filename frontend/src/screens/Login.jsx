@@ -49,10 +49,11 @@ const Login = () => {
               placeholder='Password'
               className='border border-gray-300 rounded w-60 h-8 pl-1' />
             {errors.password && <div className='text-red-500'>{errors.password.message}</div>}
+            <div>Esqueceu a senha?</div>
           </div>
           <button type='submit' className={`${isSubmitting ? 'bg-gray-600' : 'bg-black cursor-pointer'} text-white p-1 rounded-md`}>Login</button>
           {errors.root && <div className='text-red-500'>{errors.root.message}</div>}
-          <div>Esqueceu a senha</div>
+          
         </form>
       </div>
     </div>
