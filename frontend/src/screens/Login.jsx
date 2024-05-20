@@ -34,7 +34,7 @@ const Login = () => {
       navigate('/resgister')
     } catch (error) {
       console.log(error?.data?.message)
-      setError("root", { message: "Este email já está a ser usado" })
+      setError("root", { message: "Email ou password errada" })
     }
     // console.log('data', data)
   }
@@ -75,9 +75,11 @@ const Login = () => {
             </div>
           </div>
 
+          {isLoading && <div>Loading...</div>}
+
           <div className='w-full'>
+          {errors.root && <div className='text-red-500'>{errors.root.message}</div>}
             <button type='submit' className={`${isSubmitting ? 'bg-gray-600' : 'bg-black cursor-pointer'} text-white p-1 rounded-md mt-4 w-full`}>Login</button>
-            {errors.root && <div className='text-red-500'>{errors.root.message}</div>}
             <div className='mb-4'>Não tem conta? <Link className="text-blue-600" to="/register">Signup</Link></div>
           </div>
         </form>
