@@ -1,8 +1,27 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
+import {useDispatch, useSelector} from 'react-redux'
+import { useRegisterMutation } from '../slices/userApiSlice'
+import { setCredentials } from '../slices/authSlice'
+
+
 
 const Register = () => {
+
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const [registerApi, { isLoading }] = useRegisterMutation();
+
+  const {userInfo} = useSelector((state) => state.auth);
+  useEffect(()=>{
+    if (userInfo) {
+      navigate('/dashboard')
+    }
+  }, [navigate, userInfo]);
+
   const { register, handleSubmit, setError, watch, formState: { errors, isSubmitting } } = useForm({
     defaultValues: {
       email: "",
@@ -13,7 +32,9 @@ const Register = () => {
 
   const onSubmit = async data => {
     try {
-
+      const res = await register({name:data.name, email: data.email, password: data.password}).unwrap();
+      dispatch(setCredentials({...res}))
+      navigate('/resgister')
     } catch (error) {
       setError("email", { message: "Este email já está a ser usado" })
     }
@@ -98,8 +119,10 @@ const Register = () => {
               placeholder="Confirm Password"
               className="border border-gray-300 rounded w-full h-8 pl-1" />
             {errors.confirmPassword && <div className="text-red-500">{errors.confirmPassword.message}</div>}
-
           </div>
+
+          {isLoading && <div>Loading...</div>}
+
           <div className='w-full'>
             <button type='submit' className={`${isSubmitting ? 'bg-gray-600' : 'bg-black cursor-pointer'} text-white p-1 rounded-md mt-4 w-full`}>Registar</button>
             <div className='mb-4'>Já possui uma conta? <Link className="text-blue-600" to="/">  Login</Link></div>
