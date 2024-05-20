@@ -2,7 +2,7 @@ import React from 'react'
 import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
-import {useDispatch, useSelector} from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { useRegisterMutation } from '../slices/userApiSlice'
 import { setCredentials } from '../slices/authSlice'
 
@@ -15,8 +15,8 @@ const Register = () => {
 
   const [registerApi, { isLoading }] = useRegisterMutation();
 
-  const {userInfo} = useSelector((state) => state.auth);
-  useEffect(()=>{
+  const { userInfo } = useSelector((state) => state.auth);
+  useEffect(() => {
     if (userInfo) {
       navigate('/dashboard')
     }
@@ -24,6 +24,7 @@ const Register = () => {
 
   const { register, handleSubmit, setError, watch, formState: { errors, isSubmitting } } = useForm({
     defaultValues: {
+      name: "",
       email: "",
       password: "",
       confirmPassword: "",
@@ -32,11 +33,13 @@ const Register = () => {
 
   const onSubmit = async data => {
     try {
-      const res = await register({name:data.name, email: data.email, password: data.password}).unwrap();
-      dispatch(setCredentials({...res}))
+      const res = await registerApi({ name: data.name, email: data.email, password: data.password }).unwrap();
+      dispatch(setCredentials({ ...res }))
       navigate('/resgister')
     } catch (error) {
-      setError("email", { message: "Este email já está a ser usado" })
+      console.log(error?.data?.message)
+      console.log(error)
+      setError("email", { message: "MEH" })
     }
     console.log('data', data)
   }
@@ -53,7 +56,7 @@ const Register = () => {
   {/* ------------------PASSWORD----------------- */ }
   const validatePassword = (value) => {
     if (value.length < 8) {
-      return "Password tem de conter 8 letras";
+      return "Password tem de conter 8 caracteres";
     }
     if (!/[A-Z]/.test(value)) {
       return "A senha deve conter pelo menos 1 letra maiúscula";
@@ -88,39 +91,55 @@ const Register = () => {
           <div className='flex flex-col gap-3 w-full'>
             <div className='text-center pt-6'>REGISTO</div>
 
+            {/* ------------------NAME----------------- */}
+            <div>
+              <input
+                {...register("name", {
+                  required: "Nome é obrigatório",
+                })}
+                type='text' placeholder='Name'
+                className='border border-gray-300 rounded w-full h-8 pl-1' />
+              {errors.name && <div className='text-red-500'>{errors.name.message}</div>}
+            </div>
+
             {/* ------------------EMAIL----------------- */}
-            <input
-              {...register("email", {
-                required: "Email é obrigatório",
-                validate: validateEmail,
-              })}
-              type='text' placeholder='Email'
-              className='border border-gray-300 rounded w-full h-8 pl-1' />
-            {errors.email && <div className='text-red-500'>{errors.email.message}</div>}
+            <div>
+              <input
+                {...register("email", {
+                  required: "Email é obrigatório",
+                  validate: validateEmail,
+                })}
+                type='text' placeholder='Email'
+                className='border border-gray-300 rounded w-full h-8 pl-1' />
+              {errors.email && <div className='text-red-500'>{errors.email.message}</div>}
+            </div>
 
             {/* ------------------PASSWORD----------------- */}
-            <input
-              {...register("password", {
-                required: "Password é obrigatória",
-                validate: validatePassword,
-              })}
-              type='password'
-              placeholder='Password'
-              className='border border-gray-300 rounded w-full h-8 pl-1' />
-            {errors.password && <div className='text-red-500'>{errors.password.message}</div>}
+            <div>
+              <input
+                {...register("password", {
+                  required: "Password é obrigatória",
+                  validate: validatePassword,
+                })}
+                type='password'
+                placeholder='Password'
+                className='border border-gray-300 rounded w-full h-8 pl-1' />
+              {errors.password && <div className='text-red-500'>{errors.password.message}</div>}
+            </div>
 
             {/* ------------------CONFIRMAÇÃO DE PASSWORD----------------- */}
-            <input
-              {...register('confirmPassword', {
-                required: 'Confirmação de senha é obrigatória',
-                validate: validateConfirmPassword,
-              })}
-              type="password"
-              placeholder="Confirm Password"
-              className="border border-gray-300 rounded w-full h-8 pl-1" />
-            {errors.confirmPassword && <div className="text-red-500">{errors.confirmPassword.message}</div>}
+            <div>
+              <input
+                {...register('confirmPassword', {
+                  required: 'Confirmação de senha é obrigatória',
+                  validate: validateConfirmPassword,
+                })}
+                type="password"
+                placeholder="Confirm Password"
+                className="border border-gray-300 rounded w-full h-8 pl-1" />
+              {errors.confirmPassword && <div className="text-red-500">{errors.confirmPassword.message}</div>}
+            </div>
           </div>
-
           {isLoading && <div>Loading...</div>}
 
           <div className='w-full'>

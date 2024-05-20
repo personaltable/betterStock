@@ -5,6 +5,7 @@ import { Provider } from 'react-redux'
 import App from './App.jsx'
 import './index.css'
 import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from 'react-router-dom'
+import PrivateRoute from './components/PrivateRoute.jsx'
 import Login from './screens/Login.jsx'
 import Register from './screens/Register.jsx'
 import Dashboard from './screens/Dashboard.jsx'
@@ -14,7 +15,9 @@ const router = createBrowserRouter(
     <Route path="/" element={<App />}>
       <Route index={true} path="/" element={<Login />} />
       <Route index={true} path="/register" element={<Register />} />
-      <Route index={true} path="/dashboard" element={<Dashboard />} />
+      <Route path='' element={<PrivateRoute/>}>
+        <Route index={true} path="/dashboard" element={<Dashboard />} />
+      </Route>
     </Route>
   )
 )
