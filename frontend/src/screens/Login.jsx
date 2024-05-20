@@ -2,7 +2,7 @@ import React from 'react'
 import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
-import {useDispatch, useSelector} from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { useLoginMutation } from '../slices/userApiSlice'
 import { setCredentials } from '../slices/authSlice'
 
@@ -12,9 +12,9 @@ const Login = () => {
   const dispatch = useDispatch();
 
   const [login, { isLoading }] = useLoginMutation();
-  const {userInfo} = useSelector((state) => state.auth);
+  const { userInfo } = useSelector((state) => state.auth);
 
-  useEffect(()=>{
+  useEffect(() => {
     if (userInfo) {
       navigate('/dashboard')
     }
@@ -29,8 +29,8 @@ const Login = () => {
 
   const onSubmit = async data => {
     try {
-      const res = await login({email: data.email, password: data.password}).unwrap();
-      dispatch(setCredentials({...res}))
+      const res = await login({ email: data.email, password: data.password }).unwrap();
+      dispatch(setCredentials({ ...res }))
       navigate('/resgister')
     } catch (error) {
       console.log(error?.data?.message)
@@ -81,7 +81,7 @@ const Login = () => {
             <div className='mb-4'>Não tem conta? <Link className="text-blue-600" to="/register">Signup</Link></div>
           </div>
         </form>
-        <div className='bg-black w-96 rounded-r-md bg-[url("/images/geometric.jpg")] bg-cover'>
+        <div className='bg-black w-96 rounded-r-md bg-[url("/images/geometric1.jpg")] bg-cover'>
           <div className='text-white p-3 mt-28 text-center text-5xl'> Bem Vindo </div>
         </div>
       </div>

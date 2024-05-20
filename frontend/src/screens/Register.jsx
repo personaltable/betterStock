@@ -105,7 +105,7 @@ const Register = () => {
             <div className='mb-4'>Já possui uma conta? <Link className="text-blue-600" to="/">  Login</Link></div>
           </div>
         </form>
-        <div className='bg-black w-96 rounded-r-md bg-[url("/images/geometric.jpg")] bg-cover'>
+        <div className='bg-black w-96 rounded-r-md bg-[url("/images/geometric1.jpg")] bg-cover'>
           {/* <div className='text-white p-3 mt-28 text-center text-5xl'> Bem Vindo </div> */}
         </div>
       </div>
