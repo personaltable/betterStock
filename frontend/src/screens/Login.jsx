@@ -16,7 +16,7 @@ const Login = () => {
 
   useEffect(()=>{
     if (userInfo) {
-      navigate('/register')
+      navigate('/dashboard')
     }
   }, [navigate, userInfo]);
 
@@ -36,7 +36,7 @@ const Login = () => {
       console.log(error?.data?.message)
       setError("root", { message: "Este email já está a ser usado" })
     }
-    console.log('data', data)
+    // console.log('data', data)
   }
 
   return (
