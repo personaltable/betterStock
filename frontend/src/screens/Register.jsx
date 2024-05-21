@@ -6,7 +6,10 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useRegisterMutation } from '../slices/userApiSlice'
 import { setCredentials } from '../slices/authSlice'
 
-
+// -------------------------Show Password Icon--------------------
+import { AiTwotoneEye } from "react-icons/ai";
+import { AiTwotoneEyeInvisible } from "react-icons/ai";
+// ------------------------------------------------------------------
 
 const Register = () => {
 
@@ -84,6 +87,11 @@ const Register = () => {
   //  real. É usada para comparar o valor atual do campo de senha com o campo de confirmação de senha
   //   para validar se ambos são iguais.
 
+  // ---------------------------------Variavel ShowPassword--------------
+  const [showPassword, setShowPassword] = useState(false);
+  // ---------------------------------Variavel ShowConfirmPassword--------------
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
   return (
     <div className='flex flex-row h-screen bg-gradient-to-br to-purple-500 from-purple-900'>
       <div className='m-auto flex flex-row h-[470px] shadow-lg'>
@@ -115,29 +123,35 @@ const Register = () => {
             </div>
 
             {/* ------------------PASSWORD----------------- */}
-            <div>
+            <div className='flex flex-row relative items-center'>
               <input
                 {...register("password", {
                   required: "Password é obrigatória",
                   validate: validatePassword,
                 })}
-                type='password'
+                type={showPassword ? "text" : "password"}
                 placeholder='Password'
                 className='border border-gray-300 rounded w-full h-8 pl-1' />
               {errors.password && <div className='text-red-500'>{errors.password.message}</div>}
+              <button className="absolute left-[270px]  text-2xl" type="button" onClick={() => { setShowPassword(!showPassword) }}>
+                {showPassword ? <AiTwotoneEyeInvisible /> : <AiTwotoneEye />}
+              </button>
             </div>
 
             {/* ------------------CONFIRMAÇÃO DE PASSWORD----------------- */}
-            <div>
+            <div className='flex flex-row relative items-center'>
               <input
                 {...register('confirmPassword', {
                   required: 'Confirmação de senha é obrigatória',
                   validate: validateConfirmPassword,
                 })}
-                type="password"
+                type={showConfirmPassword ? "text" : "password"}
                 placeholder="Confirm Password"
                 className="border border-gray-300 rounded w-full h-8 pl-1" />
               {errors.confirmPassword && <div className="text-red-500">{errors.confirmPassword.message}</div>}
+              <button className="absolute left-[270px]  text-2xl" type="button" onClick={() => { setShowConfirmPassword(!showConfirmPassword) }}>
+                {showConfirmPassword ? <AiTwotoneEyeInvisible /> : <AiTwotoneEye />}
+              </button>
             </div>
           </div>
           {isLoading && <div>Loading...</div>}
