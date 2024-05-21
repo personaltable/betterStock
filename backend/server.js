@@ -5,6 +5,7 @@ import cookieParser from "cookie-parser";
 import { notFound, errorHandler } from "./middleware/errorMiddleware.js"; 
 const PORT = process.env.PORT || 5555;
 import userRoutes from './routes/userRoutes.js'
+import productRoutes from './routes/productRoutes.js'
 import connectDB from "./config/db.js";
 
 connectDB();
@@ -17,6 +18,7 @@ app.use(express.urlencoded({extended: true}))
 app.use(cookieParser())
 
 app.use('/api/users', userRoutes)
+app.use('/api/products', productRoutes)
 
 app.get('/' , (req, res) => res.send('Server is ready'))
 
