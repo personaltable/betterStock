@@ -4,12 +4,28 @@ import ContainerHeader from '../components/containers/containerHeader'
 import ContainerBody from '../components/containers/containerBody'
 import DropdownCheck from '../components/Dropdown/DropdownCheck';
 
+import { useDispatch, useSelector } from 'react-redux'
+import { useGetProductsQuery } from '../slices/productsApiSlice';
+import { setProducts, setStatus, setError } from '../slices/productsSlice';
 
+import BarChart from '../components/charts/barChart';
 import { IoSettingsOutline } from "react-icons/io5";
 
-
-
 const Dashboard = () => {
+  const { data: products, error, isLoading } = useGetProductsQuery()
+  const dispatch = useDispatch()
+
+  useEffect(() => {
+    if (isLoading) {
+      dispatch(setStatus('loading'))
+    } else if (error) {
+      dispatch(setError(error))
+      dispatch(setStatus('failed'))
+    } else {
+      dispatch(setProducts(products))
+      dispatch(setStatus('succeeded'))
+    }
+  }, [isLoading, error, products, dispatch])
 
   {/* -----------------------VARIAVEIS DROPDOWN SETTINGS HEADER--------------------- */ }
   const [columnsOptions, setColumnsOptions] = useState([]);
@@ -58,7 +74,7 @@ const Dashboard = () => {
         {/* -------------------------------BODY---------------------------- */}
         <div className='flex flex-row justify-between w-full'>
           <ContainerBody>
-            <div>dvged</div>
+            <div><BarChart /> </div>
           </ContainerBody>
 
           {/* -----------------------DROPDOWN SETTINGS BODY--------------------- */}
