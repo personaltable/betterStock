@@ -3,6 +3,7 @@ import SideBar from '../components/SideBar'
 import ButtonOption from '../components/buttons/ButtonOption'
 import ButtonFilter from '../components/buttons/ButtonFilter';
 import DropdownCheck from '../components/Dropdown/DropdownCheck';
+import StockTable from '../components/StockTable';
 
 import { FaMagnifyingGlass } from "react-icons/fa6";
 import { IoReloadCircle } from "react-icons/io5";
@@ -88,8 +89,7 @@ const Stock = () => {
 
 
         </div>
-
-
+        <StockTable></StockTable>
 
 
       </div>
