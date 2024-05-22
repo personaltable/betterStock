@@ -5,6 +5,9 @@ import ButtonFilter from '../components/buttons/ButtonFilter';
 import DropdownCheck from '../components/Dropdown/DropdownCheck';
 import StockTable from '../components/StockTable';
 
+import { useDispatch, useSelector } from 'react-redux'
+import { setProducts, setStatus, setError, sortProducts } from '../slices/productsSlice';
+
 import { FaMagnifyingGlass } from "react-icons/fa6";
 import { IoReloadCircle } from "react-icons/io5";
 import { FaPrint } from "react-icons/fa";
@@ -15,6 +18,10 @@ import { FaCircleMinus } from "react-icons/fa6";
 
 
 const Stock = () => {
+
+  const dispatch = useDispatch();
+  const productsState = useSelector(state => state.productsList.products)
+  console.log(productsState)
 
 //General Filters______________________________
 
@@ -29,6 +36,9 @@ const Stock = () => {
   const columnsAllOptions = ['Option 1', 'Option 2', 'Option 3'];
 
 //filters
+  const handleSort = () => {
+    dispatch(sortProducts());
+  };
 //print
 
 
@@ -65,9 +75,9 @@ const Stock = () => {
               />
             </div>
 
-            <ButtonFilter className='flex flex-row justify-between items-center'>
+            <ButtonFilter onClick={handleSort} className='flex flex-row justify-between items-center'>
               <div>Filtros</div>
-              <FaFilter />
+              <FaFilter/>
             </ButtonFilter>
 
             <DropdownCheck
