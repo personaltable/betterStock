@@ -25,7 +25,8 @@ export default function Example() {
 
     const chartConfig = {
         type: "bar",
-        height: 240,
+        height: 190,
+        width: 430,
         series: [
             {
                 name: "Stock",
@@ -48,7 +49,7 @@ export default function Example() {
             plotOptions: {
                 bar: {
                     columnWidth: "40%",
-                    borderRadius: 2,
+                    borderRadius: 3,
                 },
             },
             xaxis: {
@@ -88,7 +89,7 @@ export default function Example() {
                     },
                 },
                 padding: {
-                    top: 5,
+                    top: 0,
                     right: 20,
                 },
             },

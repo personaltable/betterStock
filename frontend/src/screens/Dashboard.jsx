@@ -72,14 +72,15 @@ const Dashboard = () => {
         </div>
 
         {/* -------------------------------BODY---------------------------- */}
-        <div className='flex flex-row justify-between w-full'>
+        <div className='flex flex-row justify-between w-full p-4'>
           <ContainerBody>
             <div><BarChart /> </div>
           </ContainerBody>
 
           {/* -----------------------DROPDOWN SETTINGS BODY--------------------- */}
-          <div className='m-4'>
+          <div className=''>
             <DropdownCheck
+              className='w-64'
               options={columnsAllOptionsBody}
               selectedOptions={columnsOptionsBody}
               onOptionSelect={setColumnsOptionsBody}

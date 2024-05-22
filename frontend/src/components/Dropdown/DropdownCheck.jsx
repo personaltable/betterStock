@@ -29,21 +29,21 @@ const DropdownCheck = ({ options, selectedOptions, onOptionSelect, children, cla
   }, []);
 
   return (
-    <div className={`relative inline-block text-left ${className}`} ref={dropdownRef}>
+    <div className={`relative inline-block text-left`} ref={dropdownRef}>
       <div onClick={handleToggle}>
         {children}
       </div>
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-36 bg-white border border-gray-200 rounded shadow-lg z-10">
+        <div className={`absolute right-0 mt-2 bg-white border border-gray-200 rounded shadow-lg z-10 ${className}`}>
           <ul className="py-1">
             {options.map((option) => (
-              <li key={option} className="px-4 py-1">
+              <li key={option} className="px-4 py-1 w-full">
                 <label className="flex items-center">
                   <input
                     type="checkbox"
                     checked={selectedOptions.includes(option)}
                     onChange={() => handleOptionChange(option)}
-                    className="mr-2 w-4 h-4"
+                    className="mr-2 min-w-4 min-h-4"
                   />
                   {option}
                 </label>
