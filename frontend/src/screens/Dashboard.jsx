@@ -43,8 +43,8 @@ const Dashboard = () => {
 
       <div className='flex flex-col w-full'>
 
-        <div className='bg-basepurple-500 flex flex-row justify-between w-full'>
-          <div className='  flex flex-row p-3 gap-5 '>
+        <div className='bg-basepurple-500 flex flex-row justify-between w-full p-3'>
+          <div className='  flex flex-row gap-5 '>
             <ContainerHeader>
               <div>hi</div>
             </ContainerHeader>
@@ -59,8 +59,9 @@ const Dashboard = () => {
           </div>
 
           {/* -----------------------DROPDOWN SETTINGS HEADER--------------------- */}
-          <div className='m-2'>
+          <div className=''>
             <DropdownCheck
+              className='w-64'
               options={columnsAllOptions}
               selectedOptions={columnsOptions}
               onOptionSelect={setColumnsOptions}
@@ -72,7 +73,7 @@ const Dashboard = () => {
         </div>
 
         {/* -------------------------------BODY---------------------------- */}
-        <div className='flex flex-row justify-between w-full p-4'>
+        <div className='flex flex-row justify-between w-full p-3'>
           <ContainerBody>
             <div><BarChart /> </div>
           </ContainerBody>
@@ -80,7 +81,7 @@ const Dashboard = () => {
           {/* -----------------------DROPDOWN SETTINGS BODY--------------------- */}
           <div className=''>
             <DropdownCheck
-              className='w-64'
+              className='w-80'
               options={columnsAllOptionsBody}
               selectedOptions={columnsOptionsBody}
               onOptionSelect={setColumnsOptionsBody}
