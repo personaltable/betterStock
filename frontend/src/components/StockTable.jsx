@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios'
+import {useReactTable} from "@tanstack/react-table"
 
 import { useDispatch, useSelector } from 'react-redux'
 import { useGetProductsQuery } from '../slices/productsApiSlice';
@@ -25,19 +26,14 @@ const StockTable = () => {
     const productsState = useSelector(state => state.productsList.products)
     console.log(productsState)
 
+    const columns = {
 
+    }
 
-    // const [data, setData] = useState([]);
-    // console.log(data);
-    // useEffect(() => {
-    //     const fetchData = async () => {
-    //         const response = await axios.get(`http://localhost:5555/api/products`);
-    //         setData(response.data)
-    //     }
-
-    //     fetchData();
-    // }, [])
-
+    const table = useReactTable(
+        productsState,
+        columns,
+    );
 
 
     return (
@@ -45,9 +41,8 @@ const StockTable = () => {
             {productsState.map((produto, index) => (
                 <div key={index}>{produto.name}</div>
             ))}
-            {/* {data.map((produto, index) => (
-                <div key={index}>{produto.name}</div>
-            ))} */}
+
+            
         </div>
     )
 }

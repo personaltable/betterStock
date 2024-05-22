@@ -81,6 +81,7 @@ const Stock = () => {
             </ButtonFilter>
 
             <DropdownCheck
+              className='w-44'
               options={columnsAllOptions}
               selectedOptions={columnsOptions}
               onOptionSelect={setColumnsOptions}
