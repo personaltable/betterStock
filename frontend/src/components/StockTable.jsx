@@ -1,40 +1,40 @@
-import React, { useState, useRef, useEffect } from 'react';
-import axios from 'axios'
-import {useReactTable} from "@tanstack/react-table"
-
-import { useDispatch, useSelector } from 'react-redux'
+import React, { useState, useEffect } from 'react';
+import { useReactTable, flexRender, getCoreRowModel } from '@tanstack/react-table';
+import { useDispatch, useSelector } from 'react-redux';
 import { useGetProductsQuery } from '../slices/productsApiSlice';
-import { setProducts, setStatus, setError} from '../slices/productsSlice';
+import { setProducts, setStatus, setError } from '../slices/productsSlice';
 
 const StockTable = () => {
+    const productsState = useSelector((state) => state.productsList.products);
 
-    const dispatch = useDispatch()
-    const { data: products, error, isLoading } = useGetProductsQuery()
+    const data = React.useMemo(() => productsState, [productsState]);
 
-    useEffect(() => {
-        if (isLoading) {
-            dispatch(setStatus('loading'))
-        } else if (error) {
-            dispatch(setError(error))
-            dispatch(setStatus('failed'))
-        } else {
-            dispatch(setProducts(products))
-            dispatch(setStatus('succeeded'))
-        }
-    }, [isLoading, error, products, dispatch])
-
-    const productsState = useSelector(state => state.productsList.products)
-    console.log(productsState)
-
-    const columns = {
-
-    }
-
-    const table = useReactTable(
-        productsState,
-        columns,
+    const columns = React.useMemo(
+        () => [
+            {
+                id: 'name',
+                header: 'Nome',
+                accessorKey: 'name',
+            },
+            {
+                id: 'category',
+                header: 'Categoria',
+                accessorKey: 'category.name',
+            },
+            {
+                id: 'brand',
+                header: 'Marca',
+                accessorKey: 'brand',
+            },
+        ],
+        []
     );
 
+    const table = useReactTable({
+        data,
+        columns,
+        getCoreRowModel: getCoreRowModel(),
+    });
 
     return (
         <div>
@@ -42,9 +42,38 @@ const StockTable = () => {
                 <div key={index}>{produto.name}</div>
             ))}
 
-            
+            <table>
+                <thead>
+                    {table.getHeaderGroups().map((headerGroup) => (
+                        <tr key={headerGroup.id}>
+                            {headerGroup.headers.map((header) => (
+                                <th key={header.id}>
+                                    {flexRender(
+                                        header.column.columnDef.header,
+                                        header.getContext()
+                                    )}
+                                </th>
+                            ))}
+                        </tr>
+                    ))}
+                </thead>
+                <tbody>
+                    {table.getRowModel().rows.map((row) => (
+                        <tr key={row.id}>
+                            {row.getVisibleCells().map((cell) => (
+                                <td key={cell.id}>
+                                    {flexRender(
+                                        cell.column.columnDef.cell,
+                                        cell.getContext()
+                                    )}
+                                </td>
+                            ))}
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
         </div>
-    )
-}
+    );
+};
 
-export default StockTable
+export default StockTable;

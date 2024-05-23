@@ -5,7 +5,8 @@ import ButtonFilter from '../components/buttons/ButtonFilter';
 import DropdownCheck from '../components/Dropdown/DropdownCheck';
 import StockTable from '../components/StockTable';
 
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux';
+import { useGetProductsQuery } from '../slices/productsApiSlice';
 import { setProducts, setStatus, setError, sortProducts } from '../slices/productsSlice';
 
 import { FaMagnifyingGlass } from "react-icons/fa6";
@@ -20,8 +21,20 @@ import { FaCircleMinus } from "react-icons/fa6";
 const Stock = () => {
 
   const dispatch = useDispatch();
-  const productsState = useSelector(state => state.productsList.products)
-  console.log(productsState)
+  const { data: products, error, isLoading } = useGetProductsQuery();
+
+  useEffect(() => {
+      if (isLoading) {
+          dispatch(setStatus('loading'));
+      } else if (error) {
+          dispatch(setError(error));
+          dispatch(setStatus('failed'));
+      } else if (products) {
+          dispatch(setProducts(products));
+          dispatch(setStatus('succeeded'));
+      }
+  }, [isLoading, error, products, dispatch]);
+
 
 //General Filters______________________________
 
