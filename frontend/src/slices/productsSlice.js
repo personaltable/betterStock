@@ -4,7 +4,7 @@ const initialState = {
     products: [],
     status: 'idle', // 'idle' | 'loading' | 'succeeded' | 'failed'
     error: null,
-    sortDirection: 'asc' // 'asc' | 'desc'
+    sortDirection: 'desc' // 'asc' | 'desc'
 }
 
 const productsSlice = createSlice({
