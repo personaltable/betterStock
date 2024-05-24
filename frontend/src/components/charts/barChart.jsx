@@ -4,7 +4,7 @@ import { Card, CardBody, CardHeader, Typography } from "@material-tailwind/react
 import Chart from "react-apexcharts";
 import axios from 'axios'
 
-export default function Example() {
+export default function BarChart() {
     const [productsList, setProductsList] = useState([]);
     console.log(productsList);
 
@@ -112,18 +112,17 @@ export default function Example() {
             >
                 <div>
                     <Typography variant="h6" color="blue-gray">
-                        Bar Chart
+
                     </Typography>
                     <Typography
                         variant="small"
                         color="gray"
                         className="max-w-sm font-normal"
                     >
-                        Sales data for the past months
                     </Typography>
                 </div>
             </CardHeader>
-            <CardBody className="px-2 pb-0">
+            <CardBody className="px-2 pb-0 shadow-md shadow-white">
                 <Chart {...chartConfig} />
             </CardBody>
         </Card>
