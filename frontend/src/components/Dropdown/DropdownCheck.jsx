@@ -35,9 +35,9 @@ const DropdownCheck = ({ options, selectedOptions, onOptionSelect, children, cla
       </div>
       {isOpen && (
         <div className={`absolute right-0 mt-2 bg-white border border-gray-200 rounded shadow-lg z-10 ${className}`}>
-          <ul className="py-1">
+          <ul className="py-2 px-4">
             {options.map((option) => (
-              <li key={option} className="px-4 py-1 w-full">
+              <li key={option} className="py-1 w-full">
                 <label className="flex items-center">
                   <input
                     type="checkbox"

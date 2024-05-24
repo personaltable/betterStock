@@ -1,16 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
 
-const Dropdown = ({ options, selectedOption, onOptionSelect, children, className = '' }) => {
+const Dropdown = ({ trigger, children, className = '', classNameContainer = '' }) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
 
   const handleToggle = () => {
     setIsOpen(!isOpen);
-  };
-
-  const handleOptionClick = (option) => {
-    onOptionSelect(option);
-    setIsOpen(false);
   };
 
   const handleClickOutside = (event) => {
@@ -29,21 +24,11 @@ const Dropdown = ({ options, selectedOption, onOptionSelect, children, className
   return (
     <div className={`relative inline-block text-left ${className}`} ref={dropdownRef}>
       <div onClick={handleToggle}>
-        {children}
+        {trigger}
       </div>
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-36 bg-white border border-gray-200 rounded shadow-lg z-10">
-          <ul className="py-1">
-            {options.map((option) => (
-              <li
-                key={option}
-                onClick={() => handleOptionClick(option)}
-                className="cursor-pointer hover:bg-gray-100 px-4 py-2"
-              >
-                {option}
-              </li>
-            ))}
-          </ul>
+        <div className={`absolute right-0 mt-2 py-2 px-4 w-36 bg-white border border-gray-200 rounded shadow-lg z-10 ${classNameContainer}`}>
+          {children}
         </div>
       )}
     </div>
