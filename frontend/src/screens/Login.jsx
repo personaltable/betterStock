@@ -84,7 +84,7 @@ const Login = () => {
                   {showPassword ? <AiTwotoneEyeInvisible /> : <AiTwotoneEye />}
                 </button>
               </div>
-              <div>Esqueceu a senha?</div>
+              <div className='mb-4'>Esqueceu a  <Link className="text-blue-600" to="/ForgotPassword">senha</Link>?</div>
             </div>
 
           </div>
