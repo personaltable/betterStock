@@ -4,7 +4,7 @@ const initialState = {
     products: [],
     status: 'idle', // 'idle' | 'loading' | 'succeeded' | 'failed'
     error: null,
-    sortDirection: 'desc' // 'asc' | 'desc'
+    columns:['Nome','Categoria','Informação', 'Preço','Data / Hora', 'Criador','Reposição','Stock'],
 }
 
 const productsSlice = createSlice({
@@ -20,22 +20,15 @@ const productsSlice = createSlice({
         setError: (state, action) => {
             state.error = action.payload;
         },
-        sortProducts: (state) => {
-            state.products.sort((a, b) => {
-                if (state.sortDirection === 'asc') {
-                    return a.name.localeCompare(b.name)
-                } else {
-                    return b.name.localeCompare(a.name)
-                }
-            });
-            state.sortDirection = state.sortDirection === 'asc' ? 'desc' : 'asc';
-        },
         clearProducts: (state) => {
             state.products = [];
+        },
+        setColumns: (state, action) =>{
+            state.columns = action.payload;
         }
     }
 })
 
-export const { setProducts, setStatus, setError, sortProducts, clearProducts } = productsSlice.actions;
+export const { setProducts, setStatus, setError, clearProducts, setColumns } = productsSlice.actions;
 
 export default productsSlice.reducer;

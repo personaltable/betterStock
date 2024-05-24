@@ -21,6 +21,7 @@ thead tr {
 /* Table Header Cells */
 thead th {
     padding: 9px 15px;
+    cursor: pointer;
 }
 
 /* Table Body Rows */

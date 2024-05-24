@@ -7,7 +7,7 @@ import StockTable from '../components/StockTable';
 
 import { useDispatch, useSelector } from 'react-redux';
 import { useGetProductsQuery } from '../slices/productsApiSlice';
-import { setProducts, setStatus, setError, sortProducts } from '../slices/productsSlice';
+import { setProducts, setStatus, setError, setColumns} from '../slices/productsSlice';
 
 import { FaMagnifyingGlass } from "react-icons/fa6";
 import { IoReloadCircle } from "react-icons/io5";
@@ -45,13 +45,16 @@ const Stock = () => {
   };
 
 //columns
-  const [columnsOptions, setColumnsOptions] = useState([]);
-  const columnsAllOptions = ['Option 1', 'Option 2', 'Option 3'];
+  const columnsList = useSelector((state) => state.productsList.columns);
+  const columnsAllOptions = ['Nome', 'Categoria', 'Marca', 'Informação', 'Preço', 'Data / Hora', 'Criador', 'Reposição','Stock Baixo', 'Stock'];
+  const handleColumnSelect = (options) => {
+    dispatch(setColumns(options));
+  };
 
 //filters
-  const handleSort = () => {
-    dispatch(sortProducts());
-  };
+  // const handleSort = () => {
+  //   dispatch(sortProducts());
+  // };
 //print
 
 
@@ -88,7 +91,7 @@ const Stock = () => {
               />
             </div>
 
-            <ButtonFilter onClick={handleSort} className='flex flex-row justify-between items-center'>
+            <ButtonFilter className='flex flex-row justify-between items-center'>
               <div>Filtros</div>
               <FaFilter/>
             </ButtonFilter>
@@ -96,8 +99,8 @@ const Stock = () => {
             <DropdownCheck
               className='w-44'
               options={columnsAllOptions}
-              selectedOptions={columnsOptions}
-              onOptionSelect={setColumnsOptions}
+              selectedOptions={columnsList}
+              onOptionSelect={handleColumnSelect}
             >
               <ButtonFilter className='flex flex-row justify-between items-center'>
                 <div>Colunas</div>
