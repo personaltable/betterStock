@@ -1,28 +1,27 @@
-import React, { useState, useEffect } from 'react';
-import { useReactTable, flexRender, getCoreRowModel, getSortedRowModel } from '@tanstack/react-table';
+import React, { useState, useMemo, useEffect } from 'react';
+import { useReactTable, flexRender, getCoreRowModel, getSortedRowModel, getFilteredRowModel } from '@tanstack/react-table';
+import { setProducts, setStatus, setError, resetFilters, setColumns, setSearchName } from '../slices/productsSlice';
 import { useDispatch, useSelector } from 'react-redux';
-import { useGetProductsQuery } from '../slices/productsApiSlice';
-import { setProducts, setStatus, setError, sortProducts } from '../slices/productsSlice';
-import "./StockTable.css"
-import { DateTime } from 'luxon'
-
-import { FaArrowDownShortWide } from "react-icons/fa6";
-import { FaArrowUpWideShort } from "react-icons/fa6";
-
-
-
+import { DateTime } from 'luxon';
+import { FaArrowDownShortWide, FaArrowUpWideShort } from 'react-icons/fa6';
+import './StockTable.css';
 
 const StockTable = () => {
-    const productsState = useSelector((state) => state.productsList.products);
+    const dispatch = useDispatch();
 
-    const data = React.useMemo(() => productsState, [productsState]);
+    //TABLE DATA / COLUMNS____________________________
 
-    const columns = React.useMemo(
+    const productsList = useSelector((state) => state.productsList.products);
+    const columnsList = useSelector((state) => state.productsList.columns);
+    const data = useMemo(() => productsList, [productsList]);
+
+    const allColumns = useMemo(
         () => [
             {
                 id: 'name',
                 header: 'Nome',
                 accessorKey: 'name',
+                filterFn: 'customFilterFunction',
             },
             {
                 id: 'category',
@@ -42,14 +41,14 @@ const StockTable = () => {
             {
                 id: 'price',
                 header: 'Preço',
-                accessorFn: row => `${row.price}€`,
+                accessorFn: (row) => `${row.price}€`,
             },
             {
                 id: 'creationDate',
                 header: 'Data / Hora',
                 accessorKey: 'creationDate',
-                cell: info => DateTime.fromISO(info.getValue()).
-                    toLocaleString(DateTime.DATETIME_MED)
+                cell: (info) =>
+                    DateTime.fromISO(info.getValue()).toLocaleString(DateTime.DATETIME_MED),
             },
             {
                 id: 'createdBy',
@@ -75,17 +74,55 @@ const StockTable = () => {
         []
     );
 
-    const [sorting, setSorting] = useState([]);
+    //COLUMNS OPTIONS_______________________
+
+    //Filter Columns
+    const filteredColumns = useMemo(
+        () => allColumns.filter((column) => columnsList.includes(column.header)),
+        [allColumns, columnsList]
+    );
+
+    //Sort Columns
+    const initialSorting = [{ id: 'creationDate', desc: false, },];
+    const [sorting, setSorting] = useState(initialSorting);
+
+    //FILTERS OPTIONS_______________________
+
+    //Reset Filters
+    const isResettingFilters = useSelector((state) => state.productsList.filters);
+    useEffect(() => {
+        if (isResettingFilters) {
+            dispatch(setSearchName(''));
+            dispatch(resetFilters(false));
+        }
+    }, [isResettingFilters]);
+
+    //Filter By Name
+    const searchName = useSelector((state) => state.productsList.searchName);
+    console.log(searchName)
+
+    const customFilterFunction = (row, columnId, filterValue) => {
+        const cellValue = row.getValue(columnId);
+        return cellValue.toLowerCase().startsWith(filterValue.toLowerCase());
+    };
+
+
+    //TABLE CONFIG___________________
 
     const table = useReactTable({
         data,
-        columns,
+        columns: filteredColumns,
         getCoreRowModel: getCoreRowModel(),
         getSortedRowModel: getSortedRowModel(),
-        state:{
-            sorting: sorting
+        getFilteredRowModel: getFilteredRowModel(),
+        state: {
+            sorting,
+            columnFilters: useMemo(() => [{ id: 'name', value: searchName }], [searchName]),
         },
-        onSortingChange: setSorting
+        onSortingChange: setSorting,
+        filterFns: {
+            customFilterFunction,
+        },
     });
 
     return (
@@ -100,10 +137,7 @@ const StockTable = () => {
                                     onClick={header.column.getToggleSortingHandler()}
                                 >
                                     <div className="flex items-center">
-                                        {flexRender(
-                                            header.column.columnDef.header,
-                                            header.getContext()
-                                        )}
+                                        {flexRender(header.column.columnDef.header, header.getContext())}
                                         {header.column.getIsSorted() === 'asc' ? (
                                             <FaArrowDownShortWide className="ml-1" />
                                         ) : header.column.getIsSorted() === 'desc' ? (
@@ -120,10 +154,7 @@ const StockTable = () => {
                         <tr key={row.id} className="border-b">
                             {row.getVisibleCells().map((cell) => (
                                 <td key={cell.id} className="px-4 py-2">
-                                    {flexRender(
-                                        cell.column.columnDef.cell,
-                                        cell.getContext()
-                                    )}
+                                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
                                 </td>
                             ))}
                         </tr>

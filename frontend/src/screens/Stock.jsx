@@ -1,13 +1,22 @@
-import React, { useState, useRef, useEffect } from 'react';
-import SideBar from '../components/SideBar'
-import ButtonOption from '../components/buttons/ButtonOption'
-import ButtonFilter from '../components/buttons/ButtonFilter';
-import DropdownCheck from '../components/Dropdown/DropdownCheck';
-import StockTable from '../components/StockTable';
+import React, { useState, useRef, useEffect } from "react";
+import SideBar from "../components/SideBar";
+import ButtonOption from "../components/buttons/ButtonOption";
+import ButtonFilter from "../components/buttons/ButtonFilter";
+import Dropdown from "../components/Dropdown/Dropdown";
+import DropdownCheck from "../components/Dropdown/DropdownCheck";
+import DropdownSearch from "../components/Dropdown/DropdownSearch";
+import StockTable from "../components/StockTable";
 
-import { useDispatch, useSelector } from 'react-redux';
-import { useGetProductsQuery } from '../slices/productsApiSlice';
-import { setProducts, setStatus, setError, sortProducts } from '../slices/productsSlice';
+import { useDispatch, useSelector } from "react-redux";
+import { useGetProductsQuery } from "../slices/productsApiSlice";
+import {
+  setProducts,
+  setStatus,
+  setError,
+  resetFilters,
+  setColumns,
+  setSearchName,
+} from "../slices/productsSlice";
 
 import { FaMagnifyingGlass } from "react-icons/fa6";
 import { IoReloadCircle } from "react-icons/io5";
@@ -17,108 +26,135 @@ import { FaFilter } from "react-icons/fa6";
 import { FaCirclePlus } from "react-icons/fa6";
 import { FaCircleMinus } from "react-icons/fa6";
 
-
 const Stock = () => {
-
   const dispatch = useDispatch();
   const { data: products, error, isLoading } = useGetProductsQuery();
 
   useEffect(() => {
-      if (isLoading) {
-          dispatch(setStatus('loading'));
-      } else if (error) {
-          dispatch(setError(error));
-          dispatch(setStatus('failed'));
-      } else if (products) {
-          dispatch(setProducts(products));
-          dispatch(setStatus('succeeded'));
-      }
+    if (isLoading) {
+      dispatch(setStatus("loading"));
+    } else if (error) {
+      dispatch(setError(error));
+      dispatch(setStatus("failed"));
+    } else if (products) {
+      dispatch(setProducts(products));
+      dispatch(setStatus("succeeded"));
+    }
   }, [isLoading, error, products, dispatch]);
 
+  //General Filters______________________________
 
-//General Filters______________________________
+  //Reset Filters
+  const handleResetFilterChange = () => {
+    dispatch(resetFilters(true));
+  };
 
-//search
-  const [searchFilter, setSearchFilter] = useState(""); 
+  //search
+  const searchName = useSelector((state) => state.productsList.searchName);
   const handleSearchFilterChange = (e) => {
-    setSearchFilter(e.target.value);
+    dispatch(setSearchName(e.target.value));
   };
 
-//columns
-  const [columnsOptions, setColumnsOptions] = useState([]);
-  const columnsAllOptions = ['Option 1', 'Option 2', 'Option 3'];
+  const [searchCategoryValue, setSearchCategoryValue] = useState("");
 
-//filters
-  const handleSort = () => {
-    dispatch(sortProducts());
+  //columns
+  const columnsList = useSelector((state) => state.productsList.columns);
+  const columnsAllOptions = [
+    "Nome",
+    "Categoria",
+    "Marca",
+    "Informação",
+    "Preço",
+    "Data / Hora",
+    "Criador",
+    "Reposição",
+    "Stock Baixo",
+    "Stock",
+  ];
+  const handleColumnSelect = (options) => {
+    dispatch(setColumns(options));
   };
-//print
 
-
-
+  //filters
+  // const handleSort = () => {
+  //   dispatch(sortProducts());
+  // };
+  //print
 
   return (
-    <div className='flex flex-row'>
+    <div className="flex flex-row">
       <SideBar />
-      <div className='flex flex-col p-3 w-full'>
-        <div className='flex flex-row justify-between items-center'>
-
-          <div className='flex flex-row gap-2 items-center'>
-            <ButtonOption className='flex flex-row justify-between items-center'>
+      <div className="flex flex-col p-3 w-full">
+        <div className="flex flex-row justify-between items-center">
+          <div className="flex flex-row gap-2 items-center">
+            <ButtonOption className="flex flex-row justify-between items-center">
               <div>Adicionar</div>
               <FaCirclePlus />
             </ButtonOption>
-            <ButtonOption className='flex flex-row justify-between items-center'>
+            <ButtonOption className="flex flex-row justify-between items-center">
               <div>Remover</div>
               <FaCircleMinus />
             </ButtonOption>
           </div>
 
-          <div className='flex flex-row gap-2 items-center'>
-            <IoReloadCircle className='text-3xl text-basepurple-500 hover:text-basepurple-600 transition duration-300 ease-in-out cursor-pointer' />
+          <div className="flex flex-row gap-2 items-center">
+            <IoReloadCircle
+              onClick={handleResetFilterChange}
+              className="text-3xl text-basepurple-500 hover:text-basepurple-600 transition duration-300 ease-in-out cursor-pointer"
+            />
 
-            <div className='flex flex-row relative items-center'>
-              <FaMagnifyingGlass className='text-gray-400 left-2 absolute'/>
+            <div className="flex flex-row relative items-center">
+              <FaMagnifyingGlass className="text-gray-400 left-2 absolute" />
               <input
-                type='text'
+                type="text"
                 onChange={handleSearchFilterChange}
-                value={searchFilter}
-                className='w-36 h-8 pl-7 rounded-md border border-basepurple-500 focus:outline-basepurple-600'
-                placeholder='Pesquisar...'
+                value={searchName}
+                className="w-36 h-8 pl-7 rounded-md border border-basepurple-500 focus:outline-basepurple-600"
+                placeholder="Pesquisar..."
               />
             </div>
 
-            <ButtonFilter onClick={handleSort} className='flex flex-row justify-between items-center'>
-              <div>Filtros</div>
-              <FaFilter/>
-            </ButtonFilter>
+            <Dropdown
+              trigger={
+                <ButtonFilter className="flex flex-row justify-between items-center">
+                  <div>Filtros</div>
+                  <FaFilter />
+                </ButtonFilter>}
+              classNameContainer="w-80"
+            >
+
+              <DropdownSearch
+                label={"Categoria:"}
+                options={["Informática", "Escritório"]}
+                searchValue={searchCategoryValue}
+                setSearchValue={setSearchCategoryValue}
+              ></DropdownSearch>
+              <div>hi</div>
+
+            </Dropdown>
 
             <DropdownCheck
-              className='w-44'
+              className="w-44"
               options={columnsAllOptions}
-              selectedOptions={columnsOptions}
-              onOptionSelect={setColumnsOptions}
+              selectedOptions={columnsList}
+              onOptionSelect={handleColumnSelect}
             >
-              <ButtonFilter className='flex flex-row justify-between items-center'>
+              <ButtonFilter className="flex flex-row justify-between items-center">
                 <div>Colunas</div>
                 <FaWrench />
               </ButtonFilter>
             </DropdownCheck>
 
-            <ButtonFilter className='flex flex-row justify-between items-center'>
+            <ButtonFilter className="flex flex-row justify-between items-center">
               <div>Imprimir</div>
               <FaPrint />
             </ButtonFilter>
           </div>
-
-
         </div>
         <StockTable></StockTable>
-
-
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Stock
+export default Stock;
