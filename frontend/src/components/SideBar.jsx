@@ -29,7 +29,7 @@ function SideBar() {
   const { userInfo } = useSelector((state) => state.auth)
 
   return (
-    <div className='flex flex-col bg-zinc-900 min-w-64 max-w-64 h-screen text-xl p-6 gap-28 text-gray-300'>
+    <div className='flex flex-col sticky top-0 bg-zinc-900 min-w-64 max-w-64 h-screen text-xl p-6 gap-28 text-gray-300'>
 
       <div className='flex flex-row justify-between items-center'>
         <div className='flex flex-row items-center gap-3'>
