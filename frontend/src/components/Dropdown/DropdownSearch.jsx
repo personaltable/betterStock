@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 
-const DropdownSearch = ({ label, options, searchValue, setSearchValue }) => {
+const DropdownSearch = ({ label, options, searchValue, setSearchValue, className }) => {
     const [isOpen, setIsOpen] = useState(false);
 
     const [filteredOptions, setFilteredOptions] = useState(options);
@@ -48,7 +48,7 @@ const DropdownSearch = ({ label, options, searchValue, setSearchValue }) => {
                     <input value={searchValue} onChange={(e) => { handleSearchChange(e.target.value) }} onClick={handleToggle} className='pl-1 w-40 border border-gray-500' type="text" />
                 </div>
                 {isOpen && (
-                    <div className="absolute mt-1 top-6 bg-white border border-gray-200 rounded shadow-lg w-40">
+                    <div className={`${className} absolute mt-1 top-6 bg-white border border-gray-200 rounded shadow-lg w-40`}>
                         {filteredOptions.map(option => (
                             <div
                                 key={option}

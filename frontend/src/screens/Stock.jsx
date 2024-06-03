@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useMemo } from "react";
 import SideBar from "../components/SideBar";
 import ButtonOption from "../components/buttons/ButtonOption";
 import ButtonFilter from "../components/buttons/ButtonFilter";
@@ -16,6 +16,7 @@ import {
   resetFilters,
   setColumns,
   setSearchName,
+  setSearchCategory,
 } from "../slices/productsSlice";
 
 import { FaMagnifyingGlass } from "react-icons/fa6";
@@ -49,13 +50,20 @@ const Stock = () => {
     dispatch(resetFilters(true));
   };
 
-  //search
+  //Search
   const searchName = useSelector((state) => state.productsList.searchName);
   const handleSearchFilterChange = (e) => {
     dispatch(setSearchName(e.target.value));
   };
 
-  const [searchCategoryValue, setSearchCategoryValue] = useState("");
+  //Category
+  const searchCategory = useSelector((state) => state.productsList.searchCategory);
+  const [searchCategoryValue, setSearchCategoryValue] = useState(searchCategory);
+
+  useEffect(() => {
+    dispatch(setSearchCategory(searchCategoryValue));
+  }), [searchCategoryValue]
+
 
   //columns
   const columnsList = useSelector((state) => state.productsList.columns);
@@ -75,11 +83,6 @@ const Stock = () => {
     dispatch(setColumns(options));
   };
 
-  //filters
-  // const handleSort = () => {
-  //   dispatch(sortProducts());
-  // };
-  //print
 
   return (
     <div className="flex flex-row">
@@ -120,11 +123,19 @@ const Stock = () => {
                   <div>Filtros</div>
                   <FaFilter />
                 </ButtonFilter>}
-              classNameContainer="w-80"
+              classNameContainer="w-80 flex flex-col gap-2"
             >
 
               <DropdownSearch
                 label={"Categoria:"}
+                options={["Informática", "Escritório"]}
+                searchValue={searchCategoryValue}
+                setSearchValue={setSearchCategoryValue}
+                className={'z-40'}
+              ></DropdownSearch>
+
+              <DropdownSearch
+                label={"Utilizador:"}
                 options={["Informática", "Escritório"]}
                 searchValue={searchCategoryValue}
                 setSearchValue={setSearchCategoryValue}

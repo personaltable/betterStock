@@ -13,6 +13,8 @@ const StockTable = () => {
 
     const productsList = useSelector((state) => state.productsList.products);
     const columnsList = useSelector((state) => state.productsList.columns);
+    const chosenCategory = useSelector((state) => state.productsList.searchCategory);
+    console.log(chosenCategory)
     const data = useMemo(() => productsList, [productsList]);
 
     const allColumns = useMemo(
@@ -27,6 +29,7 @@ const StockTable = () => {
                 id: 'category',
                 header: 'Categoria',
                 accessorKey: 'category.name',
+                filterFn: 'customFilterCategory',
             },
             {
                 id: 'brand',
@@ -86,7 +89,10 @@ const StockTable = () => {
     const initialSorting = [{ id: 'creationDate', desc: false, },];
     const [sorting, setSorting] = useState(initialSorting);
 
-    //FILTERS OPTIONS_______________________
+
+
+
+    //FILTERS OPTIONS_____________________________________________________________
 
     //Reset Filters
     const isResettingFilters = useSelector((state) => state.productsList.filters);
@@ -99,11 +105,19 @@ const StockTable = () => {
 
     //Filter By Name
     const searchName = useSelector((state) => state.productsList.searchName);
-    console.log(searchName)
 
     const customFilterFunction = (row, columnId, filterValue) => {
         const cellValue = row.getValue(columnId);
         return cellValue.toLowerCase().startsWith(filterValue.toLowerCase());
+    };
+
+    //Filter By Category
+
+    const searchCategory = useSelector((state) => state.productsList.searchCategory);
+
+    const customFilterCategory = (row, columnId, filterValue) => {
+        const cellValue = row.getValue(columnId);
+        return cellValue.toLowerCase().includes(filterValue.toLowerCase());
     };
 
 
@@ -117,11 +131,18 @@ const StockTable = () => {
         getFilteredRowModel: getFilteredRowModel(),
         state: {
             sorting,
-            columnFilters: useMemo(() => [{ id: 'name', value: searchName }], [searchName]),
+            columnFilters: useMemo(
+                () => [
+                    { id: 'name', value: searchName },
+                    { id: 'category', value: searchCategory },
+                ],
+                [searchName, searchCategory]
+            )
         },
         onSortingChange: setSorting,
         filterFns: {
             customFilterFunction,
+            customFilterCategory
         },
     });
 
