@@ -18,10 +18,16 @@ import { CiCircleQuestion } from "react-icons/ci";
 
 const Dashboard = () => {
 
-  const fetchData = async () => {
-    const response = await axios.get(`http://localhost:5555/api/products`);
-    console.log(response.data)
-  }
+
+  const [productsList, setProductsList] = useState([]);
+  useEffect(() => {
+    const fetchData = async () => {
+      const response = await axios.get(`http://localhost:5555/api/products`);
+      setProductsList(response.data);
+    }
+
+    fetchData();
+  }, [])
 
   // __________________________Variáveis Dropdown Settings Header____________________________________
   const [columnsOptions, setColumnsOptions] = useState(['Todos os produtos', 'Produtos sem stock', 'Produtos com stock baixo']);
@@ -94,7 +100,7 @@ const Dashboard = () => {
                     <div>Quantidade por categoria</div>
                     <Tooltip content="Grafico Circular que mostra a quantidade de itens por cada categoria" className='z-20'><CiCircleQuestion /></Tooltip>
                   </div>
-                  <PieChart />
+                  <PieChart productsList={productsList} />
                 </div>
               </ContainerBody>
             ) : (null)}

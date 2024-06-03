@@ -3,33 +3,60 @@ import { Card, CardBody, CardHeader, Typography } from "@material-tailwind/react
 import Chart from "react-apexcharts";
 import { Square3Stack3DIcon } from "@heroicons/react/24/outline";
 
-const chartConfig = {
-    type: "pie",
-    width: 200,
-    height: 200,
-    series: [44, 55, 13, 43, 22],
-    options: {
-        chart: {
-            toolbar: {
+
+
+export default function PieChart({ productsList }) {
+
+
+    let categoryCounts = productsList.reduce((counts, product) => {
+        const categoryName = product.category.name;
+        if (counts[categoryName]) {
+            counts[categoryName]++;
+        } else {
+            counts[categoryName] = 1;
+        }
+        return counts;
+    }, {});
+
+    // Criar a lista final com as cores
+    let colorsList = ["#020617", "#ff8f00", "#00897b", "#1e88e5", "#d81b60"];
+
+    let dataList = Object.keys(categoryCounts).map((category, index) => {
+        let color = colorsList[index % colorsList.length];
+        return { categoryName: category, count: categoryCounts[category], color };
+    });
+
+    let PieCategoryName = dataList.map((data) => { return data.categoryName })
+    let PieCategoryCount = dataList.map((data) => { return data.count })
+    let PieCategoryColors = dataList.map((data) => { return data.color })
+
+
+    const chartConfig = {
+        type: "pie",
+        width: 200,
+        height: 200,
+        series: PieCategoryCount,
+        options: {
+            chart: {
+                toolbar: {
+                    show: false,
+                },
+            },
+            title: {
+                show: "",
+            },
+            dataLabels: {
+                enabled: false,
+            },
+            colors: PieCategoryColors,
+            legend: {
                 show: false,
             },
         },
-        title: {
-            show: "",
-        },
-        dataLabels: {
-            enabled: false,
-        },
-        colors: ["#020617", "#ff8f00", "#00897b", "#1e88e5", "#d81b60"],
-        legend: {
-            show: false,
-        },
-    },
-};
+    };
 
-export default function PieChart() {
     const colors = chartConfig.options.colors;
-    const labels = ['Label 1', 'Label 2', 'Label 3', 'Label 4', 'Label 5'];
+    const labels = PieCategoryName;
 
     return (
         <div className='flex flex-row'>
