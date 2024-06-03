@@ -6,6 +6,7 @@ import Dropdown from "../components/Dropdown/Dropdown";
 import DropdownCheck from "../components/Dropdown/DropdownCheck";
 import DropdownSearch from "../components/Dropdown/DropdownSearch";
 import StockTable from "../components/StockTable";
+import axios from 'axios'
 
 import { useDispatch, useSelector } from "react-redux";
 import { useGetProductsQuery } from "../slices/productsApiSlice";
@@ -17,6 +18,7 @@ import {
   setColumns,
   setSearchName,
   setSearchCategory,
+  setSearchUser,
 } from "../slices/productsSlice";
 
 import { FaMagnifyingGlass } from "react-icons/fa6";
@@ -26,6 +28,7 @@ import { FaWrench } from "react-icons/fa6";
 import { FaFilter } from "react-icons/fa6";
 import { FaCirclePlus } from "react-icons/fa6";
 import { FaCircleMinus } from "react-icons/fa6";
+import Category from "../../../backend/models/categoryModel";
 
 const Stock = () => {
   const dispatch = useDispatch();
@@ -47,7 +50,10 @@ const Stock = () => {
 
   //Reset Filters
   const handleResetFilterChange = () => {
+    setSearchCategoryValue("");
+    setSearchUserValue("");
     dispatch(resetFilters(true));
+
   };
 
   //Search
@@ -57,12 +63,41 @@ const Stock = () => {
   };
 
   //Category
+  const [categoryList, setCategoryList] = useState([]);
+  useEffect(() => {
+    const fetchData = async () => {
+      const response = await axios.get(`http://localhost:5555/api/products/categories`);
+      const categoryNames = response.data.map(category => category.name);
+      setCategoryList(categoryNames);
+    }
+    fetchData();
+  }, [])
+
   const searchCategory = useSelector((state) => state.productsList.searchCategory);
   const [searchCategoryValue, setSearchCategoryValue] = useState(searchCategory);
 
   useEffect(() => {
     dispatch(setSearchCategory(searchCategoryValue));
+    console.log(searchCategory)
   }), [searchCategoryValue]
+
+  //User
+  const [userList, setUserList] = useState([]);
+  useEffect(() => {
+    const fetchData = async () => {
+      const response = await axios.get(`http://localhost:5555/api/users`);
+      const usersNames = response.data.users.map(user => user.name);
+      setUserList(usersNames);
+    }
+    fetchData();
+  }, [])
+
+  const searchUser = useSelector((state) => state.productsList.searchUser);
+  const [searchUserValue, setSearchUserValue] = useState(searchUser);
+
+  useEffect(() => {
+    dispatch(setSearchUser(searchUserValue));
+  }), [searchUserValue]
 
 
   //columns
@@ -128,7 +163,7 @@ const Stock = () => {
 
               <DropdownSearch
                 label={"Categoria:"}
-                options={["Informática", "Escritório"]}
+                options={categoryList}
                 searchValue={searchCategoryValue}
                 setSearchValue={setSearchCategoryValue}
                 className={'z-40'}
@@ -136,9 +171,9 @@ const Stock = () => {
 
               <DropdownSearch
                 label={"Utilizador:"}
-                options={["Informática", "Escritório"]}
-                searchValue={searchCategoryValue}
-                setSearchValue={setSearchCategoryValue}
+                options={userList}
+                searchValue={searchUserValue}
+                setSearchValue={setSearchUserValue}
               ></DropdownSearch>
               <div>hi</div>
 

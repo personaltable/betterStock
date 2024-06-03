@@ -41,4 +41,14 @@ const createProduct = asyncHandler(async (req, res) => {
     res.status(201).json(savedProduct);
 });
 
-export { getProducts, createProduct };
+
+//@desc     Get all categories
+//route     GET /api/products/categories
+//@access   Public
+const getCategories = asyncHandler(async (req, res) => {
+    const categories = await Category.find()
+
+    res.status(200).json(categories);
+});
+
+export { getProducts, createProduct, getCategories };

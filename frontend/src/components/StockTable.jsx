@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useReactTable, flexRender, getCoreRowModel, getSortedRowModel, getFilteredRowModel } from '@tanstack/react-table';
-import { setProducts, setStatus, setError, resetFilters, setColumns, setSearchName } from '../slices/productsSlice';
+import { setProducts, setStatus, setError, resetFilters, setColumns, setSearchName, setSearchCategory, setSearchUser } from '../slices/productsSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { DateTime } from 'luxon';
 import { FaArrowDownShortWide, FaArrowUpWideShort } from 'react-icons/fa6';
@@ -13,8 +13,6 @@ const StockTable = () => {
 
     const productsList = useSelector((state) => state.productsList.products);
     const columnsList = useSelector((state) => state.productsList.columns);
-    const chosenCategory = useSelector((state) => state.productsList.searchCategory);
-    console.log(chosenCategory)
     const data = useMemo(() => productsList, [productsList]);
 
     const allColumns = useMemo(
@@ -57,6 +55,7 @@ const StockTable = () => {
                 id: 'createdBy',
                 header: 'Criador',
                 accessorKey: 'createdBy.name',
+                filterFn: 'customFilterUser',
             },
             {
                 id: 'reStock',
@@ -94,15 +93,6 @@ const StockTable = () => {
 
     //FILTERS OPTIONS_____________________________________________________________
 
-    //Reset Filters
-    const isResettingFilters = useSelector((state) => state.productsList.filters);
-    useEffect(() => {
-        if (isResettingFilters) {
-            dispatch(setSearchName(''));
-            dispatch(resetFilters(false));
-        }
-    }, [isResettingFilters]);
-
     //Filter By Name
     const searchName = useSelector((state) => state.productsList.searchName);
 
@@ -112,7 +102,6 @@ const StockTable = () => {
     };
 
     //Filter By Category
-
     const searchCategory = useSelector((state) => state.productsList.searchCategory);
 
     const customFilterCategory = (row, columnId, filterValue) => {
@@ -120,6 +109,16 @@ const StockTable = () => {
         return cellValue.toLowerCase().includes(filterValue.toLowerCase());
     };
 
+    //Filter By User
+    const searchUser = useSelector((state) => state.productsList.searchUser);
+
+    const customFilterUser = (row, columnId, filterValue) => {
+        const cellValue = row.getValue(columnId);
+        if (!filterValue) {
+            return true;
+        }
+        return cellValue.toLowerCase() === filterValue.toLowerCase();
+    };
 
     //TABLE CONFIG___________________
 
@@ -135,14 +134,16 @@ const StockTable = () => {
                 () => [
                     { id: 'name', value: searchName },
                     { id: 'category', value: searchCategory },
+                    { id: 'createdBy', value: searchUser },
                 ],
-                [searchName, searchCategory]
+                [searchName, searchCategory, searchUser]
             )
         },
         onSortingChange: setSorting,
         filterFns: {
             customFilterFunction,
-            customFilterCategory
+            customFilterCategory,
+            customFilterUser
         },
     });
 
