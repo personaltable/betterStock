@@ -20,6 +20,7 @@ const Dashboard = () => {
 
 
   const [productsList, setProductsList] = useState([]);
+
   useEffect(() => {
     const fetchData = async () => {
       const response = await axios.get(`http://localhost:5555/api/products`);
@@ -113,7 +114,7 @@ const Dashboard = () => {
                     <div>Quantidade por categoria</div>
                     <Tooltip content="Grafico de barras que mostra a quantidade de itens por cada categoria" className='z-20'><CiCircleQuestion /></Tooltip>
                   </div>
-                  <BarChart />
+                  <BarChart productsListBar={productsList} />
                 </div>
               </ContainerBody>
             ) : (null)}

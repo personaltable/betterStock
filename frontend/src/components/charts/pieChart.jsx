@@ -19,14 +19,14 @@ export default function PieChart({ productsList }) {
     }, {});
 
     // Criar a lista final com as cores
-    let colorsList = ["#020617", "#ff8f00", "#00897b", "#1e88e5", "#d81b60"];
+    let colorsList = ["#0D5DE9", "#E90D17", "#E90DC4", "#0DE93F", "#DFE90D"];
 
     let dataList = Object.keys(categoryCounts).map((category, index) => {
         let color = colorsList[index % colorsList.length];
         return { categoryName: category, count: categoryCounts[category], color };
     });
 
-    let PieCategoryName = dataList.map((data) => { return data.categoryName })
+    let PieCategoryName = dataList.map((data) => { return `${data.categoryName} - ${data.count}` })
     let PieCategoryCount = dataList.map((data) => { return data.count })
     let PieCategoryColors = dataList.map((data) => { return data.color })
 

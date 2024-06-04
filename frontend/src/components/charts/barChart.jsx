@@ -4,7 +4,26 @@ import { Card, CardBody, CardHeader, Typography } from "@material-tailwind/react
 import Chart from "react-apexcharts";
 import axios from 'axios'
 
-export default function BarChart() {
+export default function BarChart({ productsListBar }) {
+
+    let categoryCounts = productsListBar.reduce((counts, product) => {
+        const categoryName = product.category.name;
+        if (counts[categoryName]) {
+            counts[categoryName]++;
+        } else {
+            counts[categoryName] = 1;
+        }
+        return counts;
+    }, {});
+
+    let dataList = Object.keys(categoryCounts).map((category, index) => {
+        return { categoryName: category, count: categoryCounts[category] };
+    });
+
+    let PieCategoryName = dataList.map((data) => { return `${data.categoryName} - ${data.count}` })
+    let PieCategoryCount = dataList.map((data) => { return data.count })
+
+
     const [productsList, setProductsList] = useState([]);
     console.log(productsList);
 
@@ -27,12 +46,7 @@ export default function BarChart() {
         type: "bar",
         height: 190,
         width: 430,
-        series: [
-            {
-                name: "Stock",
-                data: stockValues,
-            },
-        ],
+        series: PieCategoryCount,
         options: {
             chart: {
                 toolbar: {
@@ -101,6 +115,8 @@ export default function BarChart() {
             },
         },
     };
+
+    const labels = PieCategoryName;
 
     return (
         <Card>
