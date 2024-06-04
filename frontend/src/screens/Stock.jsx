@@ -17,6 +17,7 @@ import {
   resetFilters,
   setColumns,
   setSearchName,
+  setSearchStock,
   setSearchCategory,
   setSearchUser,
 } from "../slices/productsSlice";
@@ -28,7 +29,10 @@ import { FaWrench } from "react-icons/fa6";
 import { FaFilter } from "react-icons/fa6";
 import { FaCirclePlus } from "react-icons/fa6";
 import { FaCircleMinus } from "react-icons/fa6";
-import Category from "../../../backend/models/categoryModel";
+import { IoClose } from "react-icons/io5";
+import { IoIosArrowDown } from "react-icons/io";
+
+
 
 const Stock = () => {
   const dispatch = useDispatch();
@@ -62,6 +66,18 @@ const Stock = () => {
     dispatch(setSearchName(e.target.value));
   };
 
+  //Stock
+  const stockFilterList = ["Exato", "Entre", "Acima", "Abaixo"];
+  const [stockChoice, setStockChoice] = useState('Exato');
+  const [stockInput, setStockInput] = useState('');
+  const [stockSecondInput, setStockSecondInput] = useState('');
+
+  useEffect(() => {
+    dispatch(setSearchStock({ stockChoice, stockInput, stockSecondInput }));
+  }, [stockChoice, stockInput, stockSecondInput])
+
+
+
   //Category
   const [categoryList, setCategoryList] = useState([]);
   useEffect(() => {
@@ -78,7 +94,6 @@ const Stock = () => {
 
   useEffect(() => {
     dispatch(setSearchCategory(searchCategoryValue));
-    console.log(searchCategory)
   }), [searchCategoryValue]
 
   //User
@@ -119,6 +134,7 @@ const Stock = () => {
   };
 
 
+
   return (
     <div className="flex flex-row">
       <SideBar />
@@ -134,6 +150,8 @@ const Stock = () => {
               <FaCircleMinus />
             </ButtonOption>
           </div>
+
+          {/* Filtros _______________________________________________________________ */}
 
           <div className="flex flex-row gap-2 items-center">
             <IoReloadCircle
@@ -158,8 +176,48 @@ const Stock = () => {
                   <div>Filtros</div>
                   <FaFilter />
                 </ButtonFilter>}
-              classNameContainer="w-80 flex flex-col gap-2"
+              classNameContainer="w-fit flex flex-col gap-2 p-2 mt-2"
             >
+
+              <div className="flex flex-row items-center justify-between" >
+                <div className="flex flex-row ">
+                  <div className="w-20">Stock:</div>
+                  <Dropdown
+                    trigger={
+                      <div className="flex cursor-pointer w-[80px] flex-row gap-1 px-1 justify-between items-center border border-gray-500 rounded mr-1">
+                        <div className="">{stockChoice}</div>
+                        <IoIosArrowDown className="text-xs" />
+                      </div>
+                    }
+                    classNameContainer='w-[80px] mr-1 mt-1'
+                  >
+                    {stockFilterList.map((option) => (
+                      <div onClick={() => { setStockChoice(option) }} className="p-1 px-2 hover:bg-gray-100 cursor-pointer" key={option}>{option}</div>
+                    ))}
+                  </Dropdown>
+
+                  <input
+                    type="text"
+                    onChange={(e) => { setStockInput(e.target.value) }}
+                    value={stockInput}
+                    className="pl-1 w-14 border border-gray-500"
+                  />
+
+                  {stockChoice === "Entre" ? (
+                    <div className="flex flex-row">
+                      <div className="mx-0.5"> - </div>
+                      <input
+                        type="text"
+                        onChange={(e) => { setStockSecondInput(e.target.value) }}
+                        value={stockSecondInput}
+                        className="pl-1 w-14 border border-gray-500"
+                      />
+                    </div>
+                  ) : (<div></div>)}
+
+                </div>
+                <IoClose onClick={() => { [setStockInput(''), setStockSecondInput('')] }} className="text-xl cursor-pointer" />
+              </div>
 
               <DropdownSearch
                 label={"Categoria:"}
@@ -167,6 +225,7 @@ const Stock = () => {
                 searchValue={searchCategoryValue}
                 setSearchValue={setSearchCategoryValue}
                 className={'z-40'}
+                more={<IoClose onClick={() => { setSearchCategoryValue('') }} className="text-xl cursor-pointer" />}
               ></DropdownSearch>
 
               <DropdownSearch
@@ -174,8 +233,8 @@ const Stock = () => {
                 options={userList}
                 searchValue={searchUserValue}
                 setSearchValue={setSearchUserValue}
+                more={<IoClose onClick={() => { setSearchUserValue('') }} className="text-xl cursor-pointer" />}
               ></DropdownSearch>
-              <div>hi</div>
 
             </Dropdown>
 

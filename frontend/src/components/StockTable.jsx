@@ -71,6 +71,7 @@ const StockTable = () => {
                 id: 'stock',
                 header: 'Stock',
                 accessorKey: 'stock',
+                filterFn: 'customFilterStock',
             },
         ],
         []
@@ -99,6 +100,35 @@ const StockTable = () => {
     const customFilterFunction = (row, columnId, filterValue) => {
         const cellValue = row.getValue(columnId);
         return cellValue.toLowerCase().startsWith(filterValue.toLowerCase());
+    };
+
+    //Filter by Stock
+
+    const searchStock = useSelector((state) => state.productsList.searchStock);
+    // console.log(searchStock)
+
+    const customFilterStock = (row, columnId, filterValue) => {
+        const cellValue = parseInt(row.getValue(columnId), 10);
+        const stockInput = parseInt(filterValue.stockInput, 10);
+        const stockSecondInput = parseInt(filterValue.stockSecondInput, 10);
+
+        if (!stockInput) {
+            return true;
+        }
+
+        switch (filterValue.stockChoice) {
+
+            case "Exato":
+                return cellValue === stockInput;
+            case "Entre":
+                return cellValue >= stockInput && cellValue <= stockSecondInput;
+            case "Acima":
+                return cellValue > stockInput;
+            case "Abaixo":
+                return cellValue < stockInput;
+            default:
+                return true;
+        }
     };
 
     //Filter By Category
@@ -135,15 +165,17 @@ const StockTable = () => {
                     { id: 'name', value: searchName },
                     { id: 'category', value: searchCategory },
                     { id: 'createdBy', value: searchUser },
+                    { id: 'stock', value: searchStock },
                 ],
-                [searchName, searchCategory, searchUser]
+                [searchName, searchCategory, searchUser, searchStock]
             )
         },
         onSortingChange: setSorting,
         filterFns: {
             customFilterFunction,
             customFilterCategory,
-            customFilterUser
+            customFilterUser,
+            customFilterStock
         },
     });
 

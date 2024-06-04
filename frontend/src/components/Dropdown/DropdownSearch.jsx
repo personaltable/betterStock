@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 
-const DropdownSearch = ({ label, options, searchValue, setSearchValue, className }) => {
+const DropdownSearch = ({ label, options, searchValue, setSearchValue, className, more }) => {
     const [isOpen, setIsOpen] = useState(false);
 
     const [filteredOptions, setFilteredOptions] = useState(options);
@@ -41,27 +41,27 @@ const DropdownSearch = ({ label, options, searchValue, setSearchValue, className
 
 
     return (
-        <div className="relative flex" ref={dropdownRef}>
-            <div className='flex justify-end'>
-                <div className='flex gap-3'>
-                    <label className='w-24'>{label}</label>
-                    <input value={searchValue} onChange={(e) => { handleSearchChange(e.target.value) }} onClick={handleToggle} className='pl-1 w-40 border border-gray-500' type="text" />
+        <div className="relative flex items-center gap-1" ref={dropdownRef}>
+            <div className='flex justify-end items-center'>
+                <div className='flex '>
+                    <label className='w-20'>{label}</label>
+                    <input value={searchValue} onChange={(e) => { handleSearchChange(e.target.value) }} onClick={handleToggle} className='pl-1 w-52 border border-gray-500' type="text" />
                 </div>
                 {isOpen && (
-                    <div className={`${className} absolute mt-1 top-6 bg-white border border-gray-200 rounded shadow-lg w-40`}>
+                    <div className={`${className} absolute mt-1 top-6 bg-white border border-gray-200 rounded shadow-lg w-52`}>
                         {filteredOptions.map(option => (
                             <div
                                 key={option}
                                 onClick={() => { handleOptionClick(option) }}
-                                className="p-1 hover:bg-gray-100 cursor-pointer"
+                                className="p-1 px-2 hover:bg-gray-100 cursor-pointer "
                             >
                                 {option}
                             </div>
                         ))}
-
                     </div>
                 )}
             </div>
+            {more}
         </div>
     );
 };
