@@ -11,6 +11,8 @@ import Register from './screens/Register.jsx'
 import Dashboard from './screens/Dashboard.jsx'
 import Stock from './screens/Stock.jsx'
 import ForgotPassword from './screens/ForgotPassword.jsx'
+import CategoryPage from './screens/CategoryPage.jsx'
+import Products from './screens/Products.jsx'
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -21,6 +23,8 @@ const router = createBrowserRouter(
       <Route path='' element={<PrivateRoute />}>
         <Route index={true} path="/dashboard" element={<Dashboard />} />
         <Route index={true} path="/stock" element={<Stock />} />
+        <Route index={true} path="/CategoryPage" element={<CategoryPage />} />
+        <Route index={true} path="/Products/:categoryId" element={<Products />} />
       </Route>
     </Route>
   )
