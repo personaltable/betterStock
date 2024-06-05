@@ -7,7 +7,6 @@ import { Square3Stack3DIcon } from "@heroicons/react/24/outline";
 
 export default function PieChart({ productsList }) {
 
-
     let categoryCounts = productsList.reduce((counts, product) => {
         const categoryName = product.category.name;
         if (counts[categoryName]) {

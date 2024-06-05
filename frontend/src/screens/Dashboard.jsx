@@ -30,6 +30,33 @@ const Dashboard = () => {
     fetchData();
   }, [])
 
+  // -----------------------------------USEEFFECT TOTALSTOCK-----------------------------------
+  const [totalProducts, setTotalProducts] = useState(0);
+
+  useEffect(() => {
+    setTotalProducts(productsList.length);
+  }, [productsList]);
+
+  // -----------------------------------USEEFFECT OUTOFSTOCK-----------------------------------
+  const [outOfStockProducts, setOutOfStockProducts] = useState([]);
+
+  useEffect(() => {
+    setTotalProducts(productsList.length);
+    const filteredProducts = productsList.filter(product => product.stock === 0);
+    setOutOfStockProducts(filteredProducts);
+  }, [productsList]);
+
+  // -----------------------------------USEEFFECT LOWSTOCK-----------------------------------
+  const [lowStockProducts, setLowStockProducts] = useState([]);
+
+  useEffect(() => {
+    setTotalProducts(productsList.length);
+    const filteredOutOfStock = productsList.filter(product => product.stock === 0);
+    setOutOfStockProducts(filteredOutOfStock);
+    const filteredLowStock = productsList.filter(product => product.stock < product.lowStock);
+    setLowStockProducts(filteredLowStock);
+  }, [productsList]);
+
   // __________________________Variáveis Dropdown Settings Header____________________________________
   const [columnsOptions, setColumnsOptions] = useState(['Todos os produtos', 'Produtos sem stock', 'Produtos com stock baixo']);
   const columnsAllOptions = ['Todos os produtos', 'Produtos sem stock', 'Produtos com stock baixo'];
@@ -54,6 +81,7 @@ const Dashboard = () => {
 
               <ContainerHeader>
                 <div className='text-lg'>Todos os produtos</div>
+                <div>{totalProducts}</div>
 
               </ContainerHeader>
             ) : (null)}
@@ -61,12 +89,14 @@ const Dashboard = () => {
             {columnsOptions.includes("Produtos sem stock") ? (
               <ContainerHeader>
                 <div className='text-lg'>Produtos sem stock</div>
+                <div>{outOfStockProducts.length}</div>
               </ContainerHeader>
             ) : (null)}
 
             {columnsOptions.includes("Produtos com stock baixo") ? (
               <ContainerHeader>
                 <div className='text-lg'>Produtos com stock baixo</div>
+                <div>{lowStockProducts.length}</div>
               </ContainerHeader>
             ) : (null)}
 
