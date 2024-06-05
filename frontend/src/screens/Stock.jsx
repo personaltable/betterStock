@@ -6,6 +6,7 @@ import Dropdown from "../components/Dropdown/Dropdown";
 import DropdownCheck from "../components/Dropdown/DropdownCheck";
 import DropdownSearch from "../components/Dropdown/DropdownSearch";
 import StockTable from "../components/StockTable";
+import FormCreateProduct from "../components/FormCreateProduct";
 import axios from 'axios'
 
 import { useDispatch, useSelector } from "react-redux";
@@ -35,6 +36,8 @@ import { IoIosArrowDown } from "react-icons/io";
 
 
 const Stock = () => {
+
+  //Fetching stock data
   const dispatch = useDispatch();
   const { data: products, error, isLoading } = useGetProductsQuery();
 
@@ -114,7 +117,6 @@ const Stock = () => {
     dispatch(setSearchUser(searchUserValue));
   }), [searchUserValue]
 
-
   //columns
   const columnsList = useSelector((state) => state.productsList.columns);
   const columnsAllOptions = [
@@ -133,15 +135,17 @@ const Stock = () => {
     dispatch(setColumns(options));
   };
 
+  //_________________________________________
 
+  const [viewCreate, setViewCreate] = useState(false)
 
   return (
     <div className="flex flex-row">
       <SideBar />
-      <div className="flex flex-col p-3 w-full">
+      <div className="flex flex-col p-3 w-full relative">
         <div className="flex flex-row justify-between items-center">
           <div className="flex flex-row gap-2 items-center">
-            <ButtonOption className="flex flex-row justify-between items-center">
+            <ButtonOption onClick={() => { setViewCreate(!viewCreate) }} className="flex flex-row justify-between items-center">
               <div>Adicionar</div>
               <FaCirclePlus />
             </ButtonOption>
@@ -256,6 +260,7 @@ const Stock = () => {
             </ButtonFilter>
           </div>
         </div>
+        {viewCreate && <FormCreateProduct viewCreate={viewCreate} setViewCreate={setViewCreate} />}
         <StockTable></StockTable>
       </div>
     </div>
