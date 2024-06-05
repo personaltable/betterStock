@@ -12,14 +12,28 @@ const CategoryPage = () => {
     const navigate = useNavigate();
     const searchName = useSelector((state) => state.productsList.searchName);
     const [categorieList, setCategorieList] = React.useState([]);
+    const [categoryColorMap, setCategoryColorMap] = React.useState({});
+
+    // Array of colors derived from the base purple shade
+    const colors = [
+        '#6D28D9', '#7C3AED', '#8B5CF6', '#A78BFA', '#C4B5FD',
+        '#5B21B6', '#4C1D95', '#312E81', '#3730A3', '#4338CA',
+        '#6366F1', '#818CF8'
+    ];
 
     React.useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get(
-                    'http://localhost:5555/api/products/categories'
-                );
-                setCategorieList(response.data);
+                const response = await axios.get('http://localhost:5555/api/products/categories');
+                const categories = response.data;
+
+                const colorMap = {};
+                categories.forEach((category, index) => {
+                    colorMap[category._id] = colors[index % colors.length];
+                });
+
+                setCategorieList(categories);
+                setCategoryColorMap(colorMap);
             } catch (error) {
                 console.error('Erro ao buscar categorias:', error);
             }
@@ -33,7 +47,7 @@ const CategoryPage = () => {
     };
 
     const handleCategoryClick = (categoryId) => {
-        console.log("Categoria clicada:", categoryId); // Adicione este console.log
+        console.log("Categoria clicada:", categoryId);
         navigate(`/Products/${categoryId}`);
     };
 
@@ -51,12 +65,13 @@ const CategoryPage = () => {
                         placeholder='Pesquisar...'
                     />
                 </div>
-                <div className='flex flex-row gap-5'>
+                <div className='flex flex-wrap gap-5 '>
                     {categorieList.map((category) => (
                         <div
-                            key={category.id} // Adicione a propriedade key com um valor único, como o id do category
-                            className="border border-gray-300 p-4 rounded-md cursor-pointer"
-                            onClick={() => handleCategoryClick(category.id)}
+                            key={category._id}
+                            className="flex justify-center items-center h-28 w-64 text-center text-2xl shadow-md shadow-slate-700 rounded border border-gray-300 cursor-pointer"
+                            style={{ backgroundColor: categoryColorMap[category._id] }}
+                            onClick={() => handleCategoryClick(category._id)}
                         >
                             {category.name}
                         </div>

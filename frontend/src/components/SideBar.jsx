@@ -9,6 +9,7 @@ import { AiFillDashboard } from "react-icons/ai";
 import { GiCardboardBoxClosed } from "react-icons/gi";
 import { FaUserCircle } from "react-icons/fa";
 import { IoIosLogOut } from "react-icons/io";
+import { AiOutlineProduct } from "react-icons/ai";
 
 function SideBar() {
 
@@ -49,7 +50,7 @@ function SideBar() {
         <div className='flex flex-row items-center gap-2'><AiFillDashboard /><Link to="/dashboard">DashBoard</Link></div>
         <div className='flex flex-row items-center gap-2'><GiCardboardBoxClosed /><Link to="/stock">Stock</Link></div>
         <div className='flex flex-row items-center gap-2'><FaUserCircle /><Link to="/historico">Histórico</Link></div>
-        <div className='flex flex-row items-center gap-2'><FaUserCircle /><Link to="/CategoryPage">Produtos</Link></div>
+        <div className='flex flex-row items-center gap-2'><AiOutlineProduct /><Link to="/CategoryPage">Produtos</Link></div>
       </div>
 
     </div>
