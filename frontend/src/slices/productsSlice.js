@@ -7,6 +7,7 @@ const initialState = {
     columns: ['Nome', 'Categoria', 'Informação', 'Preço', 'Data / Hora', 'Criador', 'Reposição', 'Stock'],
     filters: false,
     searchName: '',
+    searchStock: '',
     searchCategory: '',
     searchUser: '',
 }
@@ -38,6 +39,9 @@ const productsSlice = createSlice({
         setSearchName: (state, action) => {
             state.searchName = action.payload;
         },
+        setSearchStock: (state, action) => {
+            state.searchStock = action.payload;
+        },
         setSearchCategory: (state, action) => {
             state.searchCategory = action.payload;
         },
@@ -47,6 +51,6 @@ const productsSlice = createSlice({
     }
 })
 
-export const { setProducts, setStatus, setError, resetFilters, setColumns, setSearchName, setSearchCategory, setSearchUser } = productsSlice.actions;
+export const { setProducts, setStatus, setError, resetFilters, setColumns, setSearchName, setSearchStock, setSearchCategory, setSearchUser } = productsSlice.actions;
 
 export default productsSlice.reducer;

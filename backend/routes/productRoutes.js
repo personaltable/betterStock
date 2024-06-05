@@ -4,7 +4,6 @@ import { getProducts, createProduct, getCategories } from "../controllers/produc
 
 router.get('/', getProducts);
 router.post('/', createProduct);
-
 router.get('/categories', getCategories);
 
 

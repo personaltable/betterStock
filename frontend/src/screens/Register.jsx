@@ -42,7 +42,7 @@ const Register = () => {
     } catch (error) {
       console.log(error?.data?.message)
       console.log(error)
-      setError("email", { message: "MEH" })
+      setError("email", { message: "Erro de email" })
     }
     console.log('data', data)
   }
