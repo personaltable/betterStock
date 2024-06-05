@@ -1,6 +1,9 @@
 import React, { useState, useRef, useEffect, useMemo } from "react";
 import axios from 'axios'
 
+import { useSelector } from 'react-redux'
+import { useCreateProductMutation } from "../slices/productsApiSlice";
+
 import { useForm } from 'react-hook-form';
 import { IoClose } from "react-icons/io5";
 
@@ -19,20 +22,14 @@ const FormCreateProduct = ({ setViewCreate, viewCreate }) => {
         }
     })
 
-    const onSubmit = async data => {
-        console.log(data)
-    }
-
     //Category__________________________
     const [categoryList, setCategoryList] = useState([]);
     const [filteredOptions, setFilteredOptions] = useState([]);
-
     const [viewCategoryOptions, setViewCategoryOptions] = useState(false);
 
-
     const validateCategory = (value) => {
-        if (!categoryList.contains.value) {
-
+        if (!categoryList.includes(value)) {
+            return "Categoria inválida";
         }
     }
 
@@ -72,53 +69,175 @@ const FormCreateProduct = ({ setViewCreate, viewCreate }) => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
     }, []);
-    //___________________________________
+
+    //Stock___________________________________
+    const validateStock = (value) => {
+        if (isNaN(value)) {
+            return "O Stock deve ser numérico";
+        }
+        if (value && value.toString().length > 5) {
+            return "O Stock não deve passar de 5 dígitos";
+        }
+    };
+
+    //Price___________________________________
+    const validatePrice = (value) => {
+        if (isNaN(value)) {
+            return "O Preço deve ser numérico";
+        }
+    };
+
+    //LowStock___________________________________
+    const validateLowStock = (value) => {
+        if (isNaN(value)) {
+            return "O Stock critíco deve ser numérico";
+        }
+        if (value && value.toString().length > 5) {
+            return "O Stock critíco não deve passar de 5 dígitos";
+        }
+    };
+
+    //Information___________________________________
+    const validateInformation = (value) => {
+        const wordCount = value.trim().split(/\s+/).length;
+        if (wordCount > 30) {
+            return "A informação só pode conter 30 palavras";
+        }
+    };
+
+
+    //SUBMIT______________________________________
+
+    const [createProduct, { isLoading }] = useCreateProductMutation();
+    const { userInfo } = useSelector((state) => state.auth)
+
+    const onSubmit = async data => {
+        try {
+            const res = await createProduct({
+                name: data.name,
+                category: data.category,
+                brand: data.brand,
+                information: data.information,
+                price: data.price,
+                createdBy: userInfo.name,
+                lowStock: data.lowStock,
+                stock: data.stock,
+            }).unwrap();
+
+            setViewCreate(false);
+
+        } catch (error) {
+            console.log(error?.data?.message)
+        }
+        console.log(data)
+    }
 
 
 
     return (
-        <div className="flex flex-col w-fit h-[500px] gap-3 p-5 bg-white shadow-lg rounded-lg border border-gray-300 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50">
+        <div className="flex flex-col w-fit h-fit gap-3 p-5 bg-white shadow-lg rounded-lg border border-gray-300 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50">
             <div className="flex flex-row justify-between items-center">
                 <div className="font-bold">Adicionar Produto</div>
                 <IoClose onClick={() => { setViewCreate(false) }} className="flex self-end text-xl cursor-pointer" />
             </div>
             <form className='h-full' onSubmit={handleSubmit(onSubmit)}>
-                <div className='flex flex-col justify-between h-full'>
-                    <div className="flex flex-row gap-5">
-                        <div className='flex flex-col gap-1'>
-                            <label>Nome</label>
-                            <input
-                                className='w-48 pl-1 border border-gray-500'
-                                {...register('name', {
-                                    required: "O nome é obrigatório",
-                                })}
+                <div className='flex flex-col gap-10 h-full'>
+                    <div className='flex flex-col h-full '>
+                        <div className="flex flex-row gap-5 min-h-20">
+                            <div className='flex flex-col gap-1'>
+                                <div className="flex flex-row gap-1">
+                                    <label>Nome</label>
+                                    <div className="text-red-500">*</div>
+                                </div>
+                                <input
+                                    className='w-48 pl-1 border border-gray-500'
+                                    {...register('name', {
+                                        required: "O nome é obrigatório",
+                                    })}
+                                />
+                                {errors.name && <div className='text-red-500 text-sm'>{errors.name.message}</div>}
+                            </div>
 
-                            />
+                            <div className='flex flex-col gap-1' ref={dropdownRef}>
+                                <div className="flex flex-row gap-1">
+                                    <label>Categoria</label>
+                                    <div className="text-red-500">*</div>
+                                </div>
+                                <input
+                                    className='relative w-48 pl-1 border border-gray-500'
+                                    {...register('category', {
+                                        required: "A categoria é obrigatória",
+                                        validate: validateCategory
+                                    })}
+                                    onChange={(e) => handleSearchChange(e.target.value)}
+                                    onClick={() => setViewCategoryOptions(true)}
+                                />
+                                {viewCategoryOptions &&
+                                    <div className="absolute w-48 pl-1 top-28 bg-white border border-gray-500 z-50">
+                                        {filteredOptions.map((option, index) => (
+                                            <div key={index} onClick={() => handleOptionClick(option)} className="hover:bg-gray-100 cursor-pointer h-7">
+                                                {option}
+                                            </div>
+                                        ))}
+                                    </div>
+                                }
+                                {errors.category && <div className='text-red-500 text-sm'>{errors.category.message}</div>}
+                            </div>
 
-                            {errors.name && <div className='text-red-500'>{errors.name.message}</div>}
+                            <div className='flex flex-col gap-1'>
+                                <div className="flex flex-row gap-1">
+                                    <label>Stock</label>
+                                    <div className="text-red-500">*</div>
+                                </div>
+                                <input
+                                    className='w-48 pl-1 border border-gray-500'
+                                    {...register('stock', {
+                                        required: "O stock é obrigatório",
+                                        validate: validateStock
+                                    })}
+                                />
+                                {errors.stock && <div className='text-red-500 text-sm'>{errors.stock.message}</div>}
+                            </div>
+                        </div>
+                        <div className="flex flex-row gap-5 min-h-20">
+                            <div className='flex flex-col gap-1'>
+                                <label>Marca</label>
+                                <input
+                                    className='w-48 pl-1 border border-gray-500'
+                                    {...register('brand')}
+                                />
+                            </div>
+                            <div className='flex flex-col gap-1'>
+                                <label>Preço</label>
+                                <input
+                                    className='w-48 pl-1 border border-gray-500'
+                                    {...register('price',
+                                        { validate: validatePrice }
+                                    )}
+                                />
+                                {errors.price && <div className='text-red-500 text-sm'>{errors.price.message}</div>}
+                            </div>
+                            <div className='flex flex-col gap-1'>
+                                <label>Stock critíco</label>
+                                <input
+                                    className='w-48 pl-1 border border-gray-500'
+                                    {...register('lowStock',
+                                        { validate: validateLowStock })}
+                                />
+                                {errors.lowStock && <div className='text-red-500 text-sm'>{errors.lowStock.message}</div>}
+                            </div>
                         </div>
 
-                        <div className='flex flex-col gap-1' ref={dropdownRef}>
-                            <label>Categoria</label>
-                            <input
-                                className='relative w-48 pl-1 border border-gray-500'
-                                {...register('category', {
-                                    required: "A categoria é obrigatória",
-                                    validate: validateCategory
-                                })}
-                                onChange={(e) => handleSearchChange(e.target.value)}
-                                onClick={() => setViewCategoryOptions(true)}
-                            />
-                            {viewCategoryOptions &&
-                                <div className="absolute w-48 pl-1 top-28 bg-white border border-gray-500 z-50">
-                                    {filteredOptions.map((option, index) => (
-                                        <div key={index} onClick={() => handleOptionClick(option)} className="hover:bg-gray-100 cursor-pointer h-7">
-                                            {option}
-                                        </div>
-                                    ))}
-                                </div>
-                            }
-                            {errors.category && <div className='text-red-500'>{errors.category.message}</div>}
+                        <div className="flex flex-row gap-5">
+                            <div className='flex flex-col gap-1 w-full'>
+                                <label>Informações</label>
+                                <textarea
+                                    className='w-full pl-1 border border-gray-500'
+                                    {...register('information',
+                                        { validate: validateInformation })}
+                                />
+                                {errors.information && <div className='text-red-500 text-sm'>{errors.information.message}</div>}
+                            </div>
                         </div>
                     </div>
                     <button type='submit' className='flex justify-center items-center bg-black text-white w-48 p-2 py-1 rounded'>Submeter</button>

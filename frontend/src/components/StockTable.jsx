@@ -42,7 +42,7 @@ const StockTable = () => {
             {
                 id: 'price',
                 header: 'Preço',
-                accessorFn: (row) => `${row.price}€`,
+                accessorFn: (row) => { return row.price !== null ? `${row.price}€` : '' }
             },
             {
                 id: 'creationDate',
