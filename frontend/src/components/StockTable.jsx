@@ -9,6 +9,7 @@ import './StockTable.css';
 const StockTable = () => {
     const dispatch = useDispatch();
 
+
     //TABLE DATA / COLUMNS____________________________
 
     const productsList = useSelector((state) => state.productsList.products);
@@ -23,13 +24,17 @@ const StockTable = () => {
 
     // console.log(selectedProducts)
 
-    const handleAllRowSelectionChange = (isSelected) => {
-        if (isSelected) {
-            setSelectedProducts(productsList);
-        } else {
-            setSelectedProducts([]);
-        }
+    const [isChecked, setIsChecked] = useState(false)
+
+    useEffect(() => {
+        handleAllRowSelectionChange();
+    }, [isChecked])
+
+    const handleAllRowSelectionChange = () => {
+        setSelectedProducts(isChecked ? [...productsList] : []);
+        console.log(isChecked)
     };
+
 
     const handleRowSelectionChange = (row, isSelected) => {
         const selectedProduct = row.original;
@@ -43,8 +48,6 @@ const StockTable = () => {
     };
 
 
-
-
     const allColumns = useMemo(
         () => [
             {
@@ -53,20 +56,16 @@ const StockTable = () => {
                     <input
                         className='h-3.5 w-3.5'
                         type="checkbox"
-                        {...{
-                            checked: selectedProducts.length === data.length,
-                            onChange: (e) => handleAllRowSelectionChange(e.target.checked),
-                        }}
+                        checked={isChecked}
+                        onChange={() => setIsChecked(!isChecked)}
                     />
                 ),
                 cell: ({ row }) => (
                     <input
                         className='h-3.5 w-3.5'
                         type="checkbox"
-                        {...{
-                            checked: selectedProducts.includes(row.original),
-                            onChange: (e) => handleRowSelectionChange(row, e.target.checked),
-                        }}
+                        checked={selectedProducts.includes(row.original)}
+                        onChange={(e) => handleRowSelectionChange(row, e.target.checked)}
                     />
                 ),
             },
@@ -209,7 +208,7 @@ const StockTable = () => {
 
     const table = useReactTable({
         data,
-        columns: allColumns,
+        columns: filteredColumns,
         getCoreRowModel: getCoreRowModel(),
         getSortedRowModel: getSortedRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
@@ -227,7 +226,6 @@ const StockTable = () => {
             )
         },
         onSortingChange: setSorting,
-        onRowSelectionChange: handleRowSelectionChange,
         filterFns: {
             customFilterFunction,
             customFilterCategory,
