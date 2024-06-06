@@ -135,7 +135,7 @@ const FormCreateProduct = ({ setViewCreate, viewCreate }) => {
 
 
     return (
-        <div className="flex flex-col w-fit h-fit gap-3 p-5 bg-white shadow-lg rounded-lg border border-gray-300 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50">
+        <div className="flex flex-col w-fit h-fit gap-3 p-5 bg-white shadow-lg rounded-lg border border-gray-300 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-2/3 z-50">
             <div className="flex flex-row justify-between items-center">
                 <div className="font-bold">Adicionar Produto</div>
                 <IoClose onClick={() => { setViewCreate(false) }} className="flex self-end text-xl cursor-pointer" />

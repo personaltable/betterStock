@@ -2,6 +2,7 @@ import asyncHandler from 'express-async-handler'
 import Product from '../models/productModel.js'
 import Category from '../models/categoryModel.js'
 import User from '../models/userModel.js'
+import mongoose from 'mongoose'
 import { check, validationResult } from 'express-validator'
 
 //@desc     Get all products
@@ -68,6 +69,32 @@ const createProduct = asyncHandler(async (req, res) => {
     res.status(201).json(savedProduct);
 });
 
+//@desc     Excluir produto
+//route     DELETE /api/products/
+//@access   Público
+
+const deleteProduct = asyncHandler(async (req, res) => {
+    try {
+        // Extrair os IDs dos produtos a serem excluídos da lista de produtos recebida
+        const productIds = req.body.map(productId => mongoose.Types.ObjectId(productId));
+        console.log(productIds)
+
+        // Use o método deleteMany do modelo de Produto para excluir vários produtos
+        const result = await Product.deleteMany({ _id: { $in: productIds } });
+
+        if (result.deletedCount > 0) {
+            res.status(200).json({ message: 'Produtos excluídos com sucesso.' });
+        } else {
+            res.status(404).json({ message: 'Nenhum produto encontrado para exclusão.' });
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Não foi possível excluir os produtos.' });
+    }
+});
+
+
+
 
 
 //@desc     Get all categories
@@ -79,4 +106,4 @@ const getCategories = asyncHandler(async (req, res) => {
     res.status(200).json(categories);
 });
 
-export { getProducts, createProduct, getCategories };
+export { getProducts, createProduct, getCategories, deleteProduct };
