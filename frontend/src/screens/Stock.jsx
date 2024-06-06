@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, useMemo } from "react";
+import axios from 'axios'
 import SideBar from "../components/SideBar";
 import ButtonOption from "../components/buttons/ButtonOption";
 import ButtonFilter from "../components/buttons/ButtonFilter";
@@ -7,7 +8,8 @@ import DropdownCheck from "../components/Dropdown/DropdownCheck";
 import DropdownSearch from "../components/Dropdown/DropdownSearch";
 import StockTable from "../components/StockTable";
 import FormCreateProduct from "../components/FormCreateProduct";
-import axios from 'axios'
+import FormDeleteProduct from "../components/FormDeleteProduct";
+
 
 import { useDispatch, useSelector } from "react-redux";
 import { useGetProductsQuery } from "../slices/productsApiSlice";
@@ -137,7 +139,12 @@ const Stock = () => {
 
   //_________________________________________
 
+  //Delete
+  const deleteList = useSelector((state) => state.productsList.deleteList);
+  console.log(deleteList)
+
   const [viewCreate, setViewCreate] = useState(false)
+  const [viewDelete, setViewDelete] = useState(false)
 
   return (
     <div className="flex flex-row">
@@ -149,7 +156,7 @@ const Stock = () => {
               <div>Adicionar</div>
               <FaCirclePlus />
             </ButtonOption>
-            <ButtonOption className="flex flex-row justify-between items-center">
+            <ButtonOption onClick={() => { setViewDelete(!viewDelete) }} className="flex flex-row justify-between items-center">
               <div>Remover</div>
               <FaCircleMinus />
             </ButtonOption>
@@ -261,7 +268,10 @@ const Stock = () => {
           </div>
         </div>
         {viewCreate && <FormCreateProduct viewCreate={viewCreate} setViewCreate={setViewCreate} />}
+        {viewDelete && <FormDeleteProduct viewDelete={viewDelete} setViewDelete={setViewDelete} />}
+
         <StockTable></StockTable>
+
       </div>
     </div>
   );

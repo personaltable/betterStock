@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useReactTable, flexRender, getCoreRowModel, getSortedRowModel, getFilteredRowModel } from '@tanstack/react-table';
-import { setProducts, setStatus, setError, resetFilters, setColumns, setSearchName, setSearchCategory, setSearchUser } from '../slices/productsSlice';
+import { setProducts, setStatus, setError, resetFilters, setColumns, setSearchName, setSearchCategory, setSearchUser, setDeleteList } from '../slices/productsSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { DateTime } from 'luxon';
 import { FaArrowDownShortWide, FaArrowUpWideShort } from 'react-icons/fa6';
@@ -9,14 +9,66 @@ import './StockTable.css';
 const StockTable = () => {
     const dispatch = useDispatch();
 
+
     //TABLE DATA / COLUMNS____________________________
 
     const productsList = useSelector((state) => state.productsList.products);
     const columnsList = useSelector((state) => state.productsList.columns);
     const data = useMemo(() => productsList, [productsList]);
 
+    const [selectedProducts, setSelectedProducts] = useState([]);
+
+    useEffect(() => {
+        dispatch(setDeleteList(selectedProducts));
+    }), [selectedProducts]
+
+    // console.log(selectedProducts)
+
+    const [isChecked, setIsChecked] = useState(false)
+
+    useEffect(() => {
+        handleAllRowSelectionChange();
+    }, [isChecked])
+
+    const handleAllRowSelectionChange = () => {
+        setSelectedProducts(isChecked ? [...productsList] : []);
+        console.log(isChecked)
+    };
+
+
+    const handleRowSelectionChange = (row, isSelected) => {
+        const selectedProduct = row.original;
+        if (isSelected) {
+            setSelectedProducts(prevSelectedProducts => [...prevSelectedProducts, selectedProduct]);
+        } else {
+            setSelectedProducts(prevSelectedProducts =>
+                prevSelectedProducts.filter(product => product !== selectedProduct)
+            );
+        }
+    };
+
+
     const allColumns = useMemo(
         () => [
+            {
+                id: 'select',
+                header: ({ table }) => (
+                    <input
+                        className='h-3.5 w-3.5'
+                        type="checkbox"
+                        checked={isChecked}
+                        onChange={() => setIsChecked(!isChecked)}
+                    />
+                ),
+                cell: ({ row }) => (
+                    <input
+                        className='h-3.5 w-3.5'
+                        type="checkbox"
+                        checked={selectedProducts.includes(row.original)}
+                        onChange={(e) => handleRowSelectionChange(row, e.target.checked)}
+                    />
+                ),
+            },
             {
                 id: 'name',
                 header: 'Nome',
@@ -42,7 +94,7 @@ const StockTable = () => {
             {
                 id: 'price',
                 header: 'Preço',
-                accessorFn: (row) => `${row.price}€`,
+                accessorFn: (row) => { return row.price !== null ? `${row.price}€` : '' }
             },
             {
                 id: 'creationDate',
@@ -74,16 +126,17 @@ const StockTable = () => {
                 filterFn: 'customFilterStock',
             },
         ],
-        []
+        [selectedProducts]
     );
 
     //COLUMNS OPTIONS_______________________
 
     //Filter Columns
     const filteredColumns = useMemo(
-        () => allColumns.filter((column) => columnsList.includes(column.header)),
+        () => allColumns.filter((column) => columnsList.includes(column.header) || column.id === 'select'),
         [allColumns, columnsList]
     );
+
 
     //Sort Columns
     const initialSorting = [{ id: 'creationDate', desc: false, },];
@@ -150,6 +203,7 @@ const StockTable = () => {
         return cellValue.toLowerCase() === filterValue.toLowerCase();
     };
 
+
     //TABLE CONFIG___________________
 
     const table = useReactTable({
@@ -160,6 +214,7 @@ const StockTable = () => {
         getFilteredRowModel: getFilteredRowModel(),
         state: {
             sorting,
+            rowSelection: selectedProducts,
             columnFilters: useMemo(
                 () => [
                     { id: 'name', value: searchName },
@@ -184,6 +239,7 @@ const StockTable = () => {
             <table>
                 <thead>
                     {table.getHeaderGroups().map((headerGroup) => (
+
                         <tr key={headerGroup.id}>
                             {headerGroup.headers.map((header) => (
                                 <th
@@ -207,7 +263,7 @@ const StockTable = () => {
                     {table.getRowModel().rows.map((row) => (
                         <tr key={row.id} className="border-b">
                             {row.getVisibleCells().map((cell) => (
-                                <td key={cell.id} className="px-4 py-2">
+                                <td key={cell.id} className="px-3 py-2">
                                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                                 </td>
                             ))}
