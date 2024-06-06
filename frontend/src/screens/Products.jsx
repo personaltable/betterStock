@@ -51,13 +51,13 @@ const Products = () => {
 
                 const updatedProduct = { ...product, stock: product.stock - quantity };
                 const productId = product._id;
-                const url = `http://localhost:5555/api/products/${productId}`;
+
+                const response = await axios.put(`http://localhost:5555/api/products/store/${productId}`, updatedProduct);
 
                 console.log(`Atualizando produto com ID: ${productId}`);
-                console.log(`URL: ${url}`);
                 console.log('Dados do produto:', updatedProduct);
 
-                const response = await axios.put(url, updatedProduct);
+
 
                 if (response.status === 200) {
                     setQuantity(0); // Reset quantity after adding to cart
