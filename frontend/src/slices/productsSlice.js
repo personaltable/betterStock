@@ -10,6 +10,7 @@ const initialState = {
     searchStock: '',
     searchCategory: '',
     searchUser: '',
+    deleteList: [],
 }
 
 const productsSlice = createSlice({
@@ -47,10 +48,13 @@ const productsSlice = createSlice({
         },
         setSearchUser: (state, action) => {
             state.searchUser = action.payload;
+        },
+        setDeleteList: (state, action) => {
+            state.deleteList = action.payload;
         }
     }
 })
 
-export const { setProducts, setStatus, setError, resetFilters, setColumns, setSearchName, setSearchStock, setSearchCategory, setSearchUser } = productsSlice.actions;
+export const { setProducts, setStatus, setError, resetFilters, setColumns, setSearchName, setSearchStock, setSearchCategory, setSearchUser, setDeleteList } = productsSlice.actions;
 
 export default productsSlice.reducer;

@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useReactTable, flexRender, getCoreRowModel, getSortedRowModel, getFilteredRowModel } from '@tanstack/react-table';
-import { setProducts, setStatus, setError, resetFilters, setColumns, setSearchName, setSearchCategory, setSearchUser } from '../slices/productsSlice';
+import { setProducts, setStatus, setError, resetFilters, setColumns, setSearchName, setSearchCategory, setSearchUser, setDeleteList } from '../slices/productsSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { DateTime } from 'luxon';
 import { FaArrowDownShortWide, FaArrowUpWideShort } from 'react-icons/fa6';
@@ -16,7 +16,12 @@ const StockTable = () => {
     const data = useMemo(() => productsList, [productsList]);
 
     const [selectedProducts, setSelectedProducts] = useState([]);
-    console.log(selectedProducts)
+
+    useEffect(() => {
+        dispatch(setDeleteList(selectedProducts));
+    }), [selectedProducts]
+
+    // console.log(selectedProducts)
 
     const handleAllRowSelectionChange = (isSelected) => {
         if (isSelected) {
@@ -46,6 +51,7 @@ const StockTable = () => {
                 id: 'select',
                 header: ({ table }) => (
                     <input
+                        className='h-3.5 w-3.5'
                         type="checkbox"
                         {...{
                             checked: selectedProducts.length === data.length,
@@ -55,6 +61,7 @@ const StockTable = () => {
                 ),
                 cell: ({ row }) => (
                     <input
+                        className='h-3.5 w-3.5'
                         type="checkbox"
                         {...{
                             checked: selectedProducts.includes(row.original),
