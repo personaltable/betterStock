@@ -169,6 +169,7 @@ const FormCreateProduct = ({ setViewCreate, viewCreate }) => {
                                         required: "A categoria é obrigatória",
                                         validate: validateCategory
                                     })}
+                                    autoComplete="off"
                                     onChange={(e) => handleSearchChange(e.target.value)}
                                     onClick={() => setViewCategoryOptions(true)}
                                 />

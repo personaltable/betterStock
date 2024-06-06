@@ -85,6 +85,7 @@ const StockTable = () => {
         [allColumns, columnsList]
     );
 
+
     //Sort Columns
     const initialSorting = [{ id: 'creationDate', desc: false, },];
     const [sorting, setSorting] = useState(initialSorting);
@@ -184,6 +185,7 @@ const StockTable = () => {
             <table>
                 <thead>
                     {table.getHeaderGroups().map((headerGroup) => (
+
                         <tr key={headerGroup.id}>
                             {headerGroup.headers.map((header) => (
                                 <th
@@ -207,7 +209,7 @@ const StockTable = () => {
                     {table.getRowModel().rows.map((row) => (
                         <tr key={row.id} className="border-b">
                             {row.getVisibleCells().map((cell) => (
-                                <td key={cell.id} className="px-4 py-2">
+                                <td key={cell.id} className="px-3 py-2">
                                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                                 </td>
                             ))}

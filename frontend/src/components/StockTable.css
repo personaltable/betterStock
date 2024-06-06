@@ -27,11 +27,16 @@ thead th {
 /* Table Body Rows */
 tbody tr {
     border-bottom: 1px solid #dddddd;
+    max-height: 10px;
 }
 
 /* Table Body Cells */
 tbody td {
     padding: 12px 15px;
+    max-width: 180px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 /* Alternating Row Colors */

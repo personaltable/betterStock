@@ -3,7 +3,6 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import { useLogoutMutation } from '../slices/userApiSlice';
 import { logout } from '../slices/authSlice';
-import LiveClockUpdate from '../components/clock/clock'
 
 import { AiFillDashboard } from "react-icons/ai";
 import { GiCardboardBoxClosed } from "react-icons/gi";
