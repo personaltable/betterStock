@@ -15,8 +15,54 @@ const StockTable = () => {
     const columnsList = useSelector((state) => state.productsList.columns);
     const data = useMemo(() => productsList, [productsList]);
 
+    const [selectedProducts, setSelectedProducts] = useState([]);
+    console.log(selectedProducts)
+
+    const handleAllRowSelectionChange = (isSelected) => {
+        if (isSelected) {
+            setSelectedProducts(productsList);
+        } else {
+            setSelectedProducts([]);
+        }
+    };
+
+    const handleRowSelectionChange = (row, isSelected) => {
+        const selectedProduct = row.original;
+        if (isSelected) {
+            setSelectedProducts(prevSelectedProducts => [...prevSelectedProducts, selectedProduct]);
+        } else {
+            setSelectedProducts(prevSelectedProducts =>
+                prevSelectedProducts.filter(product => product !== selectedProduct)
+            );
+        }
+    };
+
+
+
+
     const allColumns = useMemo(
         () => [
+            {
+                id: 'select',
+                header: ({ table }) => (
+                    <input
+                        type="checkbox"
+                        {...{
+                            checked: selectedProducts.length === data.length,
+                            onChange: (e) => handleAllRowSelectionChange(e.target.checked),
+                        }}
+                    />
+                ),
+                cell: ({ row }) => (
+                    <input
+                        type="checkbox"
+                        {...{
+                            checked: selectedProducts.includes(row.original),
+                            onChange: (e) => handleRowSelectionChange(row, e.target.checked),
+                        }}
+                    />
+                ),
+            },
             {
                 id: 'name',
                 header: 'Nome',
@@ -74,14 +120,14 @@ const StockTable = () => {
                 filterFn: 'customFilterStock',
             },
         ],
-        []
+        [selectedProducts]
     );
 
     //COLUMNS OPTIONS_______________________
 
     //Filter Columns
     const filteredColumns = useMemo(
-        () => allColumns.filter((column) => columnsList.includes(column.header)),
+        () => allColumns.filter((column) => columnsList.includes(column.header) || column.id === 'select'),
         [allColumns, columnsList]
     );
 
@@ -151,16 +197,18 @@ const StockTable = () => {
         return cellValue.toLowerCase() === filterValue.toLowerCase();
     };
 
+
     //TABLE CONFIG___________________
 
     const table = useReactTable({
         data,
-        columns: filteredColumns,
+        columns: allColumns,
         getCoreRowModel: getCoreRowModel(),
         getSortedRowModel: getSortedRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
         state: {
             sorting,
+            rowSelection: selectedProducts,
             columnFilters: useMemo(
                 () => [
                     { id: 'name', value: searchName },
@@ -172,6 +220,7 @@ const StockTable = () => {
             )
         },
         onSortingChange: setSorting,
+        onRowSelectionChange: handleRowSelectionChange,
         filterFns: {
             customFilterFunction,
             customFilterCategory,
