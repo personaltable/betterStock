@@ -1,27 +1,25 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import SideBar from '../components/SideBar';
-import ContainerHeader from '../components/containers/containerHeader';
 import { setSearchName } from '../slices/productsSlice';
-import { FaMagnifyingGlass } from 'react-icons/fa6';
+import { FaSearch } from 'react-icons/fa';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 const CategoryPage = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const searchName = useSelector((state) => state.productsList.searchName);
-    const [categorieList, setCategorieList] = React.useState([]);
-    const [categoryColorMap, setCategoryColorMap] = React.useState({});
+    const searchName = useSelector(state => state.productsList.searchName);
+    const [categorieList, setCategorieList] = useState([]);
+    const [categoryColorMap, setCategoryColorMap] = useState({});
 
-    // Array of colors derived from the base purple shade
+    // Array of colors derived from a professional palette
     const colors = [
-        '#6D28D9', '#7C3AED', '#8B5CF6', '#A78BFA', '#C4B5FD',
-        '#5B21B6', '#4C1D95', '#312E81', '#3730A3', '#4338CA',
-        '#6366F1', '#818CF8'
+        '#264653', '#2a9d8f', '#0077b6', '#00b4d8',
+        '#1d3557', '#686d76', '#457b9d'
     ];
 
-    React.useEffect(() => {
+    useEffect(() => {
         const fetchData = async () => {
             try {
                 const response = await axios.get('http://localhost:5555/api/products/categories');
@@ -35,7 +33,7 @@ const CategoryPage = () => {
                 setCategorieList(categories);
                 setCategoryColorMap(colorMap);
             } catch (error) {
-                console.error('Erro ao buscar categorias:', error);
+                console.error('Error fetching categories:', error);
             }
         };
 
@@ -52,24 +50,24 @@ const CategoryPage = () => {
     };
 
     return (
-        <div className='flex flex-row w-full'>
+        <div className='flex flex-row w-full h-full'>
             <SideBar />
             <div className='flex flex-col m-5'>
                 <div className='flex flex-row relative items-center mb-5'>
-                    <FaMagnifyingGlass className='text-gray-400 left-2 absolute' />
+                    <FaSearch className='text-gray-600 left-2 absolute' />
                     <input
                         type='text'
                         onChange={handleSearchFilterChange}
                         value={searchName}
-                        className='w-36 h-8 pl-7 rounded-md border border-basepurple-500 focus:outline-basepurple-600'
+                        className='w-48 h-10 pl-7 pr-4 rounded-full border border-gray-400 focus:outline-none focus:border-blue-500'
                         placeholder='Pesquisar...'
                     />
                 </div>
-                <div className='flex flex-wrap gap-5 '>
+                <div className='flex flex-wrap gap-5'>
                     {categorieList.map((category) => (
                         <div
                             key={category._id}
-                            className="flex justify-center items-center h-28 w-64 text-center text-2xl shadow-md shadow-slate-700 rounded border border-gray-300 cursor-pointer"
+                            className="flex justify-center items-center h-28 w-64 text-lg font-medium text-white rounded-lg cursor-pointer shadow-md transition-colors duration-300"
                             style={{ backgroundColor: categoryColorMap[category._id] }}
                             onClick={() => handleCategoryClick(category._id)}
                         >

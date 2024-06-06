@@ -43,7 +43,7 @@ function SideBar() {
           onClick={logoutHandler}
           className='cursor-pointer w-6 h-6' />
       </div>
-      {/* <div><LiveClockUpdate /></div> */}
+
 
       <div className='flex flex-col gap-3'>
         <div className='flex flex-row items-center gap-2'><AiFillDashboard /><Link to="/dashboard">DashBoard</Link></div>
