@@ -1,17 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
 import SideBar from '../components/SideBar';
-import { setSearchName } from '../slices/productsSlice';
 import { FaSearch } from 'react-icons/fa';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 const CategoryPage = () => {
-    const dispatch = useDispatch();
     const navigate = useNavigate();
-    const searchName = useSelector(state => state.productsList.searchName);
     const [categorieList, setCategorieList] = useState([]);
     const [categoryColorMap, setCategoryColorMap] = useState({});
+    const [searchTerm, setSearchTerm] = useState('');
 
     // Array of colors derived from a professional palette
     const colors = [
@@ -41,13 +38,17 @@ const CategoryPage = () => {
     }, []);
 
     const handleSearchFilterChange = (e) => {
-        dispatch(setSearchName(e.target.value));
+        setSearchTerm(e.target.value);
     };
 
     const handleCategoryClick = (categoryId) => {
         console.log("Categoria clicada:", categoryId);
         navigate(`/Products/${categoryId}`);
     };
+
+    const filteredCategories = categorieList.filter((category) => {
+        return category.name.toLowerCase().startsWith(searchTerm.toLowerCase());
+    });
 
     return (
         <div className='flex flex-row w-full h-full'>
@@ -58,13 +59,13 @@ const CategoryPage = () => {
                     <input
                         type='text'
                         onChange={handleSearchFilterChange}
-                        value={searchName}
+                        value={searchTerm}
                         className='w-48 h-10 pl-7 pr-4 rounded-full border border-gray-400 focus:outline-none focus:border-blue-500'
                         placeholder='Pesquisar...'
                     />
                 </div>
                 <div className='flex flex-wrap gap-5'>
-                    {categorieList.map((category) => (
+                    {filteredCategories.map((category) => (
                         <div
                             key={category._id}
                             className="flex justify-center items-center h-28 w-64 text-lg font-medium text-white rounded-lg cursor-pointer shadow-md transition-shadow duration-200 hover:shadow-lg hover:shadow-black/50"
