@@ -139,9 +139,7 @@ const Stock = () => {
 
   //_________________________________________
 
-  //Delete
-  const deleteList = useSelector((state) => state.productsList.deleteList);
-  console.log(deleteList)
+
 
   const [viewCreate, setViewCreate] = useState(false)
   const [viewDelete, setViewDelete] = useState(false)

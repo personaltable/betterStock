@@ -22,7 +22,6 @@ const StockTable = () => {
         dispatch(setDeleteList(selectedProducts));
     }), [selectedProducts]
 
-    // console.log(selectedProducts)
 
     const [isChecked, setIsChecked] = useState(false)
 
@@ -32,7 +31,6 @@ const StockTable = () => {
 
     const handleAllRowSelectionChange = () => {
         setSelectedProducts(isChecked ? [...productsList] : []);
-        console.log(isChecked)
     };
 
 
@@ -158,7 +156,6 @@ const StockTable = () => {
     //Filter by Stock
 
     const searchStock = useSelector((state) => state.productsList.searchStock);
-    // console.log(searchStock)
 
     const customFilterStock = (row, columnId, filterValue) => {
         const cellValue = parseInt(row.getValue(columnId), 10);

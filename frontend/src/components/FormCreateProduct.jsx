@@ -135,116 +135,119 @@ const FormCreateProduct = ({ setViewCreate, viewCreate }) => {
 
 
     return (
-        <div className="flex flex-col w-fit h-fit gap-3 p-5 bg-white shadow-lg rounded-lg border border-gray-300 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-2/3 z-50">
-            <div className="flex flex-row justify-between items-center">
-                <div className="font-bold">Adicionar Produto</div>
-                <IoClose onClick={() => { setViewCreate(false) }} className="flex self-end text-xl cursor-pointer" />
-            </div>
-            <form className='h-full' onSubmit={handleSubmit(onSubmit)}>
-                <div className='flex flex-col gap-10 h-full'>
-                    <div className='flex flex-col h-full '>
-                        <div className="flex flex-row gap-5 min-h-20">
-                            <div className='flex flex-col gap-1'>
-                                <div className="flex flex-row gap-1">
-                                    <label>Nome</label>
-                                    <div className="text-red-500">*</div>
-                                </div>
-                                <input
-                                    className='w-48 pl-1 border border-gray-500'
-                                    {...register('name', {
-                                        required: "O nome é obrigatório",
-                                    })}
-                                />
-                                {errors.name && <div className='text-red-500 text-sm'>{errors.name.message}</div>}
-                            </div>
-
-                            <div className='flex flex-col gap-1' ref={dropdownRef}>
-                                <div className="flex flex-row gap-1">
-                                    <label>Categoria</label>
-                                    <div className="text-red-500">*</div>
-                                </div>
-                                <input
-                                    className='relative w-48 pl-1 border border-gray-500'
-                                    {...register('category', {
-                                        required: "A categoria é obrigatória",
-                                        validate: validateCategory
-                                    })}
-                                    autoComplete="off"
-                                    onChange={(e) => handleSearchChange(e.target.value)}
-                                    onClick={() => setViewCategoryOptions(true)}
-                                />
-                                {viewCategoryOptions &&
-                                    <div className="absolute w-48 pl-1 top-28 bg-white border border-gray-500 z-50">
-                                        {filteredOptions.map((option, index) => (
-                                            <div key={index} onClick={() => handleOptionClick(option)} className="hover:bg-gray-100 cursor-pointer h-7">
-                                                {option}
-                                            </div>
-                                        ))}
-                                    </div>
-                                }
-                                {errors.category && <div className='text-red-500 text-sm'>{errors.category.message}</div>}
-                            </div>
-
-                            <div className='flex flex-col gap-1'>
-                                <div className="flex flex-row gap-1">
-                                    <label>Stock</label>
-                                    <div className="text-red-500">*</div>
-                                </div>
-                                <input
-                                    className='w-48 pl-1 border border-gray-500'
-                                    {...register('stock', {
-                                        required: "O stock é obrigatório",
-                                        validate: validateStock
-                                    })}
-                                />
-                                {errors.stock && <div className='text-red-500 text-sm'>{errors.stock.message}</div>}
-                            </div>
-                        </div>
-                        <div className="flex flex-row gap-5 min-h-20">
-                            <div className='flex flex-col gap-1'>
-                                <label>Marca</label>
-                                <input
-                                    className='w-48 pl-1 border border-gray-500'
-                                    {...register('brand')}
-                                />
-                            </div>
-                            <div className='flex flex-col gap-1'>
-                                <label>Preço</label>
-                                <input
-                                    className='w-48 pl-1 border border-gray-500'
-                                    {...register('price',
-                                        { validate: validatePrice }
-                                    )}
-                                />
-                                {errors.price && <div className='text-red-500 text-sm'>{errors.price.message}</div>}
-                            </div>
-                            <div className='flex flex-col gap-1'>
-                                <label>Stock critíco</label>
-                                <input
-                                    className='w-48 pl-1 border border-gray-500'
-                                    {...register('lowStock',
-                                        { validate: validateLowStock })}
-                                />
-                                {errors.lowStock && <div className='text-red-500 text-sm'>{errors.lowStock.message}</div>}
-                            </div>
-                        </div>
-
-                        <div className="flex flex-row gap-5">
-                            <div className='flex flex-col gap-1 w-full'>
-                                <label>Informações</label>
-                                <textarea
-                                    className='w-full pl-1 border border-gray-500'
-                                    {...register('information',
-                                        { validate: validateInformation })}
-                                />
-                                {errors.information && <div className='text-red-500 text-sm'>{errors.information.message}</div>}
-                            </div>
-                        </div>
-                    </div>
-                    <button type='submit' className='flex justify-center items-center bg-black text-white w-48 p-2 py-1 rounded'>Submeter</button>
+        <div className={`fixed inset-0 z-50 ${viewCreate ? 'flex' : 'hidden'} justify-center items-center`}>
+            <div className="fixed inset-0 bg-black opacity-50" onClick={() => setViewCreate(false)}></div>
+            <div className="relative flex flex-col w-fit h-fit gap-3 p-5 bg-white shadow-lg rounded-lg border border-gray-300 z-50 left-32">
+                <div className="flex flex-row justify-between items-center">
+                    <div className="font-bold">Adicionar Produto</div>
+                    <IoClose onClick={() => { setViewCreate(false) }} className="flex self-end text-xl cursor-pointer" />
                 </div>
-            </form>
+                <form className='h-full' onSubmit={handleSubmit(onSubmit)}>
+                    <div className='flex flex-col gap-10 h-full'>
+                        <div className='flex flex-col h-full '>
+                            <div className="flex flex-row gap-5 min-h-20">
+                                <div className='flex flex-col gap-1'>
+                                    <div className="flex flex-row gap-1">
+                                        <label>Nome</label>
+                                        <div className="text-red-500">*</div>
+                                    </div>
+                                    <input
+                                        className='w-48 pl-1 border border-gray-500'
+                                        {...register('name', {
+                                            required: "O nome é obrigatório",
+                                        })}
+                                    />
+                                    {errors.name && <div className='text-red-500 text-sm'>{errors.name.message}</div>}
+                                </div>
 
+                                <div className='flex flex-col gap-1' ref={dropdownRef}>
+                                    <div className="flex flex-row gap-1">
+                                        <label>Categoria</label>
+                                        <div className="text-red-500">*</div>
+                                    </div>
+                                    <input
+                                        className='relative w-48 pl-1 border border-gray-500'
+                                        {...register('category', {
+                                            required: "A categoria é obrigatória",
+                                            validate: validateCategory
+                                        })}
+                                        autoComplete="off"
+                                        onChange={(e) => handleSearchChange(e.target.value)}
+                                        onClick={() => setViewCategoryOptions(true)}
+                                    />
+                                    {viewCategoryOptions &&
+                                        <div className="absolute w-48 pl-1 top-28 bg-white border border-gray-500 z-50">
+                                            {filteredOptions.map((option, index) => (
+                                                <div key={index} onClick={() => handleOptionClick(option)} className="hover:bg-gray-100 cursor-pointer h-7">
+                                                    {option}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    }
+                                    {errors.category && <div className='text-red-500 text-sm'>{errors.category.message}</div>}
+                                </div>
+
+                                <div className='flex flex-col gap-1'>
+                                    <div className="flex flex-row gap-1">
+                                        <label>Stock</label>
+                                        <div className="text-red-500">*</div>
+                                    </div>
+                                    <input
+                                        className='w-48 pl-1 border border-gray-500'
+                                        {...register('stock', {
+                                            required: "O stock é obrigatório",
+                                            validate: validateStock
+                                        })}
+                                    />
+                                    {errors.stock && <div className='text-red-500 text-sm'>{errors.stock.message}</div>}
+                                </div>
+                            </div>
+                            <div className="flex flex-row gap-5 min-h-20">
+                                <div className='flex flex-col gap-1'>
+                                    <label>Marca</label>
+                                    <input
+                                        className='w-48 pl-1 border border-gray-500'
+                                        {...register('brand')}
+                                    />
+                                </div>
+                                <div className='flex flex-col gap-1'>
+                                    <label>Preço</label>
+                                    <input
+                                        className='w-48 pl-1 border border-gray-500'
+                                        {...register('price',
+                                            { validate: validatePrice }
+                                        )}
+                                    />
+                                    {errors.price && <div className='text-red-500 text-sm'>{errors.price.message}</div>}
+                                </div>
+                                <div className='flex flex-col gap-1'>
+                                    <label>Stock critíco</label>
+                                    <input
+                                        className='w-48 pl-1 border border-gray-500'
+                                        {...register('lowStock',
+                                            { validate: validateLowStock })}
+                                    />
+                                    {errors.lowStock && <div className='text-red-500 text-sm'>{errors.lowStock.message}</div>}
+                                </div>
+                            </div>
+
+                            <div className="flex flex-row gap-5">
+                                <div className='flex flex-col gap-1 w-full'>
+                                    <label>Informações</label>
+                                    <textarea
+                                        className='w-full pl-1 border border-gray-500'
+                                        {...register('information',
+                                            { validate: validateInformation })}
+                                    />
+                                    {errors.information && <div className='text-red-500 text-sm'>{errors.information.message}</div>}
+                                </div>
+                            </div>
+                        </div>
+                        <button type='submit' className='flex justify-center items-center bg-black text-white w-48 p-2 py-1 rounded'>Submeter</button>
+                    </div>
+                </form>
+
+            </div>
         </div>
     )
 }
