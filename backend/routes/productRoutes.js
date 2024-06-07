@@ -7,11 +7,14 @@ import {
   getCategoryById,
   deleteProduct,
   changeStock,
+  changeStockTable
 } from "../controllers/productControllers.js";
 
 router.get("/", getProducts);
 router.post("/", createProduct);
 router.delete("/", deleteProduct);
+router.put("/:id", changeStockTable);
+
 
 router.put("/store/:id", changeStock);
 router.get("/categories/:categoryId", getCategoryById);

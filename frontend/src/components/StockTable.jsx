@@ -3,8 +3,16 @@ import { useReactTable, flexRender, getCoreRowModel, getSortedRowModel, getFilte
 import { setDeleteList, setDeleteConfirmation } from '../slices/productsSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { DateTime } from 'luxon';
-import { FaArrowDownShortWide, FaArrowUpWideShort } from 'react-icons/fa6';
 import './StockTable.css';
+
+import { useEditProductMutation } from "../slices/productsApiSlice";
+
+import { FaArrowDownShortWide, FaArrowUpWideShort } from 'react-icons/fa6';
+import { FaPen } from "react-icons/fa";
+import { FaCheck } from "react-icons/fa";
+
+
+
 
 const StockTable = () => {
     const dispatch = useDispatch();
@@ -17,6 +25,8 @@ const StockTable = () => {
     const deleteConfirmation = useSelector((state) => state.productsList.deleteConfirmation);
     const data = useMemo(() => productsList, [productsList]);
 
+
+    //Delete____________________________________________
     const [selectedProducts, setSelectedProducts] = useState([]);
 
     useEffect(() => {
@@ -53,6 +63,33 @@ const StockTable = () => {
         }
     };
 
+    //Edit____________________________________________
+
+    const [editingRow, setEditingRow] = useState(null);
+    const [editedData, setEditedData] = useState({});
+
+    const [changeProduct, { isLoading }] = useEditProductMutation();
+
+    console.log(editedData)
+
+    const handleEditClick = (row) => {
+        setEditingRow(row.original._id);
+        setEditedData(row.original);
+    };
+
+    const handleInputChange = (e, field) => {
+        setEditedData(prevState => ({
+            ...prevState,
+            [field]: e.target.value
+        }));
+    };
+
+
+    const handleConfirmChanges = async () => {
+
+        const res = await changeProduct({ id: editedData._id, data: editedData })
+        setEditingRow(null)
+    }
 
     const allColumns = useMemo(
         () => [
@@ -80,6 +117,16 @@ const StockTable = () => {
                 header: 'Nome',
                 accessorKey: 'name',
                 filterFn: 'customFilterFunction',
+                cell: ({ row }) => (
+                    editingRow === row.original._id
+                        ? <input
+                            className='w-full border border-gray-400 pl-1'
+                            value={editedData.name}
+                            onChange={(e) => handleInputChange(e, 'name')}
+
+                        />
+                        : row.original.name
+                ),
             },
             {
                 id: 'category',
@@ -131,15 +178,36 @@ const StockTable = () => {
                 accessorKey: 'stock',
                 filterFn: 'customFilterStock',
             },
+            {
+                id: 'edit',
+                header: ({ table }) => (
+                    <FaPen />
+                ),
+                cell: ({ row }) => (
+                    <div>
+                        {editingRow === row.original._id ?
+                            (<FaCheck
+                                className='cursor-pointer'
+                                onClick={() => { handleConfirmChanges() }}
+                            />)
+                            :
+                            (<FaPen
+                                className='cursor-pointer'
+                                onClick={() => handleEditClick(row)}
+                            />)
+                        }
+                    </div>
+                ),
+            },
         ],
-        [selectedProducts]
+        [editingRow, selectedProducts, editedData]
     );
 
     //COLUMNS OPTIONS_______________________
 
     //Filter Columns
     const filteredColumns = useMemo(
-        () => allColumns.filter((column) => columnsList.includes(column.header) || column.id === 'select'),
+        () => allColumns.filter((column) => columnsList.includes(column.header) || column.id === 'select' || column.id === 'edit'),
         [allColumns, columnsList]
     );
 

@@ -23,6 +23,7 @@ import {
   setSearchStock,
   setSearchCategory,
   setSearchUser,
+  setFormFeedback,
 } from "../slices/productsSlice";
 
 import { FaMagnifyingGlass } from "react-icons/fa6";
@@ -139,10 +140,26 @@ const Stock = () => {
 
   //_________________________________________
 
-
-
   const [viewCreate, setViewCreate] = useState(false)
   const [viewDelete, setViewDelete] = useState(false)
+
+  const formFeedback = useSelector((state) => state.productsList.formFeedback);
+
+  useEffect(() => {
+    let timer;
+    if (formFeedback) {
+      timer = setTimeout(() => {
+        dispatch(setFormFeedback(''));
+      }, 5000);
+    }
+
+    return () => {
+      if (timer) {
+        clearTimeout(timer);
+      }
+    };
+
+  }, [formFeedback, dispatch])
 
   return (
     <div className="flex flex-row">
@@ -267,8 +284,12 @@ const Stock = () => {
         </div>
         {viewCreate && <FormCreateProduct viewCreate={viewCreate} setViewCreate={setViewCreate} />}
         {viewDelete && <FormDeleteProduct viewDelete={viewDelete} setViewDelete={setViewDelete} />}
-
         <StockTable></StockTable>
+        {formFeedback &&
+          <div className="flex flex-row justify-between items-center sticky bg-[#1d3557] py-2 px-3 w-96 text-white bottom-10 left-3 rounded-r-3xl">
+            <div>{formFeedback}</div>
+            <IoClose className="cursor-pointer text-lg" onClick={() => { dispatch(setFormFeedback('')) }} />
+          </div>}
 
       </div>
     </div>

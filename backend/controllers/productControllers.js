@@ -108,6 +108,45 @@ const deleteProduct = asyncHandler(async (req, res) => {
   }
 });
 
+//@desc     Alterar tabela de stock
+//route     PUT /api/products/:id
+//@access   Público
+
+const changeStockTable = asyncHandler(async (req, res) => {
+  try {
+    const productId = req.params.id;
+    const { name, category, brand, information, price, reStock, lowStock, stock } = req.body;
+
+    // Verificar se o produto existe
+    const product = await Product.findById(productId);
+
+    if (!product) {
+      return res.status(404).json({ message: 'Produto não encontrado' });
+    }
+
+    // Atualizar os campos do produto com os novos dados
+    product.name = name;
+    product.category = category;
+    product.brand = brand;
+    product.information = information;
+    product.price = price;
+    product.reStock = reStock;
+    product.lowStock = lowStock;
+    product.stock = stock;
+
+    // Salvar as alterações no banco de dados
+    await product.save();
+
+    return res.status(200).json({ message: 'Produto atualizado com sucesso' });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Erro ao atualizar o produto' });
+  }
+});
+
+
+
+
 //@desc     Change Stock
 //route     PUT /api/products/store
 //@access   Public
@@ -156,4 +195,5 @@ export {
   getCategoryById,
   deleteProduct,
   changeStock,
+  changeStockTable
 };
