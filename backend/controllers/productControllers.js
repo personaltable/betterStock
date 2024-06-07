@@ -88,24 +88,22 @@ const createProduct = asyncHandler(async (req, res) => {
 
 const deleteProduct = asyncHandler(async (req, res) => {
   try {
-    // Extrair os IDs dos produtos a serem excluídos da lista de produtos recebida
-    const productIds = req.body.map((productId) =>
-      mongoose.Types.ObjectId(productId)
+    // Extract the product IDs from the deleteList received in the request body
+    const productIds = req.body.deleteList.map((product) =>
+      mongoose.Types.ObjectId(product._id)
     );
-    console.log(productIds);
 
-    // Use o método deleteMany do modelo de Produto para excluir vários produtos
+    // Log the product IDs to verify
+
+    // Use the deleteMany method to delete multiple products
     const result = await Product.deleteMany({ _id: { $in: productIds } });
 
     if (result.deletedCount > 0) {
       res.status(200).json({ message: "Produtos excluídos com sucesso." });
     } else {
-      res
-        .status(404)
-        .json({ message: "Nenhum produto encontrado para exclusão." });
+      res.status(404).json({ message: "Nenhum produto encontrado para exclusão." });
     }
   } catch (error) {
-    console.error(error);
     res.status(500).json({ message: "Não foi possível excluir os produtos." });
   }
 });

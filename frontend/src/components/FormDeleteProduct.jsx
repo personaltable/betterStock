@@ -1,15 +1,34 @@
-import React from 'react'
-import { useSelector } from 'react-redux'
+import React, { useState, useRef, useEffect, useMemo } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useDeleteProductMutation } from "../slices/productsApiSlice";
+import { setDeleteList, setDeleteConfirmation } from '../slices/productsSlice';
 
-import { useForm } from 'react-hook-form';
 import { IoClose } from "react-icons/io5";
 
 const FormDeleteProduct = ({ setViewDelete, viewDelete }) => {
 
+    const dispatch = useDispatch();
+
     //Delete
     const deleteList = useSelector((state) => state.productsList.deleteList);
-    console.log(deleteList)
+    const [deleteProduct, { isLoading }] = useDeleteProductMutation();
+
+    const handleDeleteProduct = async () => {
+        try {
+            const res = await deleteProduct({ deleteList });
+
+            dispatch(setDeleteConfirmation(true));
+
+
+            if (res.error) {
+                throw new Error(res.error.data?.message);
+            }
+
+            setViewDelete(false);
+        } catch (error) {
+            console.log(error.message);
+        }
+    };
 
     return (
 
@@ -26,12 +45,12 @@ const FormDeleteProduct = ({ setViewDelete, viewDelete }) => {
                         <div className='mb-2'>Pretende eliminar {deleteList.length !== 1 ? 'estes produtos' : 'este produto'}:</div>
                         <div className='flex flex-col gap-1'>
                             {deleteList.map((option) => (
-                                <div>{option.name}</div>
+                                <div key={option._id}>{option.name}</div>
                             ))}
                         </div>
                     </div>
                 </div>
-                <button className='flex justify-center items-center bg-black text-white w-48 p-2 py-1 rounded'>Eliminar</button>
+                <button onClick={() => { handleDeleteProduct() }} className='flex justify-center items-center bg-black text-white w-48 p-2 py-1 rounded'>Eliminar</button>
             </div>
         </div>
     )

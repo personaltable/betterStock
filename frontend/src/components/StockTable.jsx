@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useReactTable, flexRender, getCoreRowModel, getSortedRowModel, getFilteredRowModel } from '@tanstack/react-table';
-import { setProducts, setStatus, setError, resetFilters, setColumns, setSearchName, setSearchCategory, setSearchUser, setDeleteList } from '../slices/productsSlice';
+import { setDeleteList, setDeleteConfirmation } from '../slices/productsSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { DateTime } from 'luxon';
 import { FaArrowDownShortWide, FaArrowUpWideShort } from 'react-icons/fa6';
@@ -14,13 +14,21 @@ const StockTable = () => {
 
     const productsList = useSelector((state) => state.productsList.products);
     const columnsList = useSelector((state) => state.productsList.columns);
+    const deleteConfirmation = useSelector((state) => state.productsList.deleteConfirmation);
     const data = useMemo(() => productsList, [productsList]);
 
     const [selectedProducts, setSelectedProducts] = useState([]);
 
     useEffect(() => {
+        if (deleteConfirmation) {
+            setSelectedProducts([]);
+            dispatch(setDeleteConfirmation(false));
+        }
+    }, [deleteConfirmation, dispatch]);
+
+    useEffect(() => {
         dispatch(setDeleteList(selectedProducts));
-    }), [selectedProducts]
+    }), [selectedProducts, dispatch]
 
 
     const [isChecked, setIsChecked] = useState(false)
