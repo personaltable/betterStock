@@ -11,8 +11,19 @@ const Products = () => {
     const [products, setProducts] = useState([]);
     const [selectedProduct, setSelectedProduct] = useState(null);
     const [quantity, setQuantity] = useState(0);
+    const [error, setError] = useState('');
 
     useEffect(() => {
+        const fetchCategoryName = async () => {
+            try {
+                const response = await axios.get(`http://localhost:5555/api/products/categories/${categoryId}`);
+                setCategoryName(response.data.name);
+            } catch (error) {
+                console.error('Erro ao buscar o nome da categoria:', error);
+                setCategoryName('Categoria não encontrada');
+            }
+        };
+
         const fetchProducts = async () => {
             try {
                 const response = await axios.get(`http://localhost:5555/api/products?category=${categoryId}`);
@@ -22,6 +33,7 @@ const Products = () => {
             }
         };
 
+        fetchCategoryName();
         fetchProducts();
     }, [categoryId]);
 
@@ -32,20 +44,20 @@ const Products = () => {
     const handleCloseModal = () => {
         setSelectedProduct(null);
         setQuantity(0);
+        setError(''); // Reset error message when closing modal
     };
 
     const handleAddToCart = async (product) => {
         if (quantity > 0) {
+            if (quantity > product.stock) {
+                setError('Quantidade desejada excede o stock disponível.');
+                return;
+            }
+
             try {
                 // Verifica se o ID do produto está presente
                 if (!product._id) {
                     console.error('ID do produto não encontrado');
-                    return;
-                }
-
-                // Verifica se o produto está sem estoque
-                if (product.stock === 0) {
-                    alert('Este produto está sem Stock.');
                     return;
                 }
 
@@ -57,10 +69,9 @@ const Products = () => {
                 console.log(`Atualizando produto com ID: ${productId}`);
                 console.log('Dados do produto:', updatedProduct);
 
-
-
                 if (response.status === 200) {
                     setQuantity(0); // Reset quantity after adding to cart
+                    setError(''); // Clear error message on successful addition
                     // Atualizar o estado dos produtos para refletir o novo estoque
                     setProducts((prevProducts) =>
                         prevProducts.map((p) => (p._id === product._id ? { ...p, stock: updatedProduct.stock } : p))
@@ -80,37 +91,21 @@ const Products = () => {
         <div className="flex">
             <SideBar />
             <div className="ml-5 flex-1">
-                <h1 className="text-2xl font-bold mb-5">Categoria: {categoryId}</h1>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <h1 className="text-2xl font-bold mb-5">Categoria: {categoryName}</h1>
+                <div className="flex flex-wrap gap-5">
                     {products.map((product) => {
                         if (product.category && product.category._id === categoryId) {
                             const isLowStock = product.stock <= product.lowStock;
                             return (
-                                <div key={product._id} className="bg-white p-4 shadow-md rounded-lg">
+                                <div
+                                    key={product._id}
+                                    className="bg-white p-4 w-32 h-28 text-center shadow-md rounded-lg border border-gray-300 cursor-pointer hover:shadow-2xl transition-shadow duration-200"
+                                    onClick={() => handleMoreInfoClick(product)}
+                                >
                                     <h2 className={`text-lg font-semibold ${isLowStock ? 'text-red-500' : ''}`}>{product.name}</h2>
                                     <p className="text-sm mb-2">{product.description}</p>
-                                    <div className="text-xl font-bold mb-2">
+                                    <div className="text-base font-bold mb-2">
                                         {product.price ? `€${product.price}` : 'Sem valor definido'}
-                                    </div>
-                                    <div className="flex mt-2">
-                                        {Array.from({ length: 5 }, (_, i) => (
-                                            <svg
-                                                key={i}
-                                                className={`w-4 h-4 ${i < product.rating ? 'text-yellow-500' : 'text-gray-300'}`}
-                                                fill="currentColor"
-                                                viewBox="0 0 20 20"
-                                            >
-                                                {/* SVG Path here */}
-                                            </svg>
-                                        ))}
-                                    </div>
-                                    <div className="mt-4 flex justify-center">
-                                        <button
-                                            className="bg-blue-500 text-white px-2 py-1 rounded"
-                                            onClick={() => handleMoreInfoClick(product)}
-                                        >
-                                            Mais informações
-                                        </button>
                                     </div>
                                 </div>
                             );
@@ -119,7 +114,7 @@ const Products = () => {
                     })}
                 </div>
                 <div className="mt-5">
-                    <Link to="/CategoryPage" className="flex items-center text-blue-500">
+                    <Link to="/CategoryPage" className="flex items-center w-20 text-blue-500">
                         <FaArrowLeft className="mr-2" />
                         Voltar
                     </Link>
@@ -129,7 +124,7 @@ const Products = () => {
             {/* Modal */}
             {selectedProduct && (
                 <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-                    <div className="bg-white p-5 rounded-lg w-11/12 md:w-1/2 lg:w-1/3 relative">
+                    <div className="bg-white p-5 rounded-lg w-11/12 md:w-1/2 lg:w-1/3 relative  border-gray-400 border-2">
                         <IoClose
                             onClick={handleCloseModal}
                             className="text-2xl cursor-pointer absolute top-2 right-2"
@@ -161,18 +156,22 @@ const Products = () => {
                                     type="number"
                                     value={quantity}
                                     onChange={(e) => setQuantity(Number(e.target.value))}
-                                    className="w-12 text-center"
+                                    className="w-12 text-center border border-gray-400 rounded"
                                     min="0"
                                 />
                                 <button
                                     className="bg-green-500 text-white px-2 py-1 rounded ml-2"
                                     onClick={() => handleAddToCart(selectedProduct)}
                                 >
-
                                     Adicionar
                                 </button>
                             </div>
                         </div>
+                        {error && (
+                            <div className="mt-3 text-red-500 text-center">
+                                {error}
+                            </div>
+                        )}
                     </div>
                 </div>
             )}

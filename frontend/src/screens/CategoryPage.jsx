@@ -67,7 +67,7 @@ const CategoryPage = () => {
                     {categorieList.map((category) => (
                         <div
                             key={category._id}
-                            className="flex justify-center items-center h-28 w-64 text-lg font-medium text-white rounded-lg cursor-pointer shadow-md transition-colors duration-300"
+                            className="flex justify-center items-center h-28 w-64 text-lg font-medium text-white rounded-lg cursor-pointer shadow-md transition-shadow duration-200 hover:shadow-lg hover:shadow-black/50"
                             style={{ backgroundColor: categoryColorMap[category._id] }}
                             onClick={() => handleCategoryClick(category._id)}
                         >
