@@ -1,13 +1,16 @@
 import React, { useState, useRef, useEffect, useMemo } from "react";
 import axios from 'axios'
 
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from "react-redux";
 import { useCreateProductMutation } from "../slices/productsApiSlice";
+import { setFormFeedback } from '../slices/productsSlice';
 
 import { useForm } from 'react-hook-form';
 import { IoClose } from "react-icons/io5";
 
 const FormCreateProduct = ({ setViewCreate, viewCreate }) => {
+
+    const dispatch = useDispatch();
 
     const { register, handleSubmit, setValue, setError, formState: { errors, isSubmitting } } = useForm({
         defaultValues: {
@@ -124,6 +127,7 @@ const FormCreateProduct = ({ setViewCreate, viewCreate }) => {
                 stock: data.stock,
             }).unwrap();
 
+            dispatch(setFormFeedback('Produto adicionado com sucesso'));
             setViewCreate(false);
 
         } catch (error) {

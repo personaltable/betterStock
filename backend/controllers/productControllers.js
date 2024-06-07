@@ -88,27 +88,64 @@ const createProduct = asyncHandler(async (req, res) => {
 
 const deleteProduct = asyncHandler(async (req, res) => {
   try {
-    // Extrair os IDs dos produtos a serem excluídos da lista de produtos recebida
-    const productIds = req.body.map((productId) =>
-      mongoose.Types.ObjectId(productId)
+    // Extract the product IDs from the deleteList received in the request body
+    const productIds = req.body.deleteList.map((product) =>
+      mongoose.Types.ObjectId(product._id)
     );
-    console.log(productIds);
 
-    // Use o método deleteMany do modelo de Produto para excluir vários produtos
+    // Log the product IDs to verify
+
+    // Use the deleteMany method to delete multiple products
     const result = await Product.deleteMany({ _id: { $in: productIds } });
 
     if (result.deletedCount > 0) {
       res.status(200).json({ message: "Produtos excluídos com sucesso." });
     } else {
-      res
-        .status(404)
-        .json({ message: "Nenhum produto encontrado para exclusão." });
+      res.status(404).json({ message: "Nenhum produto encontrado para exclusão." });
     }
   } catch (error) {
-    console.error(error);
     res.status(500).json({ message: "Não foi possível excluir os produtos." });
   }
 });
+
+//@desc     Alterar tabela de stock
+//route     PUT /api/products/:id
+//@access   Público
+
+const changeStockTable = asyncHandler(async (req, res) => {
+  try {
+    const productId = req.params.id;
+    const { name, category, brand, information, price, reStock, lowStock, stock } = req.body;
+
+    // Verificar se o produto existe
+    const product = await Product.findById(productId);
+
+    if (!product) {
+      return res.status(404).json({ message: 'Produto não encontrado' });
+    }
+
+    // Atualizar os campos do produto com os novos dados
+    product.name = name;
+    product.category = category;
+    product.brand = brand;
+    product.information = information;
+    product.price = price;
+    product.reStock = reStock;
+    product.lowStock = lowStock;
+    product.stock = stock;
+
+    // Salvar as alterações no banco de dados
+    await product.save();
+
+    return res.status(200).json({ message: 'Produto atualizado com sucesso' });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Erro ao atualizar o produto' });
+  }
+});
+
+
+
 
 //@desc     Change Stock
 //route     PUT /api/products/store
@@ -158,4 +195,5 @@ export {
   getCategoryById,
   deleteProduct,
   changeStock,
+  changeStockTable
 };

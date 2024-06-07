@@ -11,6 +11,9 @@ const initialState = {
     searchCategory: '',
     searchUser: '',
     deleteList: [],
+    editProduct: {},
+    deleteConfirmation: false,
+    formFeedback: '',
 }
 
 const productsSlice = createSlice({
@@ -51,10 +54,19 @@ const productsSlice = createSlice({
         },
         setDeleteList: (state, action) => {
             state.deleteList = action.payload;
+        },
+        setEditProduct: (state, action) => {
+            state.editProduct = action.payload;
+        },
+        setDeleteConfirmation: (state, action) => {
+            state.deleteConfirmation = action.payload;
+        },
+        setFormFeedback: (state, action) => {
+            state.formFeedback = action.payload;
         }
     }
 })
 
-export const { setProducts, setStatus, setError, resetFilters, setColumns, setSearchName, setSearchStock, setSearchCategory, setSearchUser, setDeleteList } = productsSlice.actions;
+export const { setProducts, setStatus, setError, resetFilters, setColumns, setSearchName, setSearchStock, setSearchCategory, setSearchUser, setDeleteList, setDeleteConfirmation, setFormFeedback, setEditProduct } = productsSlice.actions;
 
 export default productsSlice.reducer;
