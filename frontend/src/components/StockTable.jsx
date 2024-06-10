@@ -66,7 +66,14 @@ const StockTable = () => {
     //Edit____________________________________________
 
     const [editingRow, setEditingRow] = useState(null);
-    const [editedData, setEditedData] = useState({});
+    const [editedData, setEditedData] = useState({
+        name: '',
+        category: '',
+        brand: '',
+        information: '',
+        // adicione outras propriedades aqui, se necessário
+    });
+
 
     const [changeProduct, { isLoading }] = useEditProductMutation();
 
@@ -74,8 +81,13 @@ const StockTable = () => {
 
     const handleEditClick = (row) => {
         setEditingRow(row.original._id);
-        setEditedData(row.original);
+        setEditedData(prevState => ({
+            ...prevState,
+            ...row.original,
+            category: row.original.category.name // Guarda apenas o nome da categoria
+        }));
     };
+
 
     const handleInputChange = (e, field) => {
         setEditedData(prevState => ({
@@ -117,16 +129,7 @@ const StockTable = () => {
                 header: 'Nome',
                 accessorKey: 'name',
                 filterFn: 'customFilterFunction',
-                cell: ({ row }) => (
-                    editingRow === row.original._id
-                        ? <input
-                            className='w-full border border-gray-400 pl-1'
-                            value={editedData.name}
-                            onChange={(e) => handleInputChange(e, 'name')}
 
-                        />
-                        : row.original.name
-                ),
             },
             {
                 id: 'category',
@@ -337,12 +340,63 @@ const StockTable = () => {
                         <tr key={row.id} className="border-b">
                             {row.getVisibleCells().map((cell) => (
                                 <td key={cell.id} className="px-3 py-2">
-                                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                    {cell.column.id === 'name' && editingRow === row.original._id ? (
+                                        <input
+                                            className='w-full border border-gray-400 pl-1'
+                                            value={editedData.name}
+                                            onChange={(e) => handleInputChange(e, 'name')}
+                                        />
+                                    ) : cell.column.id === 'category' && editingRow === row.original._id ? (
+                                        <input
+                                            className='w-full border border-gray-400 pl-1'
+                                            value={editedData.category}
+                                            onChange={(e) => handleInputChange(e, 'category')}
+                                        />
+                                    ) : cell.column.id === 'brand' && editingRow === row.original._id ? (
+                                        <input
+                                            className='w-full border border-gray-400 pl-1'
+                                            value={editedData.brand}
+                                            onChange={(e) => handleInputChange(e, 'brand')}
+                                        />
+                                    ) : cell.column.id === 'information' && editingRow === row.original._id ? (
+                                        <input
+                                            className='w-full border border-gray-400 pl-1'
+                                            value={editedData.information}
+                                            onChange={(e) => handleInputChange(e, 'information')}
+                                        />
+                                    ) : cell.column.id === 'price' && editingRow === row.original._id ? (
+                                        <input
+                                            className='w-full border border-gray-400 pl-1'
+                                            value={editedData.price}
+                                            onChange={(e) => handleInputChange(e, 'price')}
+                                        />
+                                    ) : cell.column.id === 'reStock' && editingRow === row.original._id ? (
+                                        <input
+                                            className='w-full border border-gray-400 pl-1'
+                                            value={editedData.reStock}
+                                            onChange={(e) => handleInputChange(e, 'reStock')}
+                                        />
+                                    ) : cell.column.id === 'lowStock' && editingRow === row.original._id ? (
+                                        <input
+                                            className='w-full border border-gray-400 pl-1'
+                                            value={editedData.lowStock}
+                                            onChange={(e) => handleInputChange(e, 'lowStock')}
+                                        />
+                                    ) : cell.column.id === 'stock' && editingRow === row.original._id ? (
+                                        <input
+                                            className='w-full border border-gray-400 pl-1'
+                                            value={editedData.stock}
+                                            onChange={(e) => handleInputChange(e, 'stock')}
+                                        />
+                                    ) : (
+                                        flexRender(cell.column.columnDef.cell, cell.getContext())
+                                    )}
                                 </td>
                             ))}
                         </tr>
                     ))}
                 </tbody>
+
             </table>
         </div>
     );

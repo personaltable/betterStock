@@ -116,6 +116,16 @@ const changeStockTable = asyncHandler(async (req, res) => {
   try {
     const productId = req.params.id;
     const { name, category, brand, information, price, reStock, lowStock, stock } = req.body;
+    // console.log(req.body)
+
+    let categoryId;
+    if (category) {
+      const categoryObj = await Category.findOne({ name: category });
+      if (!categoryObj) {
+        return res.status(400).json({ message: 'Categoria não encontrada' });
+      }
+      categoryId = categoryObj._id;
+    }
 
     // Verificar se o produto existe
     const product = await Product.findById(productId);
@@ -124,9 +134,11 @@ const changeStockTable = asyncHandler(async (req, res) => {
       return res.status(404).json({ message: 'Produto não encontrado' });
     }
 
+
+
     // Atualizar os campos do produto com os novos dados
     product.name = name;
-    product.category = category;
+    product.category = categoryId;
     product.brand = brand;
     product.information = information;
     product.price = price;
@@ -134,6 +146,7 @@ const changeStockTable = asyncHandler(async (req, res) => {
     product.lowStock = lowStock;
     product.stock = stock;
 
+    console.log(product)
     // Salvar as alterações no banco de dados
     await product.save();
 

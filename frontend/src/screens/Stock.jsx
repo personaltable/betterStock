@@ -13,18 +13,7 @@ import FormDeleteProduct from "../components/FormDeleteProduct";
 
 import { useDispatch, useSelector } from "react-redux";
 import { useGetProductsQuery } from "../slices/productsApiSlice";
-import {
-  setProducts,
-  setStatus,
-  setError,
-  resetFilters,
-  setColumns,
-  setSearchName,
-  setSearchStock,
-  setSearchCategory,
-  setSearchUser,
-  setFormFeedback,
-} from "../slices/productsSlice";
+import { setProducts, setStatus, setError, resetFilters, setColumns, setSearchName, setSearchStock, setSearchCategory, setSearchUser, setFormFeedback } from "../slices/productsSlice";
 
 import { FaMagnifyingGlass } from "react-icons/fa6";
 import { IoReloadCircle } from "react-icons/io5";
