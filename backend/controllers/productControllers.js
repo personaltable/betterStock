@@ -118,7 +118,6 @@ const changeStockTable = asyncHandler(async (req, res) => {
   try {
     const productId = req.params.id;
     const { name, category, brand, information, price, originalPrice, reStock, lowStock, stock } = req.body;
-    // console.log(req.body)
 
     let categoryId;
     if (category) {

@@ -200,7 +200,7 @@ const StockTable = () => {
             {
                 id: 'originalPrice',
                 header: 'Preço Original',
-                accessorFn: (row) => { return row.originalPrice !== undefined ? `${row.originalPrice}€` : '' }
+                accessorFn: (row) => { return row.originalPrice !== undefined && row.originalPrice !== null ? `${row.originalPrice}€` : '' }
             },
             {
                 id: 'creationDate',

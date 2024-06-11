@@ -136,6 +136,10 @@ const FormCreateProduct = ({ setViewCreate, viewCreate }) => {
                 stock: data.stock,
             }).unwrap();
 
+            const sendData = { name: "create", product: data.name, user: userInfo.name }
+
+            await axios.post(`http://localhost:5555/api/actions`, sendData)
+
             dispatch(setFormFeedback('Produto adicionado com sucesso'));
             setViewCreate(false);
 
