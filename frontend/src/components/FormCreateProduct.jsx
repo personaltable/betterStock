@@ -19,6 +19,7 @@ const FormCreateProduct = ({ setViewCreate, viewCreate }) => {
             brand: '',
             information: '',
             price: null,
+            originalPrice: null,
             reStock: "",
             lowStock: null,
             stock: null,
@@ -90,6 +91,13 @@ const FormCreateProduct = ({ setViewCreate, viewCreate }) => {
         }
     };
 
+    //Price___________________________________
+    const validateOriginalPrice = (value) => {
+        if (isNaN(value)) {
+            return "O Preço original deve ser numérico";
+        }
+    };
+
     //LowStock___________________________________
     const validateLowStock = (value) => {
         if (isNaN(value)) {
@@ -122,6 +130,7 @@ const FormCreateProduct = ({ setViewCreate, viewCreate }) => {
                 brand: data.brand,
                 information: data.information,
                 price: data.price,
+                originalPrice: data.originalPrice,
                 createdBy: userInfo.name,
                 lowStock: data.lowStock,
                 stock: data.stock,
@@ -208,11 +217,14 @@ const FormCreateProduct = ({ setViewCreate, viewCreate }) => {
                             </div>
                             <div className="flex flex-row gap-5 min-h-20">
                                 <div className='flex flex-col gap-1'>
-                                    <label>Marca</label>
+                                    <label>Preço Original</label>
                                     <input
                                         className='w-48 pl-1 border border-gray-500'
-                                        {...register('brand')}
+                                        {...register('originalPrice',
+                                            { validate: validateOriginalPrice }
+                                        )}
                                     />
+                                    {errors.originalPrice && <div className='text-red-500 text-sm max-w-48'>{errors.originalPrice.message}</div>}
                                 </div>
                                 <div className='flex flex-col gap-1'>
                                     <label>Preço</label>
@@ -232,6 +244,16 @@ const FormCreateProduct = ({ setViewCreate, viewCreate }) => {
                                             { validate: validateLowStock })}
                                     />
                                     {errors.lowStock && <div className='text-red-500 text-sm'>{errors.lowStock.message}</div>}
+                                </div>
+                            </div>
+
+                            <div className="flex flex-row gap-5 min-h-20">
+                                <div className='flex flex-col gap-1'>
+                                    <label>Marca</label>
+                                    <input
+                                        className='w-48 pl-1 border border-gray-500'
+                                        {...register('brand')}
+                                    />
                                 </div>
                             </div>
 

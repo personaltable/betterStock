@@ -134,7 +134,7 @@ const StockTable = () => {
 
     //expand Row________________________________________
 
-    const [expanded, setExpand] = useState(false)
+    const [expandedRows, setExpandedRows] = useState("")
 
     const allColumns = useMemo(
         () => [
@@ -144,13 +144,10 @@ const StockTable = () => {
                     <div></div>
                 ),
                 cell: ({ row }) => (
-                    expanded ?
-                        (<IoIosArrowDown onClick={() => { setExpand(!expanded) }} className='text-lg' />)
+                    expandedRows.includes(row.id) ?
+                        (<IoIosArrowDown onClick={() => setExpandedRows("")} className='text-lg cursor-pointer' />)
                         :
-                        (<IoIosArrowForward onClick={() => { setExpand(!expanded) }} className='text-lg' />)
-
-
-
+                        (<IoIosArrowForward onClick={() => setExpandedRows(row.id)} className='text-lg cursor-pointer' />)
                 ),
             },
             {
@@ -199,6 +196,11 @@ const StockTable = () => {
                 id: 'price',
                 header: 'Preço',
                 accessorFn: (row) => { return row.price !== null ? `${row.price}€` : '' }
+            },
+            {
+                id: 'originalPrice',
+                header: 'Preço Original',
+                accessorFn: (row) => { return row.originalPrice !== undefined ? `${row.originalPrice}€` : '' }
             },
             {
                 id: 'creationDate',
@@ -256,7 +258,7 @@ const StockTable = () => {
                 ),
             },
         ],
-        [editingRow, selectedProducts, editedData]
+        [editingRow, selectedProducts, editedData, expandedRows]
     );
 
     //COLUMNS OPTIONS_______________________
@@ -390,10 +392,14 @@ const StockTable = () => {
                 </thead>
                 <tbody>
                     {table.getRowModel().rows.map((row) => (
-                        <tr key={row.id} className="border-b">
+                        <tr key={row.id} className={expandedRows.length != 0 && expandedRows.includes(row.id) ? 'h-28 border-b' : 'border-b'}>
                             {row.getVisibleCells().map((cell) => (
                                 <td key={cell.id} className="px-2 py-2">
-                                    {cell.column.id === 'name' && editingRow === row.original._id ? (
+                                    {cell.column.id === 'information' && expandedRows.includes(row.id) && editingRow !== row.original._id ? (
+                                        <div className='w-52 max-h-24 overflow-y-auto pl-1 whitespace-pre-wrap break-words'>
+                                            {row.original.information}
+                                        </div>
+                                    ) : cell.column.id === 'name' && editingRow === row.original._id ? (
                                         <input
                                             className='w-full border border-gray-400 pl-1'
                                             value={editedData.name}
@@ -425,7 +431,7 @@ const StockTable = () => {
                                             onChange={(e) => handleInputChange(e, 'brand')}
                                         />
                                     ) : cell.column.id === 'information' && editingRow === row.original._id ? (
-                                        <input
+                                        <textarea
                                             className='w-full border border-gray-400 pl-1'
                                             value={editedData.information}
                                             onChange={(e) => handleInputChange(e, 'information')}
@@ -435,6 +441,12 @@ const StockTable = () => {
                                             className='w-full border border-gray-400 pl-1'
                                             value={editedData.price}
                                             onChange={(e) => handleInputChange(e, 'price')}
+                                        />
+                                    ) : cell.column.id === 'originalPrice' && editingRow === row.original._id ? (
+                                        <input
+                                            className='w-full border border-gray-400 pl-1'
+                                            value={editedData.originalPrice}
+                                            onChange={(e) => handleInputChange(e, 'originalPrice')}
                                         />
                                     ) : cell.column.id === 'reStock' && editingRow === row.original._id ? (
                                         <div ref={dropdownRef}>

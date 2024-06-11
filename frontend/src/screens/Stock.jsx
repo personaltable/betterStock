@@ -117,6 +117,7 @@ const Stock = () => {
     "Marca",
     "Informação",
     "Preço",
+    "Preço Original",
     "Data / Hora",
     "Criador",
     "Reposição",

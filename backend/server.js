@@ -6,6 +6,7 @@ import { notFound, errorHandler } from "./middleware/errorMiddleware.js";
 const PORT = process.env.PORT || 5555;
 import userRoutes from './routes/userRoutes.js'
 import productRoutes from './routes/productRoutes.js'
+import actionsRoutes from './routes/actionsRoutes.js'
 import connectDB from "./config/db.js";
 import cors from "cors";
 
@@ -27,6 +28,7 @@ app.use(cookieParser())
 
 app.use('/api/users', userRoutes)
 app.use('/api/products', productRoutes)
+app.use('/api/actions', actionsRoutes)
 
 app.get('/', (req, res) => res.send('Server is ready'))
 

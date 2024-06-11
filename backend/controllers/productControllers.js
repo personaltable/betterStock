@@ -49,6 +49,7 @@ const createProduct = asyncHandler(async (req, res) => {
     brand,
     information,
     price,
+    originalPrice,
     createdBy,
     reStock,
     lowStock,
@@ -71,6 +72,7 @@ const createProduct = asyncHandler(async (req, res) => {
     brand,
     information,
     price,
+    originalPrice,
     createdBy: userName._id,
     reStock,
     lowStock,
@@ -115,7 +117,7 @@ const deleteProduct = asyncHandler(async (req, res) => {
 const changeStockTable = asyncHandler(async (req, res) => {
   try {
     const productId = req.params.id;
-    const { name, category, brand, information, price, reStock, lowStock, stock } = req.body;
+    const { name, category, brand, information, price, originalPrice, reStock, lowStock, stock } = req.body;
     // console.log(req.body)
 
     let categoryId;
@@ -142,6 +144,7 @@ const changeStockTable = asyncHandler(async (req, res) => {
     product.brand = brand;
     product.information = information;
     product.price = price;
+    product.originalPrice = originalPrice;
     product.reStock = reStock;
     product.lowStock = lowStock;
     product.stock = stock;
