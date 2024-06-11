@@ -1,15 +1,18 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useReactTable, flexRender, getCoreRowModel, getSortedRowModel, getFilteredRowModel } from '@tanstack/react-table';
 import { setDeleteList, setDeleteConfirmation } from '../slices/productsSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { DateTime } from 'luxon';
 import './StockTable.css';
+import axios from 'axios';
 
 import { useEditProductMutation } from "../slices/productsApiSlice";
 
 import { FaArrowDownShortWide, FaArrowUpWideShort } from 'react-icons/fa6';
 import { FaPen } from "react-icons/fa";
 import { FaCheck } from "react-icons/fa";
+import { IoIosArrowForward, IoIosArrowDown } from "react-icons/io";
+
 
 
 
@@ -66,28 +69,21 @@ const StockTable = () => {
     //Edit____________________________________________
 
     const [editingRow, setEditingRow] = useState(null);
-    const [editedData, setEditedData] = useState({
-        name: '',
-        category: '',
-        brand: '',
-        information: '',
-        // adicione outras propriedades aqui, se necessário
-    });
+    const [editedData, setEditedData] = useState({});
 
 
     const [changeProduct, { isLoading }] = useEditProductMutation();
 
-    console.log(editedData)
+    // console.log(editedData)
 
     const handleEditClick = (row) => {
         setEditingRow(row.original._id);
         setEditedData(prevState => ({
             ...prevState,
             ...row.original,
-            category: row.original.category.name // Guarda apenas o nome da categoria
+            category: row.original.category.name
         }));
     };
-
 
     const handleInputChange = (e, field) => {
         setEditedData(prevState => ({
@@ -96,15 +92,67 @@ const StockTable = () => {
         }));
     };
 
-
     const handleConfirmChanges = async () => {
-
         const res = await changeProduct({ id: editedData._id, data: editedData })
         setEditingRow(null)
     }
 
+    //getCategories
+    const [categoriesList, setCategoriesList] = useState([]);
+    const [showCategories, setShowCategories] = useState(false);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await axios.get('http://localhost:5555/api/products/categories');
+                const list = (response.data.map((option) => (option.name)));
+                setCategoriesList(list);
+            } catch (error) {
+                console.error('Error fetching categories:', error);
+            }
+        }
+        fetchData();
+    }, []);
+
+
+    const dropdownRef = useRef(null);
+    const handleClickOutside = (e) => {
+        if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+            setShowCategories(false);
+        }
+    };
+    useEffect(() => {
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, []);
+
+    //getRestock
+    const [showReStockList, setShowReStockList] = useState();
+    const reStockList = ["", "Necessária", "Não necessária", "Em progresso"]
+
+    //expand Row________________________________________
+
+    const [expanded, setExpand] = useState(false)
+
     const allColumns = useMemo(
         () => [
+            {
+                id: 'expand',
+                header: ({ table }) => (
+                    <div></div>
+                ),
+                cell: ({ row }) => (
+                    expanded ?
+                        (<IoIosArrowDown onClick={() => { setExpand(!expanded) }} className='text-lg' />)
+                        :
+                        (<IoIosArrowForward onClick={() => { setExpand(!expanded) }} className='text-lg' />)
+
+
+
+                ),
+            },
             {
                 id: 'select',
                 header: ({ table }) => (
@@ -180,6 +228,11 @@ const StockTable = () => {
                 header: 'Stock',
                 accessorKey: 'stock',
                 filterFn: 'customFilterStock',
+                cell: ({ row }) => (
+                    <span className={parseInt(row.original.stock) < parseInt(row.original.lowStock) ? 'text-red-500' : ''}>
+                        {row.original.stock}
+                    </span>
+                ),
             },
             {
                 id: 'edit',
@@ -210,7 +263,7 @@ const StockTable = () => {
 
     //Filter Columns
     const filteredColumns = useMemo(
-        () => allColumns.filter((column) => columnsList.includes(column.header) || column.id === 'select' || column.id === 'edit'),
+        () => allColumns.filter((column) => columnsList.includes(column.header) || column.id === 'select' || column.id === 'edit' || column.id === 'expand'),
         [allColumns, columnsList]
     );
 
@@ -339,7 +392,7 @@ const StockTable = () => {
                     {table.getRowModel().rows.map((row) => (
                         <tr key={row.id} className="border-b">
                             {row.getVisibleCells().map((cell) => (
-                                <td key={cell.id} className="px-3 py-2">
+                                <td key={cell.id} className="px-2 py-2">
                                     {cell.column.id === 'name' && editingRow === row.original._id ? (
                                         <input
                                             className='w-full border border-gray-400 pl-1'
@@ -347,11 +400,24 @@ const StockTable = () => {
                                             onChange={(e) => handleInputChange(e, 'name')}
                                         />
                                     ) : cell.column.id === 'category' && editingRow === row.original._id ? (
-                                        <input
-                                            className='w-full border border-gray-400 pl-1'
-                                            value={editedData.category}
-                                            onChange={(e) => handleInputChange(e, 'category')}
-                                        />
+                                        <div ref={dropdownRef}>
+                                            <div onClick={() => { setShowCategories(!showCategories) }} className='bg-white cursor-pointer w-full border border-gray-400 px-1'>
+                                                {editedData.category}
+                                            </div>
+                                            {showCategories &&
+                                                <div className='absolute h-fit px-1 mt-0.5 bg-white border border-gray-500 z-50'>
+                                                    {categoriesList.map((option) => (
+                                                        <div onClick={() => {
+                                                            setEditedData(prevState => ({
+                                                                ...prevState,
+                                                                category: option
+                                                            }));
+                                                        }} className='hover:bg-gray-100 cursor-pointer h-7' key={option}>{option}</div>
+                                                    ))}
+                                                </div>
+                                            }
+                                        </div>
+
                                     ) : cell.column.id === 'brand' && editingRow === row.original._id ? (
                                         <input
                                             className='w-full border border-gray-400 pl-1'
@@ -371,11 +437,23 @@ const StockTable = () => {
                                             onChange={(e) => handleInputChange(e, 'price')}
                                         />
                                     ) : cell.column.id === 'reStock' && editingRow === row.original._id ? (
-                                        <input
-                                            className='w-full border border-gray-400 pl-1'
-                                            value={editedData.reStock}
-                                            onChange={(e) => handleInputChange(e, 'reStock')}
-                                        />
+                                        <div ref={dropdownRef}>
+                                            <div onClick={() => { setShowReStockList(!showReStockList) }} className='bg-white cursor-pointer w-full border border-gray-400 px-1 h-6'>
+                                                {editedData.reStock}
+                                            </div>
+                                            {showReStockList &&
+                                                <div className='absolute h-fit px-1 mt-0.5 bg-white border border-gray-500'>
+                                                    {reStockList.map((option) => (
+                                                        <div onClick={() => {
+                                                            setEditedData(prevState => ({
+                                                                ...prevState,
+                                                                reStock: option
+                                                            }));
+                                                        }} className='hover:bg-gray-100 cursor-pointer h-7' key={option}>{option}</div>
+                                                    ))}
+                                                </div>
+                                            }
+                                        </div>
                                     ) : cell.column.id === 'lowStock' && editingRow === row.original._id ? (
                                         <input
                                             className='w-full border border-gray-400 pl-1'
