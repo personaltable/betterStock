@@ -2,7 +2,7 @@ import React, { useEffect, useState, useMemo } from 'react';
 import SideBar from '../components/SideBar';
 import axios from 'axios';
 import { DateTime } from 'luxon';
-import { useReactTable, flexRender, getCoreRowModel, getSortedRowModel, getFilteredRowModel } from '@tanstack/react-table';
+import { useReactTable, flexRender, getCoreRowModel, getSortedRowModel, getFilteredRowModel, getPaginationRowModel } from '@tanstack/react-table';
 
 
 import { FaArrowDownShortWide, FaArrowUpWideShort } from 'react-icons/fa6';
@@ -47,12 +47,6 @@ const History = () => {
         setProductChanges({ original, modified });
         setViewChanges(true);
     };
-
-
-
-
-
-    const [sorting, setSorting] = useState([]);
 
     const allColumns = useMemo(
         () => [
@@ -105,12 +99,23 @@ const History = () => {
         []
     );
 
+    //Sort Columns
+    const initialSorting = [{ id: 'date', desc: true }];
+    const [sorting, setSorting] = useState(initialSorting);
+
     const table = useReactTable({
         data: historyData,
         columns: allColumns,
         getCoreRowModel: getCoreRowModel(),
         getSortedRowModel: getSortedRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
+        getPaginationRowModel: getPaginationRowModel(),
+        initialState: {
+            pagination: {
+                pageIndex: 0, //custom initial page index
+                pageSize: 13, //custom default page size
+            },
+        },
         state: {
             sorting,
         },
@@ -120,7 +125,7 @@ const History = () => {
     return (
         <div className="flex flex-row">
             <SideBar />
-            <div className="flex flex-col p-3 w-full relative">
+            <div className="flex flex-col justify-between p-3 w-full relative">
                 <table>
                     <thead>
                         {table.getHeaderGroups().map((headerGroup) => (
@@ -177,6 +182,68 @@ const History = () => {
                         </div>
                     </div>
                 }
+                <div className="pagination flex items-center space-x-2">
+                    <button
+                        className="px-2 py-1 border rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
+                        onClick={() => table.setPageIndex(0)}
+                        disabled={!table.getCanPreviousPage()}
+                    >
+                        {'<<'}
+                    </button>
+                    <button
+                        className="px-2 py-1 border rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
+                        onClick={() => table.previousPage()}
+                        disabled={!table.getCanPreviousPage()}
+                    >
+                        {'<'}
+                    </button>
+                    <button
+                        className="px-2 py-1 border rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
+                        onClick={() => table.nextPage()}
+                        disabled={!table.getCanNextPage()}
+                    >
+                        {'>'}
+                    </button>
+                    <button
+                        className="px-2 py-1 border rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
+                        onClick={() => table.setPageIndex(table.getPageCount() - 1)}
+                        disabled={!table.getCanNextPage()}
+                    >
+                        {'>>'}
+                    </button>
+                    <span>
+                        Page{' '}
+                        <strong>
+                            {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
+                        </strong>
+                    </span>
+                    <span>
+                        | Go to page:{' '}
+                        <input
+                            className="border rounded px-1 w-16"
+                            type="number"
+                            defaultValue={table.getState().pagination.pageIndex + 1}
+                            onChange={(e) => {
+                                const page = e.target.value ? Number(e.target.value) - 1 : 0;
+                                table.setPageIndex(page);
+                            }}
+                            style={{ width: '50px' }}
+                        />
+                    </span>
+                    <select
+                        className="border rounded px-1"
+                        value={table.getState().pagination.pageSize}
+                        onChange={(e) => {
+                            table.setPageSize(Number(e.target.value));
+                        }}
+                    >
+                        {[13, 20, 30, 40, 50].map((pageSize) => (
+                            <option key={pageSize} value={pageSize}>
+                                Show {pageSize}
+                            </option>
+                        ))}
+                    </select>
+                </div>
             </div>
         </div>
     );

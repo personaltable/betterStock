@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
-import { useReactTable, flexRender, getCoreRowModel, getSortedRowModel, getFilteredRowModel } from '@tanstack/react-table';
+import { useReactTable, flexRender, getCoreRowModel, getSortedRowModel, getFilteredRowModel, getPaginationRowModel } from '@tanstack/react-table';
 import { setDeleteList, setDeleteConfirmation } from '../slices/productsSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { DateTime } from 'luxon';
@@ -102,19 +102,35 @@ const StockTable = () => {
 
     const handleConfirmChanges = async () => {
         try {
-            const res = await changeProduct({ id: editedData._id, data: editedData });
+            // Log originalData e editedData para verificação
+            console.log('Original Data:', originalData);
+            console.log('Edited Data:', editedData);
 
-            const sendData = {
-                name: "Editar",
-                product: editedData.name,
-                changes: {
-                    original: originalData,
-                    modified: editedData
-                },
-                user: userInfo.name
-            };
+            // Compara os valores dos dois objetos
+            const hasChanges = Object.keys(editedData).some(
+                key => editedData[key] !== originalData[key]
+            );
 
-            await axios.post(`http://localhost:5555/api/actions`, sendData);
+            console.log('Has Changes:', hasChanges); // Log para verificar se mudanças foram detectadas
+
+            if (hasChanges) {
+                const res = await changeProduct({ id: editedData._id, data: editedData });
+
+                const sendData = {
+                    name: "Editar",
+                    product: editedData.name,
+                    changes: {
+                        original: originalData,
+                        modified: editedData
+                    },
+                    user: userInfo.name
+                };
+
+                // Log sendData para verificação
+                console.log('Send Data:', sendData);
+
+                await axios.post(`http://localhost:5555/api/actions`, sendData);
+            }
 
             setEditingRow(null);
         } catch (error) {
@@ -161,6 +177,8 @@ const StockTable = () => {
 
     const [expandedRows, setExpandedRows] = useState("")
 
+    console.log(expandedRows)
+
     const allColumns = useMemo(
         () => [
             {
@@ -169,10 +187,14 @@ const StockTable = () => {
                     <div></div>
                 ),
                 cell: ({ row }) => (
-                    expandedRows.includes(row.id) ?
-                        (<IoIosArrowDown onClick={() => setExpandedRows("")} className='text-lg cursor-pointer' />)
-                        :
-                        (<IoIosArrowForward onClick={() => setExpandedRows(row.id)} className='text-lg cursor-pointer' />)
+
+                    expandedRows.includes(row.id) ? (
+                        <IoIosArrowDown onClick={() => setExpandedRows(expandedRows.filter(id => id !== row.id))} className='text-lg cursor-pointer' />
+                    ) : (
+                        <IoIosArrowForward onClick={() => setExpandedRows([...expandedRows, row.id])} className='text-lg cursor-pointer' />
+                    )
+
+
                 ),
             },
             {
@@ -296,7 +318,7 @@ const StockTable = () => {
 
 
     //Sort Columns
-    const initialSorting = [{ id: 'creationDate', desc: false, },];
+    const initialSorting = [{ id: 'creationDate', desc: true }];
     const [sorting, setSorting] = useState(initialSorting);
 
 
@@ -368,6 +390,13 @@ const StockTable = () => {
         getCoreRowModel: getCoreRowModel(),
         getSortedRowModel: getSortedRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
+        getPaginationRowModel: getPaginationRowModel(),
+        initialState: {
+            pagination: {
+                pageIndex: 0, //custom initial page index
+                pageSize: 13, //custom default page size
+            },
+        },
         state: {
             sorting,
             rowSelection: selectedProducts,
@@ -391,7 +420,7 @@ const StockTable = () => {
     });
 
     return (
-        <div>
+        <div className='flex flex-col justify-between h-full'>
             <table>
                 <thead>
                     {table.getHeaderGroups().map((headerGroup) => (
@@ -513,6 +542,69 @@ const StockTable = () => {
                 </tbody>
 
             </table>
+            <div className="pagination flex items-center space-x-2">
+                <button
+                    className="px-2 py-1 border rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
+                    onClick={() => table.setPageIndex(0)}
+                    disabled={!table.getCanPreviousPage()}
+                >
+                    {'<<'}
+                </button>
+                <button
+                    className="px-2 py-1 border rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
+                    onClick={() => table.previousPage()}
+                    disabled={!table.getCanPreviousPage()}
+                >
+                    {'<'}
+                </button>
+                <button
+                    className="px-2 py-1 border rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
+                    onClick={() => table.nextPage()}
+                    disabled={!table.getCanNextPage()}
+                >
+                    {'>'}
+                </button>
+                <button
+                    className="px-2 py-1 border rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
+                    onClick={() => table.setPageIndex(table.getPageCount() - 1)}
+                    disabled={!table.getCanNextPage()}
+                >
+                    {'>>'}
+                </button>
+                <span>
+                    Page{' '}
+                    <strong>
+                        {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
+                    </strong>
+                </span>
+                <span>
+                    | Go to page:{' '}
+                    <input
+                        className="border rounded px-1 w-16"
+                        type="number"
+                        defaultValue={table.getState().pagination.pageIndex + 1}
+                        onChange={(e) => {
+                            const page = e.target.value ? Number(e.target.value) - 1 : 0;
+                            table.setPageIndex(page);
+                        }}
+                        style={{ width: '50px' }}
+                    />
+                </span>
+                <select
+                    className="border rounded px-1"
+                    value={table.getState().pagination.pageSize}
+                    onChange={(e) => {
+                        table.setPageSize(Number(e.target.value));
+                    }}
+                >
+                    {[13, 20, 30, 40, 50].map((pageSize) => (
+                        <option key={pageSize} value={pageSize}>
+                            Show {pageSize}
+                        </option>
+                    ))}
+                </select>
+            </div>
+
         </div>
     );
 };
