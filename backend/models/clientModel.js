@@ -11,6 +11,11 @@ const clientSchema = mongoose.Schema(
       type: String,
       required: true,
     },
+    nif: {
+      type: String,
+      required: true,
+      unique: true,
+    },
     email: {
       type: String,
       required: true,
@@ -29,7 +34,6 @@ const clientSchema = mongoose.Schema(
     postCode: {
       type: String,
       required: true,
-      unique: true,
     },
     password: {
       type: String,
@@ -42,7 +46,7 @@ const clientSchema = mongoose.Schema(
 );
 
 //encrypt password
-userSchema.pre("save", async function (next) {
+clientSchema.pre("save", async function (next) {
   if (!this.isModified("password")) {
     next();
   }
@@ -52,10 +56,10 @@ userSchema.pre("save", async function (next) {
 });
 
 //compare String password with encrypt password
-userSchema.methods.matchPassword = async function (enteredPassword) {
+clientSchema.methods.matchPassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
 
-const User = mongoose.model("User", userSchema);
+const Client = mongoose.model("User", clientSchema);
 
-export default User;
+export default Client;
