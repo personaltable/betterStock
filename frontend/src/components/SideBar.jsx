@@ -48,7 +48,7 @@ function SideBar() {
       <div className='flex flex-col gap-3'>
         <div className='flex flex-row items-center gap-2'><AiFillDashboard /><Link to="/dashboard">DashBoard</Link></div>
         <div className='flex flex-row items-center gap-2'><GiCardboardBoxClosed /><Link to="/stock">Stock</Link></div>
-        <div className='flex flex-row items-center gap-2'><FaUserCircle /><Link to="/historico">Histórico</Link></div>
+        <div className='flex flex-row items-center gap-2'><FaUserCircle /><Link to="/history">Histórico</Link></div>
         <div className='flex flex-row items-center gap-2'><AiOutlineProduct /><Link to="/CategoryPage">Produtos</Link></div>
       </div>
 

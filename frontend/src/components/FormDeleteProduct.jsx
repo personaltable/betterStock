@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useDeleteProductMutation } from "../slices/productsApiSlice";
 import { setDeleteList, setDeleteConfirmation, setFormFeedback } from '../slices/productsSlice';
+import axios from "axios";
 
 import { IoClose } from "react-icons/io5";
 
@@ -13,21 +14,42 @@ const FormDeleteProduct = ({ setViewDelete, viewDelete }) => {
     const deleteList = useSelector((state) => state.productsList.deleteList);
     const [deleteProduct, { isLoading }] = useDeleteProductMutation();
 
+    console.log(deleteList)
+
     const handleDeleteProduct = async () => {
         try {
             const res = await deleteProduct({ deleteList });
-
-            dispatch(setFormFeedback('Produto(s) eliminado(s) com sucesso'));
-            dispatch(setDeleteConfirmation(true));
-
 
             if (res.error) {
                 throw new Error(res.error.data?.message);
             }
 
+            const deleteActions = deleteList.map(async (option) => {
+                const sendData = {
+                    name: "Eliminar",
+                    product: option.name,
+                    user: option.createdBy.name
+                };
+                console.log('sendData:', sendData);
+
+                try {
+                    const response = await axios.post(`http://localhost:5555/api/actions`, sendData);
+                    console.log('Response:', response.data);
+                } catch (error) {
+                    console.error('Error in POST request:', error.response?.data || error.message);
+                    throw error;
+                }
+            });
+
+            dispatch(setFormFeedback('Produto(s) eliminado(s) com sucesso'));
+            dispatch(setDeleteConfirmation(true));
             setViewDelete(false);
+
+            await Promise.all(deleteActions);
+
+
         } catch (error) {
-            console.log(error.message);
+            console.log('Error in handleDeleteProduct:', error.message);
         }
     };
 
