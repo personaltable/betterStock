@@ -20,7 +20,7 @@ const getActions = asyncHandler(async (req, res) => {
 //route     POST /api/actions/
 //@access   Public
 const createAction = asyncHandler(async (req, res) => {
-    const { name, product, user } = req.body;
+    const { name, product, changes, user } = req.body;
 
     console.log(req.body);
 
@@ -30,22 +30,15 @@ const createAction = asyncHandler(async (req, res) => {
     }
     const userId = mongoose.Types.ObjectId(getUser._id);
 
-    const getProduct = await Product.findOne({ name: product });
-    if (!getProduct) {
-        return res.status(400).json({ message: "Product not found" });
-    }
-    const productId = mongoose.Types.ObjectId(getProduct._id);
-
     const action = new Actions({
         name,
-        product: productId,
+        product: product,
+        changes: changes,
         user: userId
     });
 
     const savedAction = await action.save();
     res.status(201).json(savedAction);
 });
-
-
 
 export { getActions, createAction };

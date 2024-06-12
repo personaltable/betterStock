@@ -69,6 +69,7 @@ const StockTable = () => {
     //Edit____________________________________________
 
     const [editingRow, setEditingRow] = useState(null);
+    const [originalData, setOriginalData] = useState({});
     const [editedData, setEditedData] = useState({});
 
 
@@ -83,6 +84,11 @@ const StockTable = () => {
             ...row.original,
             category: row.original.category.name
         }));
+        setOriginalData(prevState => ({
+            ...prevState,
+            ...row.original,
+            category: row.original.category.name
+        }));
     };
 
     const handleInputChange = (e, field) => {
@@ -92,10 +98,29 @@ const StockTable = () => {
         }));
     };
 
+    const { userInfo } = useSelector((state) => state.auth)
+
     const handleConfirmChanges = async () => {
-        const res = await changeProduct({ id: editedData._id, data: editedData })
-        setEditingRow(null)
-    }
+        try {
+            const res = await changeProduct({ id: editedData._id, data: editedData });
+
+            const sendData = {
+                name: "Editar",
+                product: editedData.name,
+                changes: {
+                    original: originalData,
+                    modified: editedData
+                },
+                user: userInfo.name
+            };
+
+            await axios.post(`http://localhost:5555/api/actions`, sendData);
+
+            setEditingRow(null);
+        } catch (error) {
+            console.error('Error confirming changes:', error);
+        }
+    };
 
     //getCategories
     const [categoriesList, setCategoriesList] = useState([]);

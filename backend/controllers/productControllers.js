@@ -90,14 +90,11 @@ const createProduct = asyncHandler(async (req, res) => {
 
 const deleteProduct = asyncHandler(async (req, res) => {
   try {
-    // Extract the product IDs from the deleteList received in the request body
+
     const productIds = req.body.deleteList.map((product) =>
       mongoose.Types.ObjectId(product._id)
     );
 
-    // Log the product IDs to verify
-
-    // Use the deleteMany method to delete multiple products
     const result = await Product.deleteMany({ _id: { $in: productIds } });
 
     if (result.deletedCount > 0) {
@@ -128,16 +125,12 @@ const changeStockTable = asyncHandler(async (req, res) => {
       categoryId = categoryObj._id;
     }
 
-    // Verificar se o produto existe
     const product = await Product.findById(productId);
 
     if (!product) {
       return res.status(404).json({ message: 'Produto não encontrado' });
     }
 
-
-
-    // Atualizar os campos do produto com os novos dados
     product.name = name;
     product.category = categoryId;
     product.brand = brand;
@@ -149,7 +142,7 @@ const changeStockTable = asyncHandler(async (req, res) => {
     product.stock = stock;
 
     console.log(product)
-    // Salvar as alterações no banco de dados
+
     await product.save();
 
     return res.status(200).json({ message: 'Produto atualizado com sucesso' });
