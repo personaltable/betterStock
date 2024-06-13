@@ -146,7 +146,6 @@ const FormCreateProduct = ({ setViewCreate, viewCreate }) => {
         } catch (error) {
             console.log(error?.data?.message)
         }
-        console.log(data)
     }
 
 

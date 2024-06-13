@@ -11,6 +11,11 @@ const initialState = {
     searchCategory: '',
     searchUser: '',
     searchPrice: '',
+    searchDate: {
+        startDate: null,
+        endDate: null,
+    },
+    searchReStock: '',
     deleteList: [],
     editProduct: {},
     deleteConfirmation: false,
@@ -37,6 +42,8 @@ const productsSlice = createSlice({
                 state.searchCategory = '';
                 state.searchUser = '';
                 state.searchPrice = '';
+                state.searchDate = '';
+
             }
         },
         setColumns: (state, action) => {
@@ -57,6 +64,13 @@ const productsSlice = createSlice({
         setSearchPrice: (state, action) => {
             state.searchPrice = action.payload;
         },
+        setSearchDate(state, action) {
+            state.searchDate.startDate = action.payload.startDate;
+            state.searchDate.endDate = action.payload.endDate;
+        },
+        setSearchReStock: (state, action) => {
+            state.searchReStock = action.payload;
+        },
         setDeleteList: (state, action) => {
             state.deleteList = action.payload;
         },
@@ -72,6 +86,6 @@ const productsSlice = createSlice({
     }
 })
 
-export const { setProducts, setStatus, setError, resetFilters, setColumns, setSearchName, setSearchStock, setSearchCategory, setSearchUser, setSearchPrice, setDeleteList, setDeleteConfirmation, setFormFeedback, setEditProduct } = productsSlice.actions;
+export const { setProducts, setStatus, setError, resetFilters, setColumns, setSearchName, setSearchStock, setSearchCategory, setSearchUser, setSearchPrice, setSearchDate, setSearchReStock, setDeleteList, setDeleteConfirmation, setFormFeedback, setEditProduct } = productsSlice.actions;
 
 export default productsSlice.reducer;

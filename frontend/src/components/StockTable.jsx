@@ -156,10 +156,6 @@ const StockTable = () => {
         };
     }, []);
 
-    //getRestock
-    const [showReStockList, setShowReStockList] = useState();
-    const reStockList = ["", "Necessária", "Não necessária", "Em progresso"]
-
     //expand Row________________________________________
 
     const [expandedRows, setExpandedRows] = useState("")
@@ -167,8 +163,6 @@ const StockTable = () => {
     const handleExpandClick = (rowId) => {
         setExpandedRows(prevRowId => (prevRowId === rowId ? "" : rowId));
     };
-
-    console.log(expandedRows)
 
     const allColumns = useMemo(
         () => [
@@ -236,6 +230,7 @@ const StockTable = () => {
                     return value !== undefined && value !== null ? `${value}€` : '';
                 },
                 filterFn: 'customFilterPrice',
+
             },
             {
                 id: 'originalPrice',
@@ -252,6 +247,7 @@ const StockTable = () => {
                 accessorKey: 'creationDate',
                 cell: (info) =>
                     DateTime.fromISO(info.getValue()).toLocaleString(DateTime.DATETIME_MED),
+                filterFn: 'customFilterDate',
             },
             {
                 id: 'createdBy',
@@ -381,7 +377,6 @@ const StockTable = () => {
     //Filter By Price
 
     const searchPrice = useSelector((state) => state.productsList.searchPrice);
-    console.log(searchPrice)
 
     const customFilterPrice = (row, columnId, filterValue) => {
         const cellValue = parseInt(row.getValue(columnId), 10);
@@ -405,6 +400,44 @@ const StockTable = () => {
                 return true;
         }
     };
+
+    //Filter By Date
+
+    const searchDate = useSelector((state) => state.productsList.searchDate);
+
+    const customFilterDate = (row, columnId, filterValue) => {
+        const cellValue = DateTime.fromISO(row.getValue(columnId)).startOf('day').toJSDate();
+        const { startDate, endDate } = filterValue;
+
+        if (!startDate && !endDate) {
+            return true;
+        }
+
+        const start = startDate ? DateTime.fromISO(startDate).startOf('day').toJSDate() : null;
+        const end = endDate ? DateTime.fromISO(endDate).startOf('day').toJSDate() : null;
+
+        if (start && !end) {
+            return cellValue.getTime() === start.getTime();
+        }
+
+        if (!start && end) {
+            return cellValue.getTime() <= end.getTime();
+        }
+
+        if (start && end) {
+            return cellValue.getTime() >= start.getTime() && cellValue.getTime() <= end.getTime();
+        }
+
+        return false;
+    };
+
+
+    //Filter By Restock
+
+    // const searchReStock = useSelector((state) => state.productsList.reStock);
+
+    // const [showReStockList, setShowReStockList] = useState();
+    // const reStockList = ["", "Necessária", "Não necessária", "Em progresso"]
 
     //TABLE CONFIG___________________
 
@@ -431,8 +464,9 @@ const StockTable = () => {
                     { id: 'createdBy', value: searchUser },
                     { id: 'stock', value: searchStock },
                     { id: 'price', value: searchPrice },
+                    { id: 'creationDate', value: searchDate },
                 ],
-                [searchName, searchCategory, searchUser, searchStock, searchPrice]
+                [searchName, searchCategory, searchUser, searchStock, searchPrice, searchDate]
             )
         },
         onSortingChange: setSorting,
@@ -441,8 +475,8 @@ const StockTable = () => {
             customFilterCategory,
             customFilterUser,
             customFilterStock,
-            customFilterPrice
-
+            customFilterPrice,
+            customFilterDate
         },
     });
 
