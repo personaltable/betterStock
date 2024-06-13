@@ -13,18 +13,12 @@ import FormDeleteProduct from "../components/FormDeleteProduct";
 
 import { useDispatch, useSelector } from "react-redux";
 import { useGetProductsQuery } from "../slices/productsApiSlice";
-import { setProducts, setStatus, setError, resetFilters, setColumns, setSearchName, setSearchStock, setSearchCategory, setSearchUser, setFormFeedback } from "../slices/productsSlice";
+import { setProducts, setStatus, setError, resetFilters, setColumns, setSearchName, setSearchStock, setSearchCategory, setSearchUser, setSearchPrice, setFormFeedback } from "../slices/productsSlice";
 
-import { FaMagnifyingGlass } from "react-icons/fa6";
-import { IoReloadCircle } from "react-icons/io5";
+import { FaMagnifyingGlass, FaWrench, FaFilter, FaCirclePlus, FaCircleMinus } from "react-icons/fa6";
+import { IoReloadCircle, IoClose } from "react-icons/io5";
 import { FaPrint } from "react-icons/fa";
-import { FaWrench } from "react-icons/fa6";
-import { FaFilter } from "react-icons/fa6";
-import { FaCirclePlus } from "react-icons/fa6";
-import { FaCircleMinus } from "react-icons/fa6";
-import { IoClose } from "react-icons/io5";
 import { IoIosArrowDown } from "react-icons/io";
-
 
 
 const Stock = () => {
@@ -109,6 +103,17 @@ const Stock = () => {
     dispatch(setSearchUser(searchUserValue));
   }), [searchUserValue]
 
+  //Price
+
+  const [priceChoice, setPriceChoice] = useState('Exato');
+  const [priceInput, setPriceInput] = useState('');
+  const [priceSecondInput, setPriceSecondInput] = useState('');
+
+  useEffect(() => {
+    dispatch(setSearchPrice({ priceChoice, priceInput, priceSecondInput }));
+  }, [priceChoice, priceInput, priceSecondInput])
+
+
   //columns
   const columnsList = useSelector((state) => state.productsList.columns);
   const columnsAllOptions = [
@@ -188,7 +193,7 @@ const Stock = () => {
 
             <Dropdown
               trigger={
-                <ButtonFilter className="flex flex-row justify-between items-center">
+                <ButtonFilter >
                   <div>Filtros</div>
                   <FaFilter />
                 </ButtonFilter>}
@@ -252,6 +257,46 @@ const Stock = () => {
                 more={<IoClose onClick={() => { setSearchUserValue('') }} className="text-xl cursor-pointer" />}
               ></DropdownSearch>
 
+              <div className="flex flex-row items-center justify-between" >
+                <div className="flex flex-row ">
+                  <div className="w-20">Preço:</div>
+                  <Dropdown
+                    trigger={
+                      <div className="flex cursor-pointer w-[80px] flex-row gap-1 px-1 justify-between items-center border border-gray-500 rounded mr-1">
+                        <div className="">{priceChoice}</div>
+                        <IoIosArrowDown className="text-xs" />
+                      </div>
+                    }
+                    classNameContainer='w-[80px] mr-1 mt-1'
+                  >
+                    {stockFilterList.map((option) => (
+                      <div onClick={() => { setPriceChoice(option) }} className="p-1 px-2 hover:bg-gray-100 cursor-pointer" key={option}>{option}</div>
+                    ))}
+                  </Dropdown>
+
+                  <input
+                    type="text"
+                    onChange={(e) => { setPriceInput(e.target.value) }}
+                    value={priceInput}
+                    className="pl-1 w-14 border border-gray-500"
+                  />
+
+                  {priceChoice === "Entre" ? (
+                    <div className="flex flex-row">
+                      <div className="mx-0.5"> - </div>
+                      <input
+                        type="text"
+                        onChange={(e) => { setPriceSecondInput(e.target.value) }}
+                        value={priceSecondInput}
+                        className="pl-1 w-14 border border-gray-500"
+                      />
+                    </div>
+                  ) : (<div></div>)}
+
+                </div>
+                <IoClose onClick={() => { [setPriceInput(''), setPriceSecondInput('')] }} className="text-xl cursor-pointer" />
+              </div>
+
             </Dropdown>
 
             <DropdownCheck
@@ -260,13 +305,13 @@ const Stock = () => {
               selectedOptions={columnsList}
               onOptionSelect={handleColumnSelect}
             >
-              <ButtonFilter className="flex flex-row justify-between items-center">
+              <ButtonFilter>
                 <div>Colunas</div>
                 <FaWrench />
               </ButtonFilter>
             </DropdownCheck>
 
-            <ButtonFilter className="flex flex-row justify-between items-center">
+            <ButtonFilter>
               <div>Imprimir</div>
               <FaPrint />
             </ButtonFilter>

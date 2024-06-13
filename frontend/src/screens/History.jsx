@@ -3,9 +3,10 @@ import SideBar from '../components/SideBar';
 import axios from 'axios';
 import { DateTime } from 'luxon';
 import { useReactTable, flexRender, getCoreRowModel, getSortedRowModel, getFilteredRowModel, getPaginationRowModel } from '@tanstack/react-table';
+import ButtonFilter from '../components/buttons/ButtonFilter';
+import Dropdown from '../components/Dropdown/Dropdown';
 
-
-import { FaArrowDownShortWide, FaArrowUpWideShort } from 'react-icons/fa6';
+import { FaArrowDownShortWide, FaArrowUpWideShort, FaFilter, FaPrint } from 'react-icons/fa6';
 import { IoClose } from "react-icons/io5";
 
 const History = () => {
@@ -126,62 +127,79 @@ const History = () => {
         <div className="flex flex-row">
             <SideBar />
             <div className="flex flex-col justify-between p-3 w-full relative">
-                <table>
-                    <thead>
-                        {table.getHeaderGroups().map((headerGroup) => (
-                            <tr key={headerGroup.id}>
-                                {headerGroup.headers.map((header) => (
-                                    <th
-                                        key={header.id}
-                                        onClick={header.column.getToggleSortingHandler()}
-                                    >
-                                        <div className="flex items-center">
-                                            {flexRender(header.column.columnDef.header, header.getContext())}
-                                            {header.column.getIsSorted() ? (
-                                                header.column.getIsSorted() === 'asc' ? (
-                                                    <FaArrowDownShortWide className="ml-1" />
-                                                ) : (
-                                                    <FaArrowUpWideShort className="ml-1" />
-                                                )
-                                            ) : null}
-                                        </div>
-                                    </th>
-                                ))}
-                            </tr>
-                        ))}
-                    </thead>
-                    <tbody>
-                        {table.getRowModel().rows.map(row => (
-                            <tr key={row.id}>
-                                {row.getVisibleCells().map(cell => (
-                                    <td key={cell.id}>
-                                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                    </td>
-                                ))}
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-                {viewChanges &&
-                    <div className={`fixed inset-0 z-50 ${viewChanges ? 'flex' : 'hidden'} justify-center items-center`}>
-                        <div className="fixed inset-0 bg-black opacity-50" onClick={() => setViewChanges(false)}></div>
-                        <div className='relative flex flex-col w-[657px] min-h-[388px] gap-3 p-5 bg-white shadow-lg rounded-lg border border-gray-300 z-50 left-32'>
-                            <div className="flex flex-row justify-between items-center">
-                                <div className="font-bold">Alterações</div>
-                                <IoClose onClick={() => { setViewChanges(false) }} className="flex self-end text-xl cursor-pointer" />
-                            </div>
-                            <ul>
-                                {Object.keys(productChanges.original).map(key => (
-                                    key !== 'createdBy' && productChanges.original[key] !== productChanges.modified[key] && (
-                                        <li key={key}>
-                                            <strong>{key}</strong>: {productChanges.original[key]} &rarr; {productChanges.modified[key]}
-                                        </li>
-                                    )
-                                ))}
-                            </ul>
-                        </div>
+                <div>
+                    <div className='flex flex-row gap-2 items-center justify-end'>
+                        <Dropdown
+                            trigger={
+                                <ButtonFilter>
+                                    <div>Filtros</div>
+                                    <FaFilter />
+                                </ButtonFilter>}
+                            classNameContainer="w-fit flex flex-col gap-2 p-2 mt-2"
+                        ></Dropdown>
+
+                        <ButtonFilter>
+                            <div>Imprimir</div>
+                            <FaPrint />
+                        </ButtonFilter>
                     </div>
-                }
+                    <table>
+                        <thead>
+                            {table.getHeaderGroups().map((headerGroup) => (
+                                <tr key={headerGroup.id}>
+                                    {headerGroup.headers.map((header) => (
+                                        <th
+                                            key={header.id}
+                                            onClick={header.column.getToggleSortingHandler()}
+                                        >
+                                            <div className="flex items-center">
+                                                {flexRender(header.column.columnDef.header, header.getContext())}
+                                                {header.column.getIsSorted() ? (
+                                                    header.column.getIsSorted() === 'asc' ? (
+                                                        <FaArrowDownShortWide className="ml-1" />
+                                                    ) : (
+                                                        <FaArrowUpWideShort className="ml-1" />
+                                                    )
+                                                ) : null}
+                                            </div>
+                                        </th>
+                                    ))}
+                                </tr>
+                            ))}
+                        </thead>
+                        <tbody>
+                            {table.getRowModel().rows.map(row => (
+                                <tr key={row.id}>
+                                    {row.getVisibleCells().map(cell => (
+                                        <td key={cell.id}>
+                                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                        </td>
+                                    ))}
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                    {viewChanges &&
+                        <div className={`fixed inset-0 z-50 ${viewChanges ? 'flex' : 'hidden'} justify-center items-center`}>
+                            <div className="fixed inset-0 bg-black opacity-50" onClick={() => setViewChanges(false)}></div>
+                            <div className='relative flex flex-col w-[657px] min-h-[388px] gap-3 p-5 bg-white shadow-lg rounded-lg border border-gray-300 z-50 left-32'>
+                                <div className="flex flex-row justify-between items-center">
+                                    <div className="font-bold">Alterações</div>
+                                    <IoClose onClick={() => { setViewChanges(false) }} className="flex self-end text-xl cursor-pointer" />
+                                </div>
+                                <ul className='flex flex-col gap-2'>
+                                    {Object.keys(productChanges.original).map(key => (
+                                        key !== 'createdBy' && productChanges.original[key] !== productChanges.modified[key] && (
+                                            <li key={key}>
+                                                <strong>{key}</strong>: {productChanges.original[key]} &rarr; {productChanges.modified[key]}
+                                            </li>
+                                        )
+                                    ))}
+                                </ul>
+                            </div>
+                        </div>
+                    }
+                </div>
                 <div className="pagination flex items-center space-x-2">
                     <button
                         className="px-2 py-1 border rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-50"

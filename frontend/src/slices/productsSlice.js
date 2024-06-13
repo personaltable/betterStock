@@ -10,6 +10,7 @@ const initialState = {
     searchStock: '',
     searchCategory: '',
     searchUser: '',
+    searchPrice: '',
     deleteList: [],
     editProduct: {},
     deleteConfirmation: false,
@@ -35,6 +36,7 @@ const productsSlice = createSlice({
                 state.searchName = '';
                 state.searchCategory = '';
                 state.searchUser = '';
+                state.searchPrice = '';
             }
         },
         setColumns: (state, action) => {
@@ -52,6 +54,9 @@ const productsSlice = createSlice({
         setSearchUser: (state, action) => {
             state.searchUser = action.payload;
         },
+        setSearchPrice: (state, action) => {
+            state.searchPrice = action.payload;
+        },
         setDeleteList: (state, action) => {
             state.deleteList = action.payload;
         },
@@ -67,6 +72,6 @@ const productsSlice = createSlice({
     }
 })
 
-export const { setProducts, setStatus, setError, resetFilters, setColumns, setSearchName, setSearchStock, setSearchCategory, setSearchUser, setDeleteList, setDeleteConfirmation, setFormFeedback, setEditProduct } = productsSlice.actions;
+export const { setProducts, setStatus, setError, resetFilters, setColumns, setSearchName, setSearchStock, setSearchCategory, setSearchUser, setSearchPrice, setDeleteList, setDeleteConfirmation, setFormFeedback, setEditProduct } = productsSlice.actions;
 
 export default productsSlice.reducer;
