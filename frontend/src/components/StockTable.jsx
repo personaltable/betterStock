@@ -254,11 +254,13 @@ const StockTable = () => {
                 header: 'Criador',
                 accessorKey: 'createdBy.name',
                 filterFn: 'customFilterUser',
+
             },
             {
                 id: 'reStock',
                 header: 'Reposição',
                 accessorKey: 'reStock',
+                filterFn: 'customFilterReStock',
             },
             {
                 id: 'lowStock',
@@ -434,10 +436,28 @@ const StockTable = () => {
 
     //Filter By Restock
 
-    // const searchReStock = useSelector((state) => state.productsList.reStock);
+    const searchReStock = useSelector((state) => state.productsList.searchReStock);
 
-    // const [showReStockList, setShowReStockList] = useState();
-    // const reStockList = ["", "Necessária", "Não necessária", "Em progresso"]
+    console.log(searchReStock)
+
+    const customFilterReStock = (row, columnId, filterValue) => {
+        const reStockValue = row.original.reStock;
+
+        switch (filterValue) {
+            case "":
+                return reStockValue === "";
+            case "Necessária":
+                return reStockValue === "Necessária";
+            case "Não necessária":
+                return reStockValue === "Não necessária";
+            case "Em progresso":
+                return reStockValue === "Em progresso";
+            default:
+                return true; // Retorna true por padrão se nenhum caso corresponder
+        }
+    };
+
+
 
     //TABLE CONFIG___________________
 
@@ -465,8 +485,9 @@ const StockTable = () => {
                     { id: 'stock', value: searchStock },
                     { id: 'price', value: searchPrice },
                     { id: 'creationDate', value: searchDate },
+                    { id: 'reStock', value: searchReStock },
                 ],
-                [searchName, searchCategory, searchUser, searchStock, searchPrice, searchDate]
+                [searchName, searchCategory, searchUser, searchStock, searchPrice, searchDate, searchReStock]
             )
         },
         onSortingChange: setSorting,
@@ -476,7 +497,8 @@ const StockTable = () => {
             customFilterUser,
             customFilterStock,
             customFilterPrice,
-            customFilterDate
+            customFilterDate,
+            customFilterReStock,
         },
     });
 

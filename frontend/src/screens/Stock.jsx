@@ -47,7 +47,13 @@ const Stock = () => {
   const handleResetFilterChange = () => {
     setSearchCategoryValue("");
     setSearchUserValue("");
+    setSearchReStock("");
+    setStockInput("");
+    setStockSecondInput("");
+    setStartDate(null);
+    setEndDate(null);
     dispatch(resetFilters(true));
+
 
   };
 
@@ -129,12 +135,13 @@ const Stock = () => {
 
   //ReStock 
 
-  const [reStockValue, setReStockValue] = useState('');
+  const searchReStock = useSelector((state) => state.productsList.searchReStock);
+  const [reStockValue, setReStockValue] = useState(searchReStock);
   const reStockList = ["", "Necessária", "Não necessária", "Em progresso"]
 
   useEffect(() => {
     dispatch(setSearchReStock(reStockValue));
-  }), [reStockValue]
+  }), [reStockValue, dispatch]
 
   //columns
   const columnsList = useSelector((state) => state.productsList.columns);
@@ -276,7 +283,7 @@ const Stock = () => {
                     classNameContainer='w-52 mt-1'
                   >
                     {reStockList.map((option) => (
-                      <div onClick={() => { setReStockValue(option) }} className="p-1 px-2 hover:bg-gray-100 cursor-pointer" key={option}>{option}</div>
+                      <div onClick={() => { setReStockValue(option) }} className=" flex flex-col justify-center p-1 px-2 h-[30px] hover:bg-gray-100 cursor-pointer" key={option}>{option}</div>
                     ))}
                   </Dropdown>
 

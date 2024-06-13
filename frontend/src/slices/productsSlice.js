@@ -42,8 +42,11 @@ const productsSlice = createSlice({
                 state.searchCategory = '';
                 state.searchUser = '';
                 state.searchPrice = '';
-                state.searchDate = '';
-
+                state.searchDate = {
+                    startDate: null,
+                    endDate: null,
+                };
+                state.searchReStock = '';
             }
         },
         setColumns: (state, action) => {
