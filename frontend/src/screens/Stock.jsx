@@ -11,11 +11,12 @@ import DropdownSearch from "../components/Dropdown/DropdownSearch";
 import StockTable from "../components/StockTable";
 import FormCreateProduct from "../components/FormCreateProduct";
 import FormDeleteProduct from "../components/FormDeleteProduct";
+import ReactToPrint from 'react-to-print'
 
 
 import { useDispatch, useSelector } from "react-redux";
 import { useGetProductsQuery } from "../slices/productsApiSlice";
-import { setProducts, setStatus, setError, resetFilters, setColumns, setSearchName, setSearchStock, setSearchCategory, setSearchUser, setSearchPrice, setSearchDate, setSearchReStock, setFormFeedback } from "../slices/productsSlice";
+import { setProducts, setStatus, setError, resetFilters, setColumns, setSearchName, setSearchStock, setSearchCategory, setSearchUser, setSearchPrice, setSearchDate, setSearchReStock, setFormFeedback, setPrintStockTable } from "../slices/productsSlice";
 
 import { FaMagnifyingGlass, FaWrench, FaFilter, FaCirclePlus, FaCircleMinus } from "react-icons/fa6";
 import { IoReloadCircle, IoClose } from "react-icons/io5";
@@ -183,6 +184,15 @@ const Stock = () => {
     };
 
   }, [formFeedback, dispatch])
+
+
+  //Print
+
+  const componentRef = useRef();
+
+  const handlePrintTable = () => {
+    dispatch(setPrintStockTable(true));
+  };
 
   return (
     <div className="flex flex-row">
@@ -393,15 +403,30 @@ const Stock = () => {
               </ButtonFilter>
             </DropdownCheck>
 
-            <ButtonFilter>
-              <div>Imprimir</div>
-              <FaPrint />
-            </ButtonFilter>
+            <div onClick={handlePrintTable}>
+              <ReactToPrint
+                trigger={() =>
+
+                  <ButtonFilter>
+                    <div>Imprimir</div>
+                    <FaPrint />
+                  </ButtonFilter>
+
+                }
+                content={() => componentRef.current}
+                documentTitle='new document'
+                pageStyle='print'
+              />
+            </div>
           </div>
         </div>
         {viewCreate && <FormCreateProduct viewCreate={viewCreate} setViewCreate={setViewCreate} />}
         {viewDelete && <FormDeleteProduct viewDelete={viewDelete} setViewDelete={setViewDelete} />}
-        <StockTable></StockTable>
+
+        <div ref={componentRef} className="flex flex-col">
+          <StockTable />
+        </div>
+
         {formFeedback &&
           <div className="flex flex-row justify-between items-center sticky bg-[#1d3557] py-2 px-3 w-96 text-white bottom-10 left-3 rounded-r-3xl">
             <div>{formFeedback}</div>

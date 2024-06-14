@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo, useRef } from 'react';
 import SideBar from '../components/SideBar';
 import axios from 'axios';
 import { DateTime } from 'luxon';
@@ -6,10 +6,13 @@ import { useReactTable, flexRender, getCoreRowModel, getSortedRowModel, getFilte
 import ButtonFilter from '../components/buttons/ButtonFilter';
 import Dropdown from '../components/Dropdown/Dropdown';
 import DropdownSearch from '../components/Dropdown/DropdownSearch';
+import DropdownCheck from '../components/Dropdown/DropdownCheck';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import ReactToPrint from 'react-to-print'
 
-import { FaMagnifyingGlass, FaArrowDownShortWide, FaArrowUpWideShort, FaFilter, FaPrint } from 'react-icons/fa6';
+
+import { FaMagnifyingGlass, FaArrowDownShortWide, FaArrowUpWideShort, FaFilter, FaPrint, FaWrench } from 'react-icons/fa6';
 import { IoClose, IoReloadCircle } from "react-icons/io5";
 import { IoIosArrowDown } from "react-icons/io";
 
@@ -107,6 +110,33 @@ const History = () => {
         []
     );
 
+
+    //Columns
+    const [columnsList, setColumnsList] = useState([
+        "Ação",
+        "Produto",
+        "Alterações",
+        "Utilizador",
+        "Data / Hora",
+    ]);
+
+    const columnsAllOptions = [
+        "Ação",
+        "Produto",
+        "Alterações",
+        "Utilizador",
+        "Data / Hora",
+    ];
+
+    const handleColumnSelect = (options) => {
+        setColumnsList(options);
+    };
+
+    const filteredColumns = useMemo(
+        () => allColumns.filter((column) => columnsList.includes(column.header) || column.id === 'select' || column.id === 'edit' || column.id === 'expand'),
+        [allColumns, columnsList]
+    );
+
     //Sort Columns
     const initialSorting = [{ id: 'date', desc: true }];
     const [sorting, setSorting] = useState(initialSorting);
@@ -181,7 +211,7 @@ const History = () => {
 
     const table = useReactTable({
         data: historyData,
-        columns: allColumns,
+        columns: filteredColumns,
         getCoreRowModel: getCoreRowModel(),
         getSortedRowModel: getSortedRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
@@ -211,6 +241,8 @@ const History = () => {
             customFilterDate
         }
     });
+
+    const componentRef = useRef();
 
     return (
         <div className="flex flex-row">
@@ -302,50 +334,71 @@ const History = () => {
                                     <IoClose onClick={() => { setStartDate(null); setEndDate(null); }} className="text-xl cursor-pointer ml-2" />
                                 </div>
                             </div>
-
                         </Dropdown>
 
-                        <ButtonFilter>
-                            <div>Imprimir</div>
-                            <FaPrint />
-                        </ButtonFilter>
+                        <DropdownCheck
+                            className="w-44"
+                            options={columnsAllOptions}
+                            selectedOptions={columnsList}
+                            onOptionSelect={handleColumnSelect}
+                        >
+                            <ButtonFilter>
+                                <div>Colunas</div>
+                                <FaWrench />
+                            </ButtonFilter>
+                        </DropdownCheck>
+                        <ReactToPrint
+                            trigger={() =>
+                                <ButtonFilter>
+                                    <div>Imprimir</div>
+                                    <FaPrint />
+                                </ButtonFilter>
+                            }
+                            content={() => componentRef.current}
+                            documentTitle='new document'
+                            pageStyle='print'
+                        />
                     </div>
-                    <table>
-                        <thead>
-                            {table.getHeaderGroups().map((headerGroup) => (
-                                <tr key={headerGroup.id}>
-                                    {headerGroup.headers.map((header) => (
-                                        <th
-                                            key={header.id}
-                                            onClick={header.column.getToggleSortingHandler()}
-                                        >
-                                            <div className="flex items-center">
-                                                {flexRender(header.column.columnDef.header, header.getContext())}
-                                                {header.column.getIsSorted() ? (
-                                                    header.column.getIsSorted() === 'asc' ? (
-                                                        <FaArrowDownShortWide className="ml-1" />
-                                                    ) : (
-                                                        <FaArrowUpWideShort className="ml-1" />
-                                                    )
-                                                ) : null}
-                                            </div>
-                                        </th>
-                                    ))}
-                                </tr>
-                            ))}
-                        </thead>
-                        <tbody>
-                            {table.getRowModel().rows.map(row => (
-                                <tr key={row.id}>
-                                    {row.getVisibleCells().map(cell => (
-                                        <td key={cell.id}>
-                                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                        </td>
-                                    ))}
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
+
+
+                    <div ref={componentRef} className="flex flex-col">
+                        <table >
+                            <thead>
+                                {table.getHeaderGroups().map((headerGroup) => (
+                                    <tr key={headerGroup.id}>
+                                        {headerGroup.headers.map((header) => (
+                                            <th
+                                                key={header.id}
+                                                onClick={header.column.getToggleSortingHandler()}
+                                            >
+                                                <div className="flex items-center">
+                                                    {flexRender(header.column.columnDef.header, header.getContext())}
+                                                    {header.column.getIsSorted() ? (
+                                                        header.column.getIsSorted() === 'asc' ? (
+                                                            <FaArrowDownShortWide className="ml-1" />
+                                                        ) : (
+                                                            <FaArrowUpWideShort className="ml-1" />
+                                                        )
+                                                    ) : null}
+                                                </div>
+                                            </th>
+                                        ))}
+                                    </tr>
+                                ))}
+                            </thead>
+                            <tbody>
+                                {table.getRowModel().rows.map(row => (
+                                    <tr key={row.id}>
+                                        {row.getVisibleCells().map(cell => (
+                                            <td key={cell.id}>
+                                                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                            </td>
+                                        ))}
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
                     {viewChanges &&
                         <div className={`fixed inset-0 z-50 ${viewChanges ? 'flex' : 'hidden'} justify-center items-center`}>
                             <div className="fixed inset-0 bg-black opacity-50" onClick={() => setViewChanges(false)}></div>

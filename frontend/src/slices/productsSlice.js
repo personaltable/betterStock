@@ -20,6 +20,7 @@ const initialState = {
     editProduct: {},
     deleteConfirmation: false,
     formFeedback: '',
+    printStockTable: false,
 }
 
 const productsSlice = createSlice({
@@ -85,10 +86,13 @@ const productsSlice = createSlice({
         },
         setFormFeedback: (state, action) => {
             state.formFeedback = action.payload;
+        },
+        setPrintStockTable: (state, action) => {
+            state.printStockTable = action.payload;
         }
     }
 })
 
-export const { setProducts, setStatus, setError, resetFilters, setColumns, setSearchName, setSearchStock, setSearchCategory, setSearchUser, setSearchPrice, setSearchDate, setSearchReStock, setDeleteList, setDeleteConfirmation, setFormFeedback, setEditProduct } = productsSlice.actions;
+export const { setProducts, setStatus, setError, resetFilters, setColumns, setSearchName, setSearchStock, setSearchCategory, setSearchUser, setSearchPrice, setSearchDate, setSearchReStock, setDeleteList, setDeleteConfirmation, setFormFeedback, setEditProduct, setPrintStockTable } = productsSlice.actions;
 
 export default productsSlice.reducer;

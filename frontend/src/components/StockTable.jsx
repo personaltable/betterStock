@@ -305,12 +305,21 @@ const StockTable = () => {
 
     //COLUMNS OPTIONS_______________________
 
-    //Filter Columns
-    const filteredColumns = useMemo(
-        () => allColumns.filter((column) => columnsList.includes(column.header) || column.id === 'select' || column.id === 'edit' || column.id === 'expand'),
-        [allColumns, columnsList]
-    );
+    //Print
+    const printStockTable = useSelector((state) => state.productsList.printStockTable);
+    const [printTable, setPrintTable] = useState(printStockTable);
 
+    //muda aqui para atualizar ( porque o printStockTable dá true e o printTable dá false ( useEffect))
+
+    console.log(printTable);
+
+    //Filter Columns
+
+    const filteredColumns = useMemo(() => (
+
+        allColumns.filter((column) => columnsList.includes(column.header) || column.id === 'select' || column.id === 'edit' || column.id === 'expand')
+    ), [allColumns, columnsList]
+    );
 
     //Sort Columns
     const initialSorting = [{ id: 'creationDate', desc: true }];
@@ -454,7 +463,6 @@ const StockTable = () => {
                 return true; // Retorna true por padrão se nenhum caso corresponder
         }
     };
-
 
 
     //TABLE CONFIG___________________
