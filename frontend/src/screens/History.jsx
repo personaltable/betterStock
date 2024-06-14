@@ -5,9 +5,13 @@ import { DateTime } from 'luxon';
 import { useReactTable, flexRender, getCoreRowModel, getSortedRowModel, getFilteredRowModel, getPaginationRowModel } from '@tanstack/react-table';
 import ButtonFilter from '../components/buttons/ButtonFilter';
 import Dropdown from '../components/Dropdown/Dropdown';
+import DropdownSearch from '../components/Dropdown/DropdownSearch';
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
-import { FaArrowDownShortWide, FaArrowUpWideShort, FaFilter, FaPrint } from 'react-icons/fa6';
-import { IoClose } from "react-icons/io5";
+import { FaMagnifyingGlass, FaArrowDownShortWide, FaArrowUpWideShort, FaFilter, FaPrint } from 'react-icons/fa6';
+import { IoClose, IoReloadCircle } from "react-icons/io5";
+import { IoIosArrowDown } from "react-icons/io";
 
 const History = () => {
     const [historyData, setHistoryData] = useState([]);
@@ -65,6 +69,7 @@ const History = () => {
                 id: 'product',
                 header: 'Produto',
                 accessorKey: 'product',
+                filterFn: 'customFilterFunction',
             },
             {
                 id: 'changes',
@@ -88,6 +93,7 @@ const History = () => {
                 id: 'user',
                 header: 'Utilizador',
                 accessorKey: 'user.name',
+                filterFn: 'customFilterUser',
             },
             {
                 id: 'date',
@@ -95,6 +101,7 @@ const History = () => {
                 accessorKey: 'date',
                 cell: (info) =>
                     DateTime.fromISO(info.getValue()).toLocaleString(DateTime.DATETIME_MED),
+                filterFn: 'customFilterDate',
             },
         ],
         []
@@ -103,6 +110,74 @@ const History = () => {
     //Sort Columns
     const initialSorting = [{ id: 'date', desc: true }];
     const [sorting, setSorting] = useState(initialSorting);
+
+
+    //Filters
+
+    //Reset Filters
+    const handleResetFilterChange = () => {
+        setSearchUser('');
+        setSearchAction('')
+        setSearchName('')
+        setStartDate(null);
+        setEndDate(null);
+    };
+
+    //Filter By Name
+    const [searchName, setSearchName] = useState('')
+
+    const customFilterFunction = (row, columnId, filterValue) => {
+        const cellValue = row.getValue(columnId);
+        return cellValue.toLowerCase().startsWith(filterValue.toLowerCase());
+    };
+
+    //Filter By Action
+    const [searchAction, setSearchAction] = useState('');
+    const actionsList = ['editar', 'adicionar', 'eliminar'];
+
+    //Filter By User
+    const [searchUser, setSearchUser] = useState('');
+
+    const [userList, setUserList] = useState([]);
+    useEffect(() => {
+        const fetchData = async () => {
+            const response = await axios.get(`http://localhost:5555/api/users`);
+            const usersNames = response.data.users.map(user => user.name);
+            setUserList(usersNames);
+        }
+        fetchData();
+    }, [])
+
+    const customFilterUser = (row, columnId, filterValue) => {
+        const cellValue = row.getValue(columnId);
+        if (!filterValue) {
+            return true;
+        }
+        return cellValue.toLowerCase() === filterValue.toLowerCase();
+    };
+
+    //Filter By Data
+
+    const [startDate, setStartDate] = useState(null);
+    const [endDate, setEndDate] = useState(null);
+
+    const customFilterDate = (row, columnId, filterValue) => {
+        const cellValue = DateTime.fromISO(row.getValue(columnId));
+        const [start, end] = filterValue;
+        if (start && end) {
+            return cellValue >= DateTime.fromJSDate(start) && cellValue <= DateTime.fromJSDate(end);
+        } else if (start) {
+            return cellValue >= DateTime.fromJSDate(start);
+        } else if (end) {
+            return cellValue <= DateTime.fromJSDate(end);
+        }
+        return true;
+    }
+
+
+
+
+    //Table_________________________
 
     const table = useReactTable({
         data: historyData,
@@ -119,8 +194,22 @@ const History = () => {
         },
         state: {
             sorting,
+            columnFilters: useMemo(
+                () => [
+                    { id: 'name', value: searchAction },
+                    { id: 'product', value: searchName },
+                    { id: 'user', value: searchUser },
+                    { id: 'date', value: [startDate, endDate] }
+                ],
+                [searchAction, searchName, searchUser, startDate, endDate]
+            )
         },
         onSortingChange: setSorting,
+        filterFns: {
+            customFilterFunction,
+            customFilterUser,
+            customFilterDate
+        }
     });
 
     return (
@@ -129,6 +218,23 @@ const History = () => {
             <div className="flex flex-col justify-between p-3 w-full relative">
                 <div>
                     <div className='flex flex-row gap-2 items-center justify-end'>
+
+                        <IoReloadCircle
+                            onClick={handleResetFilterChange}
+                            className="text-3xl text-basepurple-500 hover:text-basepurple-600 transition duration-300 ease-in-out cursor-pointer"
+                        />
+
+                        <div className="flex flex-row relative items-center">
+                            <FaMagnifyingGlass className="text-gray-400 left-2 absolute" />
+                            <input
+                                type="text"
+                                onChange={(e) => { setSearchName(e.target.value) }}
+                                value={searchName}
+                                className="w-36 h-8 pl-7 rounded-md border border-basepurple-500 focus:outline-basepurple-600"
+                                placeholder="Pesquisar..."
+                            />
+                        </div>
+
                         <Dropdown
                             trigger={
                                 <ButtonFilter>
@@ -136,7 +242,68 @@ const History = () => {
                                     <FaFilter />
                                 </ButtonFilter>}
                             classNameContainer="w-fit flex flex-col gap-2 p-2 mt-2"
-                        ></Dropdown>
+                        >
+
+
+                            <div className="flex flex-row items-center justify-between" >
+                                <div className="flex flex-row ">
+                                    <div className="w-20">Ação:</div>
+                                    <Dropdown
+                                        trigger={
+                                            <div className="flex cursor-pointer w-52 h-[25px] flex-row gap-1 px-1 justify-between items-center border border-gray-500">
+                                                <div className="">{searchAction}</div>
+                                                <IoIosArrowDown className="text-xs" />
+                                            </div>
+                                        }
+                                        classNameContainer='w-52 mt-1'
+                                    >
+                                        {actionsList.map((option) => (
+                                            <div onClick={() => { setSearchAction(option) }} className=" flex flex-col justify-center w-52 p-1 px-2 h-[30px] hover:bg-gray-100 cursor-pointer" key={option}>{option}</div>
+                                        ))}
+                                    </Dropdown>
+
+                                </div>
+                                <IoClose onClick={() => { [setSearchAction('')] }} className="text-xl cursor-pointer ml-2" />
+                            </div>
+
+                            <DropdownSearch
+                                label={"Utilizador:"}
+                                options={userList}
+                                searchValue={searchUser}
+                                setSearchValue={setSearchUser}
+                                className={'z-30'}
+                                placeholder={'Pesquisar...'}
+                                more={<IoClose onClick={() => { setSearchUser('') }} className="text-xl cursor-pointer" />}
+                            ></DropdownSearch>
+
+                            <div className="flex flex-row items-start">
+                                <label className="w-20">Data:</label>
+                                <div className="flex flex-row items-center">
+                                    <DatePicker
+                                        selected={startDate}
+                                        onChange={(date) => setStartDate(date)}
+                                        selectsStart
+                                        startDate={startDate}
+                                        endDate={endDate}
+                                        placeholderText="Data inicial"
+                                        className="border border-gray-500 rounded pl-1 w-24"
+                                    />
+                                    <span className="mx-1">-</span>
+                                    <DatePicker
+                                        selected={endDate}
+                                        onChange={(date) => setEndDate(date)}
+                                        selectsEnd
+                                        startDate={startDate}
+                                        endDate={endDate}
+                                        minDate={startDate}
+                                        placeholderText="Data final"
+                                        className="border border-gray-500 rounded pl-1 w-24"
+                                    />
+                                    <IoClose onClick={() => { setStartDate(null); setEndDate(null); }} className="text-xl cursor-pointer ml-2" />
+                                </div>
+                            </div>
+
+                        </Dropdown>
 
                         <ButtonFilter>
                             <div>Imprimir</div>

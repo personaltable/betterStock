@@ -438,8 +438,6 @@ const StockTable = () => {
 
     const searchReStock = useSelector((state) => state.productsList.searchReStock);
 
-    console.log(searchReStock)
-
     const customFilterReStock = (row, columnId, filterValue) => {
         const reStockValue = row.original.reStock;
 

@@ -52,9 +52,8 @@ const Stock = () => {
     setStockSecondInput("");
     setStartDate(null);
     setEndDate(null);
+    setPriceInput("");
     dispatch(resetFilters(true));
-
-
   };
 
   //Search
@@ -365,7 +364,7 @@ const Stock = () => {
                     placeholderText="Data inicial"
                     className="border border-gray-500 rounded pl-1 w-24"
                   />
-                  <span className="mx-2">-</span>
+                  <span className="mx-1">-</span>
                   <DatePicker
                     selected={endDate}
                     onChange={(date) => setEndDate(date)}

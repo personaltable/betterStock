@@ -27,7 +27,7 @@ const Dropdown = ({ trigger, children, className = '', classNameContainer = '' }
         {trigger}
       </div>
       {isOpen && (
-        <div className={`absolute right-0 w-36 bg-white border border-gray-200 rounded shadow-lg z-10 ${classNameContainer}`}>
+        <div className={`absolute right-0 bg-white border border-gray-200 rounded shadow-lg z-10 ${classNameContainer}`}>
           {children}
         </div>
       )}
