@@ -70,6 +70,7 @@ const StockTable = () => {
     const [originalData, setOriginalData] = useState({});
     const [editedData, setEditedData] = useState({});
 
+    const [showReStockList, setShowReStockList] = useState(false);
 
     const [changeProduct, { isLoading }] = useEditProductMutation();
 
@@ -307,11 +308,6 @@ const StockTable = () => {
 
     //Print
     const printStockTable = useSelector((state) => state.productsList.printStockTable);
-    const [printTable, setPrintTable] = useState(printStockTable);
-
-    //muda aqui para atualizar ( porque o printStockTable dá true e o printTable dá false ( useEffect))
-
-    console.log(printTable);
 
     //Filter Columns
 
