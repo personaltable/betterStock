@@ -16,6 +16,7 @@ import Products from './screens/Products.jsx'
 import History from './screens/History.jsx'
 import Welcome from './screens/Welcome.jsx'
 import RoleProtectedRoute from './components/RoleProtectedRoute.jsx'
+import ManageUsers from './screens/ManageUsers.jsx'
 
 
 const router = createBrowserRouter(
@@ -46,6 +47,10 @@ const router = createBrowserRouter(
 
         <Route path="/Products/:categoryId" element={<RoleProtectedRoute allowedRoles={['employee', 'admin']} />}>
           <Route index={true} element={<Products />} />
+        </Route>
+
+        <Route path="/manageUsers" element={<RoleProtectedRoute allowedRoles={['admin']} />}>
+          <Route index={true} element={<ManageUsers />} />
         </Route>
       </Route>
     </Route>

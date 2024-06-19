@@ -102,7 +102,7 @@ const updateUserProfile = asyncHandler(async (req, res) => {
             _id: UpdatedUser._id,
             name: UpdatedUser.name,
             email: UpdatedUser.email,
-
+            role: UpdatedUser.role,
         })
     } else {
         res.status(404);

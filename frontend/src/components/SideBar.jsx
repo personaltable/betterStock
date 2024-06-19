@@ -9,6 +9,7 @@ import { GiCardboardBoxClosed } from "react-icons/gi";
 import { FaUserCircle } from "react-icons/fa";
 import { IoIosLogOut } from "react-icons/io";
 import { AiOutlineProduct } from "react-icons/ai";
+import { FaUsersCog } from "react-icons/fa";
 
 function SideBar() {
 
@@ -28,8 +29,6 @@ function SideBar() {
   }
 
   const { userInfo } = useSelector((state) => state.auth)
-
-  console.log(userInfo)
 
   return (
     <div className='flex flex-col sticky top-0 bg-zinc-900 min-w-64 max-w-64 h-screen text-xl p-6 gap-28 text-gray-300'>
@@ -51,15 +50,26 @@ function SideBar() {
         {userInfo && (userInfo.role === 'admin' || userInfo.role === 'data analyst') && (
           <div className='flex flex-row items-center gap-2'><AiFillDashboard /><Link to="/dashboard">DashBoard</Link></div>
         )}
+
+        {userInfo && (userInfo.role === 'admin' || userInfo.role === 'employee') && (
+          <div className='flex flex-row items-center gap-2'><AiOutlineProduct /><Link to="/CategoryPage">Produtos</Link></div>
+        )}
+
         {userInfo && (userInfo.role === 'admin' || userInfo.role === 'stock manager') && (
           <>
             <div className='flex flex-row items-center gap-2'><GiCardboardBoxClosed /><Link to="/stock">Stock</Link></div>
             <div className='flex flex-row items-center gap-2'><FaUserCircle /><Link to="/history">Histórico</Link></div>
           </>
         )}
-        {userInfo && (userInfo.role === 'admin' || userInfo.role === 'employee') && (
+
+        {userInfo && (userInfo.role === 'admin') && (
           <>
-            <div className='flex flex-row items-center gap-2'><AiOutlineProduct /><Link to="/CategoryPage">Produtos</Link></div>
+            <div className='mt-4'></div>
+            <div>
+              <div>Admin</div>
+              <hr />
+            </div>
+            <div className='flex flex-row items-center gap-2'><FaUsersCog /><Link to="/manageUsers">Gerir Utilizadores</Link></div>
           </>
         )}
       </div>
