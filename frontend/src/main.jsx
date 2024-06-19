@@ -14,6 +14,8 @@ import ForgotPassword from './screens/ForgotPassword.jsx'
 import CategoryPage from './screens/CategoryPage.jsx'
 import Products from './screens/Products.jsx'
 import History from './screens/History.jsx'
+import Welcome from './screens/Welcome.jsx'
+import RoleProtectedRoute from './components/RoleProtectedRoute.jsx'
 
 
 const router = createBrowserRouter(
@@ -22,13 +24,29 @@ const router = createBrowserRouter(
       <Route index={true} path="/" element={<Login />} />
       <Route index={true} path="/register" element={<Register />} />
       <Route index={true} path="/ForgotPassword" element={<ForgotPassword />} />
-      <Route path='' element={<PrivateRoute />}>
-        <Route index={true} path="/dashboard" element={<Dashboard />} />
-        <Route index={true} path="/stock" element={<Stock />} />
-        <Route index={true} path="/history" element={<History />} />
-        <Route index={true} path="/CategoryPage" element={<CategoryPage />} />
-        <Route index={true} path="/Products/:categoryId" element={<Products />} />
 
+      <Route path="" element={<PrivateRoute />}>
+        <Route index={true} path="/welcome" element={<Welcome />} />
+
+        <Route path="/dashboard" element={<RoleProtectedRoute allowedRoles={['data analyst', 'admin']} />}>
+          <Route index={true} element={<Dashboard />} />
+        </Route>
+
+        <Route path="/stock" element={<RoleProtectedRoute allowedRoles={['stock manager', 'admin']} />}>
+          <Route index={true} element={<Stock />} />
+        </Route>
+
+        <Route path="/history" element={<RoleProtectedRoute allowedRoles={['stock manager', 'admin']} />}>
+          <Route index={true} element={<History />} />
+        </Route>
+
+        <Route path="/CategoryPage" element={<RoleProtectedRoute allowedRoles={['employee', 'admin']} />}>
+          <Route index={true} element={<CategoryPage />} />
+        </Route>
+
+        <Route path="/Products/:categoryId" element={<RoleProtectedRoute allowedRoles={['employee', 'admin']} />}>
+          <Route index={true} element={<Products />} />
+        </Route>
       </Route>
     </Route>
   )

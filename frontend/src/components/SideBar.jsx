@@ -29,6 +29,8 @@ function SideBar() {
 
   const { userInfo } = useSelector((state) => state.auth)
 
+  console.log(userInfo)
+
   return (
     <div className='flex flex-col sticky top-0 bg-zinc-900 min-w-64 max-w-64 h-screen text-xl p-6 gap-28 text-gray-300'>
 
@@ -46,10 +48,20 @@ function SideBar() {
 
 
       <div className='flex flex-col gap-3'>
-        <div className='flex flex-row items-center gap-2'><AiFillDashboard /><Link to="/dashboard">DashBoard</Link></div>
-        <div className='flex flex-row items-center gap-2'><GiCardboardBoxClosed /><Link to="/stock">Stock</Link></div>
-        <div className='flex flex-row items-center gap-2'><FaUserCircle /><Link to="/history">Histórico</Link></div>
-        <div className='flex flex-row items-center gap-2'><AiOutlineProduct /><Link to="/CategoryPage">Produtos</Link></div>
+        {userInfo && (userInfo.role === 'admin' || userInfo.role === 'data analyst') && (
+          <div className='flex flex-row items-center gap-2'><AiFillDashboard /><Link to="/dashboard">DashBoard</Link></div>
+        )}
+        {userInfo && (userInfo.role === 'admin' || userInfo.role === 'stock manager') && (
+          <>
+            <div className='flex flex-row items-center gap-2'><GiCardboardBoxClosed /><Link to="/stock">Stock</Link></div>
+            <div className='flex flex-row items-center gap-2'><FaUserCircle /><Link to="/history">Histórico</Link></div>
+          </>
+        )}
+        {userInfo && (userInfo.role === 'admin' || userInfo.role === 'employee') && (
+          <>
+            <div className='flex flex-row items-center gap-2'><AiOutlineProduct /><Link to="/CategoryPage">Produtos</Link></div>
+          </>
+        )}
       </div>
 
     </div>

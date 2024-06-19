@@ -31,8 +31,6 @@ const History = () => {
         requestData();
     }, []);
 
-    console.log(historyData);
-
     // Table _________________________________
 
     const [viewChanges, setViewChanges] = useState(false);

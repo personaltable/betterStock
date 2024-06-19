@@ -531,11 +531,11 @@ const StockTable = () => {
                 </thead>
                 <tbody>
                     {table.getRowModel().rows.map((row) => (
-                        <tr key={row.id} className={expandedRows.length != 0 && expandedRows === row.id ? 'h-28 border-b' : 'border-b'}>
+                        <tr key={row.id} className={expandedRows.length != 0 && expandedRows === row.id ? 'h-20 border-b' : 'border-b'}>
                             {row.getVisibleCells().map((cell) => (
                                 <td key={cell.id} className="px-2 py-2">
                                     {cell.column.id === 'information' && expandedRows === row.id && editingRow !== row.original._id ? (
-                                        <textarea rows="4" cols="50" className='px-1 w-48 overflow-y-auto whitespace-pre-wrap break-words'>
+                                        <textarea rows="3" cols="50" className='px-1 w-full overflow-y-auto whitespace-pre-wrap break-words'>
                                             {row.original.information}
                                         </textarea>
                                     ) : cell.column.id === 'name' && editingRow === row.original._id ? (
