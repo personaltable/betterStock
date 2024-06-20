@@ -21,7 +21,7 @@ const Login = () => {
 
   useEffect(() => {
     if (userInfo) {
-      navigate('/dashboard')
+      navigate('/welcome')
     }
   }, [navigate, userInfo]);
 
@@ -41,7 +41,6 @@ const Login = () => {
       console.log(error?.data?.message)
       setError("root", { message: "Email ou password errada" })
     }
-    // console.log('data', data)
   }
 
   // ---------------------------------Variavel ShowPassword--------------

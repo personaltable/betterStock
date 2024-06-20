@@ -15,8 +15,6 @@ import { IoIosArrowForward, IoIosArrowDown } from "react-icons/io";
 
 
 
-
-
 const StockTable = () => {
     const dispatch = useDispatch();
 
@@ -72,10 +70,9 @@ const StockTable = () => {
     const [originalData, setOriginalData] = useState({});
     const [editedData, setEditedData] = useState({});
 
+    const [showReStockList, setShowReStockList] = useState(false);
 
     const [changeProduct, { isLoading }] = useEditProductMutation();
-
-    // console.log(editedData)
 
     const handleEditClick = (row) => {
         setEditingRow(row.original._id);
@@ -102,16 +99,10 @@ const StockTable = () => {
 
     const handleConfirmChanges = async () => {
         try {
-            // Log originalData e editedData para verificação
-            console.log('Original Data:', originalData);
-            console.log('Edited Data:', editedData);
 
-            // Compara os valores dos dois objetos
             const hasChanges = Object.keys(editedData).some(
                 key => editedData[key] !== originalData[key]
             );
-
-            console.log('Has Changes:', hasChanges); // Log para verificar se mudanças foram detectadas
 
             if (hasChanges) {
                 const res = await changeProduct({ id: editedData._id, data: editedData });
@@ -125,9 +116,6 @@ const StockTable = () => {
                     },
                     user: userInfo.name
                 };
-
-                // Log sendData para verificação
-                console.log('Send Data:', sendData);
 
                 await axios.post(`http://localhost:5555/api/actions`, sendData);
             }
@@ -169,15 +157,13 @@ const StockTable = () => {
         };
     }, []);
 
-    //getRestock
-    const [showReStockList, setShowReStockList] = useState();
-    const reStockList = ["", "Necessária", "Não necessária", "Em progresso"]
-
     //expand Row________________________________________
 
     const [expandedRows, setExpandedRows] = useState("")
 
-    console.log(expandedRows)
+    const handleExpandClick = (rowId) => {
+        setExpandedRows(prevRowId => (prevRowId === rowId ? "" : rowId));
+    };
 
     const allColumns = useMemo(
         () => [
@@ -187,14 +173,11 @@ const StockTable = () => {
                     <div></div>
                 ),
                 cell: ({ row }) => (
-
-                    expandedRows.includes(row.id) ? (
-                        <IoIosArrowDown onClick={() => setExpandedRows(expandedRows.filter(id => id !== row.id))} className='text-lg cursor-pointer' />
+                    expandedRows === row.id ? (
+                        <IoIosArrowDown onClick={() => handleExpandClick(row.id)} className='text-lg cursor-pointer' />
                     ) : (
-                        <IoIosArrowForward onClick={() => setExpandedRows([...expandedRows, row.id])} className='text-lg cursor-pointer' />
+                        <IoIosArrowForward onClick={() => handleExpandClick(row.id)} className='text-lg cursor-pointer' />
                     )
-
-
                 ),
             },
             {
@@ -242,12 +225,22 @@ const StockTable = () => {
             {
                 id: 'price',
                 header: 'Preço',
-                accessorFn: (row) => { return row.price !== null ? `${row.price}€` : '' }
+                accessorKey: 'price',
+                cell: (info) => {
+                    const value = info.getValue();
+                    return value !== undefined && value !== null ? `${value}€` : '';
+                },
+                filterFn: 'customFilterPrice',
+
             },
             {
                 id: 'originalPrice',
                 header: 'Preço Original',
-                accessorFn: (row) => { return row.originalPrice !== undefined && row.originalPrice !== null ? `${row.originalPrice}€` : '' }
+                accessorKey: 'originalPrice',
+                cell: (info) => {
+                    const value = info.getValue();
+                    return value !== undefined && value !== null ? `${value}€` : '';
+                },
             },
             {
                 id: 'creationDate',
@@ -255,17 +248,20 @@ const StockTable = () => {
                 accessorKey: 'creationDate',
                 cell: (info) =>
                     DateTime.fromISO(info.getValue()).toLocaleString(DateTime.DATETIME_MED),
+                filterFn: 'customFilterDate',
             },
             {
                 id: 'createdBy',
                 header: 'Criador',
                 accessorKey: 'createdBy.name',
                 filterFn: 'customFilterUser',
+
             },
             {
                 id: 'reStock',
                 header: 'Reposição',
                 accessorKey: 'reStock',
+                filterFn: 'customFilterReStock',
             },
             {
                 id: 'lowStock',
@@ -310,12 +306,16 @@ const StockTable = () => {
 
     //COLUMNS OPTIONS_______________________
 
-    //Filter Columns
-    const filteredColumns = useMemo(
-        () => allColumns.filter((column) => columnsList.includes(column.header) || column.id === 'select' || column.id === 'edit' || column.id === 'expand'),
-        [allColumns, columnsList]
-    );
+    //Print
+    const printStockTable = useSelector((state) => state.productsList.printStockTable);
 
+    //Filter Columns
+
+    const filteredColumns = useMemo(() => (
+
+        allColumns.filter((column) => columnsList.includes(column.header) || column.id === 'select' || column.id === 'edit' || column.id === 'expand')
+    ), [allColumns, columnsList]
+    );
 
     //Sort Columns
     const initialSorting = [{ id: 'creationDate', desc: true }];
@@ -381,6 +381,85 @@ const StockTable = () => {
         return cellValue.toLowerCase() === filterValue.toLowerCase();
     };
 
+    //Filter By Price
+
+    const searchPrice = useSelector((state) => state.productsList.searchPrice);
+
+    const customFilterPrice = (row, columnId, filterValue) => {
+        const cellValue = parseInt(row.getValue(columnId), 10);
+        const priceInput = parseInt(filterValue.priceInput, 10);
+        const priceSecondInput = parseInt(filterValue.priceSecondInput, 10);
+
+        if (isNaN(priceInput)) {
+            return true;
+        }
+
+        switch (filterValue.priceChoice) {
+            case "Exato":
+                return cellValue === priceInput;
+            case "Entre":
+                return cellValue >= priceInput && cellValue <= priceSecondInput;
+            case "Acima":
+                return cellValue > priceInput;
+            case "Abaixo":
+                return cellValue < priceInput;
+            default:
+                return true;
+        }
+    };
+
+    //Filter By Date
+
+    const searchDate = useSelector((state) => state.productsList.searchDate);
+
+    const customFilterDate = (row, columnId, filterValue) => {
+        const cellValue = DateTime.fromISO(row.getValue(columnId)).startOf('day').toJSDate();
+        const { startDate, endDate } = filterValue;
+
+        if (!startDate && !endDate) {
+            return true;
+        }
+
+        const start = startDate ? DateTime.fromISO(startDate).startOf('day').toJSDate() : null;
+        const end = endDate ? DateTime.fromISO(endDate).startOf('day').toJSDate() : null;
+
+        if (start && !end) {
+            return cellValue.getTime() === start.getTime();
+        }
+
+        if (!start && end) {
+            return cellValue.getTime() <= end.getTime();
+        }
+
+        if (start && end) {
+            return cellValue.getTime() >= start.getTime() && cellValue.getTime() <= end.getTime();
+        }
+
+        return false;
+    };
+
+
+    //Filter By Restock
+
+    const searchReStock = useSelector((state) => state.productsList.searchReStock);
+
+    const customFilterReStock = (row, columnId, filterValue) => {
+        const reStockValue = row.original.reStock;
+
+        switch (filterValue) {
+            case "":
+                return reStockValue === "";
+            case "Necessária":
+                return reStockValue === "Necessária";
+            case "Não necessária":
+                return reStockValue === "Não necessária";
+            case "Em progresso":
+                return reStockValue === "Em progresso";
+            default:
+                return true; // Retorna true por padrão se nenhum caso corresponder
+        }
+    };
+
 
     //TABLE CONFIG___________________
 
@@ -406,8 +485,11 @@ const StockTable = () => {
                     { id: 'category', value: searchCategory },
                     { id: 'createdBy', value: searchUser },
                     { id: 'stock', value: searchStock },
+                    { id: 'price', value: searchPrice },
+                    { id: 'creationDate', value: searchDate },
+                    { id: 'reStock', value: searchReStock },
                 ],
-                [searchName, searchCategory, searchUser, searchStock]
+                [searchName, searchCategory, searchUser, searchStock, searchPrice, searchDate, searchReStock]
             )
         },
         onSortingChange: setSorting,
@@ -415,7 +497,10 @@ const StockTable = () => {
             customFilterFunction,
             customFilterCategory,
             customFilterUser,
-            customFilterStock
+            customFilterStock,
+            customFilterPrice,
+            customFilterDate,
+            customFilterReStock,
         },
     });
 
@@ -446,13 +531,13 @@ const StockTable = () => {
                 </thead>
                 <tbody>
                     {table.getRowModel().rows.map((row) => (
-                        <tr key={row.id} className={expandedRows.length != 0 && expandedRows.includes(row.id) ? 'h-28 border-b' : 'border-b'}>
+                        <tr key={row.id} className={expandedRows.length != 0 && expandedRows === row.id ? 'h-20 border-b' : 'border-b'}>
                             {row.getVisibleCells().map((cell) => (
                                 <td key={cell.id} className="px-2 py-2">
-                                    {cell.column.id === 'information' && expandedRows.includes(row.id) && editingRow !== row.original._id ? (
-                                        <div className='w-52 max-h-24 overflow-y-auto pl-1 whitespace-pre-wrap break-words'>
+                                    {cell.column.id === 'information' && expandedRows === row.id && editingRow !== row.original._id ? (
+                                        <textarea rows="3" cols="50" className='px-1 w-full overflow-y-auto whitespace-pre-wrap break-words'>
                                             {row.original.information}
-                                        </div>
+                                        </textarea>
                                     ) : cell.column.id === 'name' && editingRow === row.original._id ? (
                                         <input
                                             className='w-full border border-gray-400 pl-1'

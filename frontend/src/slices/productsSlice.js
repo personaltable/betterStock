@@ -10,10 +10,17 @@ const initialState = {
     searchStock: '',
     searchCategory: '',
     searchUser: '',
+    searchPrice: '',
+    searchDate: {
+        startDate: null,
+        endDate: null,
+    },
+    searchReStock: '',
     deleteList: [],
     editProduct: {},
     deleteConfirmation: false,
     formFeedback: '',
+    printStockTable: false,
 }
 
 const productsSlice = createSlice({
@@ -35,6 +42,12 @@ const productsSlice = createSlice({
                 state.searchName = '';
                 state.searchCategory = '';
                 state.searchUser = '';
+                state.searchPrice = '';
+                state.searchDate = {
+                    startDate: null,
+                    endDate: null,
+                };
+                state.searchReStock = '';
             }
         },
         setColumns: (state, action) => {
@@ -52,6 +65,16 @@ const productsSlice = createSlice({
         setSearchUser: (state, action) => {
             state.searchUser = action.payload;
         },
+        setSearchPrice: (state, action) => {
+            state.searchPrice = action.payload;
+        },
+        setSearchDate(state, action) {
+            state.searchDate.startDate = action.payload.startDate;
+            state.searchDate.endDate = action.payload.endDate;
+        },
+        setSearchReStock: (state, action) => {
+            state.searchReStock = action.payload;
+        },
         setDeleteList: (state, action) => {
             state.deleteList = action.payload;
         },
@@ -63,10 +86,13 @@ const productsSlice = createSlice({
         },
         setFormFeedback: (state, action) => {
             state.formFeedback = action.payload;
+        },
+        setPrintStockTable: (state, action) => {
+            state.printStockTable = action.payload;
         }
     }
 })
 
-export const { setProducts, setStatus, setError, resetFilters, setColumns, setSearchName, setSearchStock, setSearchCategory, setSearchUser, setDeleteList, setDeleteConfirmation, setFormFeedback, setEditProduct } = productsSlice.actions;
+export const { setProducts, setStatus, setError, resetFilters, setColumns, setSearchName, setSearchStock, setSearchCategory, setSearchUser, setSearchPrice, setSearchDate, setSearchReStock, setDeleteList, setDeleteConfirmation, setFormFeedback, setEditProduct, setPrintStockTable } = productsSlice.actions;
 
 export default productsSlice.reducer;

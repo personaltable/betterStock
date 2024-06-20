@@ -1,4 +1,6 @@
 import React, { useState, useRef, useEffect, useMemo } from "react";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 import axios from 'axios'
 import SideBar from "../components/SideBar";
 import ButtonOption from "../components/buttons/ButtonOption";
@@ -9,22 +11,17 @@ import DropdownSearch from "../components/Dropdown/DropdownSearch";
 import StockTable from "../components/StockTable";
 import FormCreateProduct from "../components/FormCreateProduct";
 import FormDeleteProduct from "../components/FormDeleteProduct";
+import ReactToPrint from 'react-to-print'
 
 
 import { useDispatch, useSelector } from "react-redux";
 import { useGetProductsQuery } from "../slices/productsApiSlice";
-import { setProducts, setStatus, setError, resetFilters, setColumns, setSearchName, setSearchStock, setSearchCategory, setSearchUser, setFormFeedback } from "../slices/productsSlice";
+import { setProducts, setStatus, setError, resetFilters, setColumns, setSearchName, setSearchStock, setSearchCategory, setSearchUser, setSearchPrice, setSearchDate, setSearchReStock, setFormFeedback, setPrintStockTable } from "../slices/productsSlice";
 
-import { FaMagnifyingGlass } from "react-icons/fa6";
-import { IoReloadCircle } from "react-icons/io5";
+import { FaMagnifyingGlass, FaWrench, FaFilter, FaCirclePlus, FaCircleMinus } from "react-icons/fa6";
+import { IoReloadCircle, IoClose } from "react-icons/io5";
 import { FaPrint } from "react-icons/fa";
-import { FaWrench } from "react-icons/fa6";
-import { FaFilter } from "react-icons/fa6";
-import { FaCirclePlus } from "react-icons/fa6";
-import { FaCircleMinus } from "react-icons/fa6";
-import { IoClose } from "react-icons/io5";
 import { IoIosArrowDown } from "react-icons/io";
-
 
 
 const Stock = () => {
@@ -51,8 +48,13 @@ const Stock = () => {
   const handleResetFilterChange = () => {
     setSearchCategoryValue("");
     setSearchUserValue("");
+    setSearchReStock("");
+    setStockInput("");
+    setStockSecondInput("");
+    setStartDate(null);
+    setEndDate(null);
+    setPriceInput("");
     dispatch(resetFilters(true));
-
   };
 
   //Search
@@ -109,6 +111,38 @@ const Stock = () => {
     dispatch(setSearchUser(searchUserValue));
   }), [searchUserValue]
 
+  //Price
+
+  const [priceChoice, setPriceChoice] = useState('Exato');
+  const [priceInput, setPriceInput] = useState('');
+  const [priceSecondInput, setPriceSecondInput] = useState('');
+
+  useEffect(() => {
+    dispatch(setSearchPrice({ priceChoice, priceInput, priceSecondInput }));
+  }, [priceChoice, priceInput, priceSecondInput])
+
+  //Date
+
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
+
+  useEffect(() => {
+    dispatch(setSearchDate({
+      startDate: startDate ? startDate.toISOString() : null,
+      endDate: endDate ? endDate.toISOString() : null,
+    }));
+  }, [startDate, endDate, dispatch]);
+
+  //ReStock 
+
+  const searchReStock = useSelector((state) => state.productsList.searchReStock);
+  const [reStockValue, setReStockValue] = useState(searchReStock);
+  const reStockList = ["", "Necessária", "Não necessária", "Em progresso"]
+
+  useEffect(() => {
+    dispatch(setSearchReStock(reStockValue));
+  }), [reStockValue, dispatch]
+
   //columns
   const columnsList = useSelector((state) => state.productsList.columns);
   const columnsAllOptions = [
@@ -151,6 +185,15 @@ const Stock = () => {
 
   }, [formFeedback, dispatch])
 
+
+  //Print
+
+  const componentRef = useRef();
+
+  const handlePrintTable = () => {
+    dispatch(setPrintStockTable(true));
+  };
+
   return (
     <div className="flex flex-row">
       <SideBar />
@@ -169,7 +212,7 @@ const Stock = () => {
 
           {/* Filtros _______________________________________________________________ */}
 
-          <div className="flex flex-row gap-2 items-center">
+          <div className="flex flex-row gap-3 items-center">
             <IoReloadCircle
               onClick={handleResetFilterChange}
               className="text-3xl text-basepurple-500 hover:text-basepurple-600 transition duration-300 ease-in-out cursor-pointer"
@@ -188,11 +231,11 @@ const Stock = () => {
 
             <Dropdown
               trigger={
-                <ButtonFilter className="flex flex-row justify-between items-center">
+                <ButtonFilter >
                   <div>Filtros</div>
                   <FaFilter />
                 </ButtonFilter>}
-              classNameContainer="w-fit flex flex-col gap-2 p-2 mt-2"
+              classNameContainer="w-fit flex flex-col gap-2.5 p-2 mt-2"
             >
 
               <div className="flex flex-row items-center justify-between" >
@@ -235,12 +278,37 @@ const Stock = () => {
                 <IoClose onClick={() => { [setStockInput(''), setStockSecondInput('')] }} className="text-xl cursor-pointer" />
               </div>
 
+
+              <div className="flex flex-row items-center justify-between" >
+                <div className="flex flex-row ">
+                  <div className="w-20">Reposição:</div>
+                  <Dropdown
+                    trigger={
+                      <div className="flex cursor-pointer w-52 h-[25px] flex-row gap-1 px-1 justify-between items-center border border-gray-500">
+                        <div className="">{reStockValue}</div>
+                        <IoIosArrowDown className="text-xs" />
+                      </div>
+                    }
+                    classNameContainer='w-52 mt-1'
+                  >
+                    {reStockList.map((option) => (
+                      <div onClick={() => { setReStockValue(option) }} className=" flex flex-col justify-center p-1 px-2 h-[30px] hover:bg-gray-100 cursor-pointer" key={option}>{option}</div>
+                    ))}
+                  </Dropdown>
+
+                </div>
+                <IoClose onClick={() => { [setReStockValue('')] }} className="text-xl cursor-pointer" />
+              </div>
+
+
+
               <DropdownSearch
                 label={"Categoria:"}
                 options={categoryList}
                 searchValue={searchCategoryValue}
                 setSearchValue={setSearchCategoryValue}
                 className={'z-40'}
+                placeholder={'Pesquisar...'}
                 more={<IoClose onClick={() => { setSearchCategoryValue('') }} className="text-xl cursor-pointer" />}
               ></DropdownSearch>
 
@@ -249,8 +317,77 @@ const Stock = () => {
                 options={userList}
                 searchValue={searchUserValue}
                 setSearchValue={setSearchUserValue}
+                className={'z-30'}
+                placeholder={'Pesquisar...'}
                 more={<IoClose onClick={() => { setSearchUserValue('') }} className="text-xl cursor-pointer" />}
               ></DropdownSearch>
+
+              <div className="flex flex-row items-center justify-between" >
+                <div className="flex flex-row ">
+                  <div className="w-20">Preço:</div>
+                  <Dropdown
+                    trigger={
+                      <div className="flex cursor-pointer w-[80px] flex-row gap-1 px-1 justify-between items-center border border-gray-500 rounded mr-1">
+                        <div className="">{priceChoice}</div>
+                        <IoIosArrowDown className="text-xs" />
+                      </div>
+                    }
+                    classNameContainer='w-[80px] mr-1 mt-1'
+                  >
+                    {stockFilterList.map((option) => (
+                      <div onClick={() => { setPriceChoice(option) }} className="p-1 px-2 hover:bg-gray-100 cursor-pointer" key={option}>{option}</div>
+                    ))}
+                  </Dropdown>
+
+                  <input
+                    type="text"
+                    onChange={(e) => { setPriceInput(e.target.value) }}
+                    value={priceInput}
+                    className="pl-1 w-14 border border-gray-500"
+                  />
+
+                  {priceChoice === "Entre" ? (
+                    <div className="flex flex-row">
+                      <div className="mx-0.5"> - </div>
+                      <input
+                        type="text"
+                        onChange={(e) => { setPriceSecondInput(e.target.value) }}
+                        value={priceSecondInput}
+                        className="pl-1 w-14 border border-gray-500"
+                      />
+                    </div>
+                  ) : (<div></div>)}
+
+                </div>
+                <IoClose onClick={() => { [setPriceInput(''), setPriceSecondInput('')] }} className="text-xl cursor-pointer" />
+              </div>
+
+              <div className="flex flex-row items-start">
+                <label className="w-20">Data:</label>
+                <div className="flex flex-row items-center">
+                  <DatePicker
+                    selected={startDate}
+                    onChange={(date) => setStartDate(date)}
+                    selectsStart
+                    startDate={startDate}
+                    endDate={endDate}
+                    placeholderText="Data inicial"
+                    className="border border-gray-500 rounded pl-1 w-24"
+                  />
+                  <span className="mx-1">-</span>
+                  <DatePicker
+                    selected={endDate}
+                    onChange={(date) => setEndDate(date)}
+                    selectsEnd
+                    startDate={startDate}
+                    endDate={endDate}
+                    minDate={startDate}
+                    placeholderText="Data final"
+                    className="border border-gray-500 rounded pl-1 w-24"
+                  />
+                  <IoClose onClick={() => { setStartDate(null); setEndDate(null); }} className="text-xl cursor-pointer ml-2" />
+                </div>
+              </div>
 
             </Dropdown>
 
@@ -260,21 +397,36 @@ const Stock = () => {
               selectedOptions={columnsList}
               onOptionSelect={handleColumnSelect}
             >
-              <ButtonFilter className="flex flex-row justify-between items-center">
+              <ButtonFilter>
                 <div>Colunas</div>
                 <FaWrench />
               </ButtonFilter>
             </DropdownCheck>
 
-            <ButtonFilter className="flex flex-row justify-between items-center">
-              <div>Imprimir</div>
-              <FaPrint />
-            </ButtonFilter>
+            <div onClick={handlePrintTable}>
+              <ReactToPrint
+                trigger={() =>
+
+                  <ButtonFilter>
+                    <div>Imprimir</div>
+                    <FaPrint />
+                  </ButtonFilter>
+
+                }
+                content={() => componentRef.current}
+                documentTitle='new document'
+                pageStyle='print'
+              />
+            </div>
           </div>
         </div>
         {viewCreate && <FormCreateProduct viewCreate={viewCreate} setViewCreate={setViewCreate} />}
         {viewDelete && <FormDeleteProduct viewDelete={viewDelete} setViewDelete={setViewDelete} />}
-        <StockTable></StockTable>
+
+        <div ref={componentRef} className="flex flex-col">
+          <StockTable />
+        </div>
+
         {formFeedback &&
           <div className="flex flex-row justify-between items-center sticky bg-[#1d3557] py-2 px-3 w-96 text-white bottom-10 left-3 rounded-r-3xl">
             <div>{formFeedback}</div>

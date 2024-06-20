@@ -9,6 +9,7 @@ import { GiCardboardBoxClosed } from "react-icons/gi";
 import { FaUserCircle } from "react-icons/fa";
 import { IoIosLogOut } from "react-icons/io";
 import { AiOutlineProduct } from "react-icons/ai";
+import { FaUsersCog } from "react-icons/fa";
 
 function SideBar() {
 
@@ -46,10 +47,31 @@ function SideBar() {
 
 
       <div className='flex flex-col gap-3'>
-        <div className='flex flex-row items-center gap-2'><AiFillDashboard /><Link to="/dashboard">DashBoard</Link></div>
-        <div className='flex flex-row items-center gap-2'><GiCardboardBoxClosed /><Link to="/stock">Stock</Link></div>
-        <div className='flex flex-row items-center gap-2'><FaUserCircle /><Link to="/history">Histórico</Link></div>
-        <div className='flex flex-row items-center gap-2'><AiOutlineProduct /><Link to="/CategoryPage">Produtos</Link></div>
+        {userInfo && (userInfo.role === 'admin' || userInfo.role === 'data analyst') && (
+          <div className='flex flex-row items-center gap-2'><AiFillDashboard /><Link to="/dashboard">DashBoard</Link></div>
+        )}
+
+        {userInfo && (userInfo.role === 'admin' || userInfo.role === 'employee') && (
+          <div className='flex flex-row items-center gap-2'><AiOutlineProduct /><Link to="/CategoryPage">Produtos</Link></div>
+        )}
+
+        {userInfo && (userInfo.role === 'admin' || userInfo.role === 'stock manager') && (
+          <>
+            <div className='flex flex-row items-center gap-2'><GiCardboardBoxClosed /><Link to="/stock">Stock</Link></div>
+            <div className='flex flex-row items-center gap-2'><FaUserCircle /><Link to="/history">Histórico</Link></div>
+          </>
+        )}
+
+        {userInfo && (userInfo.role === 'admin') && (
+          <>
+            <div className='mt-4'></div>
+            <div>
+              <div>Admin</div>
+              <hr />
+            </div>
+            <div className='flex flex-row items-center gap-2'><FaUsersCog /><Link to="/manageUsers">Gerir Utilizadores</Link></div>
+          </>
+        )}
       </div>
 
     </div>

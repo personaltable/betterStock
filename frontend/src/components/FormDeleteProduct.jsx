@@ -60,7 +60,7 @@ const FormDeleteProduct = ({ setViewDelete, viewDelete }) => {
             <div className="relative flex flex-col justify-between w-[657px] min-h-[388px] gap-3 p-5 bg-white shadow-lg rounded-lg border border-gray-300 z-50 left-32">
                 <div className='flex flex-col'>
                     <div className="flex flex-row justify-between items-center mb-3">
-                        <div className="font-bold">Eliminar Produto</div>
+                        <div className="text-xl">Confirmar Eliminação</div>
                         <IoClose onClick={() => { setViewDelete(false) }} className="flex self-end text-xl cursor-pointer" />
                     </div>
 
@@ -85,7 +85,10 @@ const FormDeleteProduct = ({ setViewDelete, viewDelete }) => {
 
 
                 </div>
-                <button onClick={() => { handleDeleteProduct() }} className='flex justify-center items-center bg-black text-white w-48 p-2 py-1 rounded'>Eliminar</button>
+                <div className="flex justify-end gap-3">
+                    <button onClick={() => setViewDelete(false)} className="px-4 py-2 bg-gray-200 rounded">Cancelar</button>
+                    <button onClick={() => { handleDeleteProduct() }} className="px-4 py-2 bg-red-600 text-white rounded">Eliminar</button>
+                </div>
             </div>
         </div>
     )
