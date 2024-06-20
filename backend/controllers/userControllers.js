@@ -1,6 +1,7 @@
 import asyncHandler from 'express-async-handler'
 import User from '../models/userModel.js';
 import generateToken from '../utils/generateToken.js';
+import mongoose from "mongoose";
 
 //@desc     Auth user/ set token
 //route     POST api/users/auth
@@ -83,6 +84,37 @@ const getUserProfile = asyncHandler(async (req, res) => {
     res.status(200).json({ user })
 });
 
+//@desc     Get users
+//route     GET api/users
+//@access   Private
+const getUsers = asyncHandler(async (req, res) => {
+    const users = await User.find()
+
+    res.status(200).json({ users })
+});
+
+//@desc     Update user 
+//route     Put api/users/update
+//@access   Private
+const updateUser = asyncHandler(async (req, res) => {
+    const user = await User.findById(req.params.id)
+
+});
+
+//@desc     Get users
+//route     GET api/users
+//@access   Private
+const deleteUser = asyncHandler(async (req, res) => {
+    const user = await User.findByIdAndDelete(req.params.id);
+
+    if (user) {
+        res.status(200).json({ message: 'User deleted successfully' });
+    } else {
+        res.status(404);
+        throw new Error('User not found');
+    }
+});
+
 //@desc     Update user profile
 //route     Put api/users/profile
 //@access   Private
@@ -114,21 +146,15 @@ const updateUserProfile = asyncHandler(async (req, res) => {
 });
 
 
-//@desc     Get users
-//route     GET api/users
-//@access   Private
-const getUsers = asyncHandler(async (req, res) => {
-    const users = await User.find()
-
-    res.status(200).json({ users })
-});
-
-
 export {
     authUser,
     registerUser,
     logoutUser,
     getUserProfile,
+    updateUser,
+    getUsers,
     updateUserProfile,
-    getUsers
+    deleteUser
 }
+
+

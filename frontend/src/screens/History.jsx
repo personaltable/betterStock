@@ -38,8 +38,6 @@ const History = () => {
 
     const getAlteredKeys = (original, modified) => {
 
-
-
         const alteredKeys = [];
         Object.keys(original).forEach(key => {
             if (key !== 'createdBy' && original[key] !== modified[key]) {

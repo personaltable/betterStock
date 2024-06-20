@@ -154,9 +154,9 @@ const FormCreateProduct = ({ setViewCreate, viewCreate }) => {
         <div className={`fixed inset-0 z-50 ${viewCreate ? 'flex' : 'hidden'} justify-center items-center`}>
             <div className="fixed inset-0 bg-black opacity-50" onClick={() => setViewCreate(false)}></div>
             <div className="relative flex flex-col w-fit h-fit gap-3 p-5 bg-white shadow-lg rounded-lg border border-gray-300 z-50 left-32">
-                <div className="flex flex-row justify-between items-center">
-                    <div className="font-bold">Adicionar Produto</div>
-                    <IoClose onClick={() => { setViewCreate(false) }} className="flex self-end text-xl cursor-pointer" />
+                <div className="flex flex-row justify-between items-center ">
+                    <div className="flex text-xl">Adicionar Produto</div>
+                    <IoClose onClick={() => { setViewCreate(false) }} className="flex text-xl cursor-pointer" />
                 </div>
                 <form className='h-full' onSubmit={handleSubmit(onSubmit)}>
                     <div className='flex flex-col gap-10 h-full'>
@@ -272,7 +272,10 @@ const FormCreateProduct = ({ setViewCreate, viewCreate }) => {
                                 </div>
                             </div>
                         </div>
-                        <button type='submit' className='flex justify-center items-center bg-black text-white w-48 p-2 py-1 rounded'>Submeter</button>
+                        <div className="flex justify-end gap-3">
+                            <button onClick={() => setViewCreate(false)} className="px-4 py-2 bg-gray-200 rounded">Cancelar</button>
+                            <button type='submit' className="px-4 py-2 bg-green-600 text-white rounded">Submeter</button>
+                        </div>
                     </div>
                 </form>
 
