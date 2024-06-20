@@ -89,6 +89,7 @@ const getUserProfile = asyncHandler(async (req, res) => {
 //@access   Private
 const getUsers = asyncHandler(async (req, res) => {
     const users = await User.find()
+    console.log('teste')
 
     res.status(200).json({ users })
 });
