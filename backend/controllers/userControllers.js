@@ -1,7 +1,6 @@
 import asyncHandler from "express-async-handler";
 import User from "../models/userModel.js";
 import generateToken from "../utils/generateToken.js";
-import mongoose from "mongoose";
 
 //@desc     Auth user/ set token
 //route     POST api/users/auth
@@ -61,20 +60,11 @@ const registerUser = asyncHandler(async (req, res) => {
       _id: user._id,
       name: user.name,
       email: user.email,
+      role: user.role,
     });
-
-    if (user) {
-      generateToken(res, user._id);
-      res.status(201).json({
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-      });
-    } else {
-      res.status(400);
-      throw new Error("Invalid user data");
-    }
+  } else {
+    res.status(400);
+    throw new Error("Invalid user data");
   }
 });
 
@@ -157,28 +147,9 @@ const updateUserProfile = asyncHandler(async (req, res) => {
   } else {
     res.status(404);
     throw new Error("User not found");
-
-    if (user) {
-      user.name = req.body.name || user.name;
-      user.email = req.body.email || user.email;
-      if (req.body.password) {
-        user.password = req.body.password;
-      }
-
-      const UpdatedUser = await user.save();
-
-      res.status(200).json({
-        _id: UpdatedUser._id,
-        name: UpdatedUser.name,
-        email: UpdatedUser.email,
-      });
-    } else {
-      res.status(404);
-      throw new Error("User not found");
-    }
-
-    res.status(200).json({ message: "Update User" });
   }
+
+  res.status(200).json({ message: "Update User" });
 });
 
 export {
