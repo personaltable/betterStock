@@ -20,7 +20,7 @@ function PDF(nifConfirmation, productInfo, staffInfo, clientInfo) {
         {
             columns: [
                 {
-                    text: `Criado por ${staffInfo}`,
+                    text: `Fatura criada por ${staffInfo}`,
                     fontSize: 15,
                     bold: true,
                     margin: [30, 20, 0, 10] // margem esquerda, superior, direita, inferior
@@ -114,29 +114,39 @@ function PDF(nifConfirmation, productInfo, staffInfo, clientInfo) {
             {
                 table: {
                     headerRows: 1,
-                    widths: ['*', 'auto'], // Largura de cada coluna
+                    widths: ['auto', '*'], // Ajuste das larguras das colunas para aproximar os textos
                     body: [
                         // Cabeçalho da tabela
                         [
-                            { text: 'Propriedade', style: 'tableHeader', fontSize: 10 },
-                            { text: 'Valor', style: 'tableHeader', fontSize: 10 }
+                            { text: '', style: 'tableHeader', fontSize: 10 },
+                            { text: '', style: 'tableHeader', fontSize: 10 }
                         ],
                         // Dados do cliente
                         [
-                            { text: 'Nome:', style: 'tableHeader', fontSize: 10 },
-                            { text: clientInfo?.name || 'N/A', fontSize: 10 }
+                            { text: 'Nome:', style: 'tableHeader', fontSize: 10, margin: [0, 10, 0, 0] },
+                            { text: clientInfo?.name || 'N/A', fontSize: 10, margin: [0, 10, 0, 0] }
                         ],
                         [
                             { text: 'NIF:', style: 'tableHeader', fontSize: 10 },
                             { text: clientInfo?.nif || 'N/A', fontSize: 10 }
-                        ],
-                        [
-                            { text: '', colSpan: 2, margin: [0, 10, 0, 10] } // Linha em branco
-                        ],
+                        ]
+                    ]
+                },
+                layout: 'headerLineOnly' // Layout da tabela
+            },
+            {
+                table: {
+                    headerRows: 1,
+                    widths: ['auto', '*'], // Ajuste das larguras das colunas para aproximar os textos
+                    body: [
                         // Dados da empresa
                         [
-                            { text: 'Nome da Empresa:', style: 'tableHeader', fontSize: 10 },
-                            { text: "Exemplo empressa", fontSize: 10 }
+                            { text: '', style: 'tableHeader', fontSize: 10, margin: [0, 10, 0, 10] },
+                            { text: "", fontSize: 10, margin: [0, 10, 0, 10] }
+                        ],
+                        [
+                            { text: 'Nome da Empresa:', style: 'tableHeader', fontSize: 10, margin: [0, 10, 0, 0] },
+                            { text: "Exemplo empresa", fontSize: 10, margin: [0, 10, 0, 0] }
                         ],
                         [
                             { text: 'Telefone:', style: 'tableHeader', fontSize: 10 },
@@ -145,9 +155,6 @@ function PDF(nifConfirmation, productInfo, staffInfo, clientInfo) {
                         [
                             { text: 'Morada:', style: 'tableHeader', fontSize: 10 },
                             { text: "Exemplo", fontSize: 10 }
-                        ],
-                        [
-                            { text: '', colSpan: 2, margin: [0, 10, 0, 10] } // Linha em branco
                         ]
                     ]
                 },

@@ -42,7 +42,6 @@ const CategoryPage = () => {
     };
 
     const handleCategoryClick = (categoryId) => {
-        console.log("Categoria clicada:", categoryId);
         navigate(`/Products/${categoryId}`);
     };
 

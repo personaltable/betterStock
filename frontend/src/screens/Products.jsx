@@ -89,6 +89,11 @@ const Products = () => {
         fetchClients();
     }, [categoryId]);
 
+    const clearClientInfo = () => {
+        setInvoiceName("");
+        setInvoiceNIF("");
+        setInvoicePhone("");
+    }
     const [formData, setFormData] = useState({
         name: '',
         surName: '',
@@ -130,11 +135,12 @@ const Products = () => {
         return Object.keys(errors).length === 0;
     };
 
-
+    console.log(formData)
     const fetchCreateClient = async (e) => {
         e.preventDefault();
         if (!validate()) return;
         try {
+            console.log('trying to send')
             const response = await axios.post('http://localhost:5555/api/clients', formData);
             console.log('Client created successfully:', response.data);
         } catch (error) {
@@ -278,6 +284,7 @@ const Products = () => {
 
                 const response = await axios.put(`http://localhost:5555/api/products/store/${productId}`, { stock: updatedStock });
 
+                clearClientInfo();
                 if (response.status === 200) {
                     // Update local state
                     const index = updatedProducts.findIndex(p => p._id === productId);
