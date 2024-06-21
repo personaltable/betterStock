@@ -89,7 +89,6 @@ const getUserProfile = asyncHandler(async (req, res) => {
 //@access   Private
 const getUsers = asyncHandler(async (req, res) => {
     const users = await User.find()
-    console.log('teste')
 
     res.status(200).json({ users })
 });
@@ -115,6 +114,25 @@ const deleteUser = asyncHandler(async (req, res) => {
         throw new Error('User not found');
     }
 });
+
+const adminUpdateUser = asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    const { name, email, role } = req.body;
+
+    try {
+        const updatedUser = await User.findByIdAndUpdate(
+            id,
+            { name, email, role },
+            { new: true, runValidators: true }
+        )
+        res.status(200).json({ message: 'Utilizador atualizado:', user: updatedUser });
+
+    }
+    catch (error) {
+        console.error('Erro ao atualizar o utilizador', error)
+    }
+
+})
 
 //@desc     Update user profile
 //route     Put api/users/profile
@@ -155,7 +173,8 @@ export {
     updateUser,
     getUsers,
     updateUserProfile,
-    deleteUser
+    deleteUser,
+    adminUpdateUser
 }
 
 
