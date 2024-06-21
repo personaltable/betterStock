@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 import SideBar from '../components/SideBar';
 import ContainerHeader from '../components/containers/containerHeader';
@@ -8,11 +9,21 @@ import DropdownCheck from '../components/Dropdown/DropdownCheck';
 import PieChart from '../components/charts/pieChart';
 import BarChart from '../components/charts/barChart';
 import Tooltip from '../components/containers/ToolTip';
+import { useDispatch } from "react-redux";
 
 import { IoSettingsOutline } from "react-icons/io5";
 import { CiCircleQuestion } from "react-icons/ci";
+import { setSearchReStock } from '../slices/productsSlice';
 
 const Dashboard = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const handleReStockClick = () => {
+    dispatch(setSearchReStock("Necessária"))
+    navigate(`/Stock`);
+  }
+
   const [productsList, setProductsList] = useState([]);
 
   useEffect(() => {
@@ -48,8 +59,8 @@ const Dashboard = () => {
   const [columnsOptions, setColumnsOptions] = useState(['Todos os produtos', 'Produtos sem stock', 'Produtos com stock baixo']);
   const columnsAllOptions = ['Todos os produtos', 'Produtos sem stock', 'Produtos com stock baixo'];
 
-  const [columnsOptionsBody, setColumnsOptionsBody] = useState(['Quantidade por categoria(Pie)', 'Produtos stock mais alto', 'Produtos stock mais baixo']);
-  const columnsAllOptionsBody = ['Quantidade por categoria(Pie)', 'Quantidade por categoria(Barras)', 'Produtos stock mais alto', 'Produtos stock mais baixo'];
+  const [columnsOptionsBody, setColumnsOptionsBody] = useState(['Quantidade por categoria(Pie)', 'Produtos stock mais alto', 'Produtos stock mais baixo', 'Produtos com necessidade de re-stock']);
+  const columnsAllOptionsBody = ['Quantidade por categoria(Pie)', 'Quantidade por categoria(Barras)', 'Produtos stock mais alto', 'Produtos stock mais baixo', 'Produtos com necessidade de re-stock'];
 
   const getMostStockProducts = (products, topN) => {
     return products
@@ -63,8 +74,8 @@ const Dashboard = () => {
       .slice(0, topN);
   };
 
-  const topStockProducts = getMostStockProducts(productsList, 5);
-  const lowStockProductsList = getLowStockProducts(productsList, 5);
+  const topStockProducts = getMostStockProducts(productsList, 6);
+  const lowStockProductsList = getLowStockProducts(productsList, 6);
 
   return (
     <div className='flex flex-row w-full'>
@@ -114,7 +125,7 @@ const Dashboard = () => {
               <ContainerBody>
                 <div className='flex flex-col'>
                   <div className='flex flex-row justify-between'>
-                    <div>Quantidade por categoria</div>
+                    <div className='text-base font-semibold'>Quantidade por categoria</div>
                     <Tooltip content="Grafico Circular para visualizar a distribuição da quantidade de itens por categoria de forma proporcional, facilitando a compreensão das categorias mais representativas." className='z-20'><CiCircleQuestion /></Tooltip>
                   </div>
                   <PieChart productsList={productsList} />
@@ -126,7 +137,7 @@ const Dashboard = () => {
               <ContainerBody>
                 <div className='flex flex-col'>
                   <div className='flex flex-row justify-between'>
-                    <div>Quantidade por categoria</div>
+                    <div className='text-base font-semibold'>Quantidade por categoria</div>
                     <Tooltip content="Grafico de barras que exibe a quantidade de itens por categoria de maneira comparativa, permitindo uma análise visual das diferenças quantitativas entre as categorias." className='z-20'><CiCircleQuestion /></Tooltip>
                   </div>
                   <BarChart productsListBar={productsList} />
@@ -141,11 +152,11 @@ const Dashboard = () => {
                     <div className='text-base font-semibold'>Produtos com stock mais alto</div>
                     <Tooltip content="Esta seção exibe os produtos com a maior quantidade de stock disponível, destacando os itens mais bem abastecidos do inventário." className='z-20'><CiCircleQuestion /></Tooltip>
                   </div>
-                  <div className='flex flex-col space-y-2'>
+                  <div className='flex flex-col'>
                     {topStockProducts.map((product, index) => (
-                      <div key={index} className='flex flex-row justify-between border-b border-gray-300 pb-2 px-4 py-2 rounded shadow-sm'>
-                        <span className='font-medium text-sm'>{product.name}</span>
-                        <span className='border-l border-gray-300 pl-4 ml-4 text-gray-600 text-sm w-14'>{product.stock}</span>
+                      <div key={index} className='flex flex-row justify-between border-b border-gray-300  rounded shadow-sm'>
+                        <span className='font-medium text-sm p-2'>{product.name}</span>
+                        <span className='border-l border-gray-300 pl-4 ml-4 text-gray-600 text-sm w-14 p-2'>{product.stock}</span>
                       </div>
                     ))}
                   </div>
@@ -160,13 +171,34 @@ const Dashboard = () => {
                     <div className='text-base font-semibold'>Produtos com stock mais baixo</div>
                     <Tooltip content="Nesta área, você encontrará os produtos com a menor quantidade de stock disponível, ajudando a identificar itens que podem precisar de reposição imediata." className='z-20'><CiCircleQuestion /></Tooltip>
                   </div>
-                  <div className='flex flex-col space-y-2'>
+                  <div className='flex flex-col '>
                     {lowStockProductsList.map((product, index) => (
-                      <div key={index} className='flex flex-row justify-between border-b border-gray-300 pb-2 px-4 py-2 rounded shadow-sm'>
-                        <span className='font-medium text-sm'>{product.name}</span>
-                        <span className='border-l border-gray-300 pl-4 ml-4 text-gray-600 text-sm w-14'>{product.stock}</span>
+                      <div key={index} className='flex flex-row justify-between border-b border-gray-300  rounded shadow-sm'>
+                        <span className='font-medium text-sm p-2'>{product.name}</span>
+                        <span className='border-l border-gray-300 pl-4 ml-4 text-gray-600 text-sm w-14 p-2'>{product.stock}</span>
                       </div>
                     ))}
+                  </div>
+                </div>
+              </ContainerBody>
+            ) : null}
+
+            {columnsOptionsBody.includes("Produtos com necessidade de re-stock") ? (
+              <ContainerBody>
+                <div onClick={() => { handleReStockClick() }} className='flex flex-col h-full w-full cursor-pointer'>
+                  <div className='flex flex-row justify-between mb-4'>
+                    <div className='text-base font-semibold'>Produtos com necessidade de re-stock</div>
+                    <Tooltip content="Nesta área, você encontrará os produtos com a menor quantidade de stock disponível, ajudando a identificar itens que podem precisar de reposição imediata." className='z-20'><CiCircleQuestion /></Tooltip>
+                  </div>
+                  <div className='flex flex-col'>
+                    {productsList
+                      .filter(product => product.reStock === "Necessária") // Filtra apenas produtos com reStock necessário
+                      .map((product, index) => (
+                        <div key={index} className='flex flex-row justify-between border-b border-gray-300 rounded shadow-sm'>
+                          <span className='font-medium text-sm p-2'>{product.name}</span>
+                          <span className='p-2 border-l border-gray-300 pl-4 ml-4 text-gray-600 text-sm w-14'>{product.stock}</span>
+                        </div>
+                      ))}
                   </div>
                 </div>
               </ContainerBody>
