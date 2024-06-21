@@ -1,15 +1,15 @@
 import express from "express";
 const router = express.Router();
 import {
-    authUser,
-    registerUser,
-    logoutUser,
-    getUserProfile,
-    updateUserProfile,
-    getUsers,
-    updateUser,
-    deleteUser,
-    adminUpdateUser
+  authUser,
+  registerUser,
+  logoutUser,
+  getUserProfile,
+  updateUserProfile,
+  getUsers,
+  updateUser,
+  deleteUser,
+  adminUpdateUser
 } from "../controllers/userControllers.js";
 import { protect } from "../middleware/authMiddleware.js";
 
