@@ -12,9 +12,11 @@ import { IoIosArrowDown } from "react-icons/io";
 const ManageUsers = () => {
     const [usersList, setUsersList] = useState([]);
 
-    //SEARCH
+    //FILTER
 
     const [searchValue, setSearchValue] = useState('');
+    const [viewRoles, setViewRoles] = useState(false);
+    const [searchRole, setSearchRole] = useState('');
 
 
     //UPDATE
@@ -51,22 +53,6 @@ const ManageUsers = () => {
         setViewUserRoles(false);
     }
 
-    //__ __ __
-
-    const dropdownRef = useRef(null);
-    const handleClickOutside = (e) => {
-        if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
-            setViewUserRoles(false);
-        }
-    };
-
-    useEffect(() => {
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-        };
-    }, []);
-
 
     //DELETE
 
@@ -91,11 +77,23 @@ const ManageUsers = () => {
         const fetchUsersList = async () => {
             try {
                 const response = await axios.get(`http://localhost:5555/api/users`);
+                let filteredUsers = response.data.users;
+
                 if (searchValue) {
-                    setUsersList(response.data.users.filter(user =>
+                    filteredUsers = filteredUsers.filter(user =>
                         user.name.toLowerCase().startsWith(searchValue.toLowerCase())
-                    ));
-                } else { setUsersList(response.data.users); }
+                    );
+                }
+
+                if (searchRole) {
+                    filteredUsers = filteredUsers.filter(user =>
+                        user.role === searchRole
+                    );
+                }
+
+                setUsersList(filteredUsers);
+
+
 
             } catch (error) {
                 console.error('Erro ao buscar a lista de utilizadores:', error);
@@ -103,19 +101,38 @@ const ManageUsers = () => {
         };
 
         fetchUsersList();
-    }, [viewUpdate, viewDelete, searchValue]);
+    }, [viewUpdate, viewDelete, searchValue, searchRole]);
 
+    //__ __ __
+
+    const dropdownRef = useRef(null);
+    const dropdownRole = useRef(null);
+    const handleClickOutside = (e) => {
+        if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+            setViewUserRoles(false);
+        }
+        if (dropdownRole.current && !dropdownRole.current.contains(e.target)) {
+            setViewRoles(false);
+        }
+    };
+
+    useEffect(() => {
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, []);
 
 
     return (
         <div className="flex flex-row">
             <SideBar />
             <div className="flex flex-col gap-3 p-6 w-full relative">
-                <div className='flex flex-row gap-10'>
+                <div className='flex flex-row gap-3'>
                     <div className='text-2xl'>Utilizadores</div>
                     <div className='flex flex-row items-center relative '>
                         <input
-                            className='border border-gray-500 px-2 pr-7 h-7'
+                            className='border border-gray-500 w-44 px-2 pr-7 h-7'
                             type='text'
                             value={searchValue}
                             onChange={(e) => { setSearchValue(e.target.value) }}
@@ -123,6 +140,29 @@ const ManageUsers = () => {
                         />
                         <FaMagnifyingGlass className='right-2 absolute' />
                     </div>
+                    <div className='flex flex-row justify-center items-center'>
+                        <div ref={dropdownRole} className='flex flex-col justify-center items-center relative h-full '>
+                            <div className='flex flex-row justify-between items-center border border-gray-500 w-44 px-2 h-7 cursor-pointer' onClick={() => { setViewRoles(!viewRoles) }}>
+                                {searchRole ? (<div>{searchRole}</div>) : (<div>Cargo</div>)}
+                                <IoIosArrowDown />
+                            </div>
+                            {viewRoles &&
+                                <div className='absolute z-10 top-8 bg-white border border-gray-400 rounded shadow-lg w-44'>
+                                    {roleList.map((option) => (
+                                        <div
+                                            key={option}
+                                            className='px-2 py-1 cursor-pointer hover:bg-gray-100'
+                                            onClick={() => setSearchRole(option)}
+                                        >
+                                            {option}
+                                        </div>
+                                    ))}
+                                </div>
+                            }
+                        </div>
+                        <IoClose onClick={() => { setSearchRole("") }} className='h-7 w-7 p-1 border border-gray-500 cursor-pointer' />
+                    </div>
+
 
                 </div>
                 <div>

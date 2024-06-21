@@ -54,6 +54,7 @@ const Stock = () => {
     setStartDate(null);
     setEndDate(null);
     setPriceInput("");
+    setReStockValue("");
     dispatch(resetFilters(true));
   };
 
@@ -235,7 +236,7 @@ const Stock = () => {
                   <div>Filtros</div>
                   <FaFilter />
                 </ButtonFilter>}
-              classNameContainer="w-fit flex flex-col gap-2.5 p-2 mt-2"
+              classNameContainer="w-fit flex flex-col gap-3.5 p-2 mt-2"
             >
 
               <div className="flex flex-row items-center justify-between" >

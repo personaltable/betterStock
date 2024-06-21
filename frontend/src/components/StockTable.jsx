@@ -440,11 +440,16 @@ const StockTable = () => {
 
 
     //Filter By Restock
+    const reStockList = ["", "Necessária", "Não necessária", "Em progresso"]
 
     const searchReStock = useSelector((state) => state.productsList.searchReStock);
 
     const customFilterReStock = (row, columnId, filterValue) => {
         const reStockValue = row.original.reStock;
+
+        if (!filterValue) {
+            return true;
+        }
 
         switch (filterValue) {
             case "":
