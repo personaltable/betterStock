@@ -595,12 +595,14 @@ const StockTable = () => {
                                             {showReStockList &&
                                                 <div className='absolute h-fit px-1 mt-0.5 bg-white border border-gray-500'>
                                                     {reStockList.map((option) => (
-                                                        <div onClick={() => {
-                                                            setEditedData(prevState => ({
-                                                                ...prevState,
-                                                                reStock: option
-                                                            }));
-                                                        }} className='hover:bg-gray-100 cursor-pointer h-7' key={option}>{option}</div>
+                                                        <div
+                                                            onClick={() => {
+                                                                setEditedData(prevState => ({
+                                                                    ...prevState,
+                                                                    reStock: option
+                                                                }));
+                                                            }}
+                                                            className='hover:bg-gray-100 cursor-pointer h-7' key={option}>{option}</div>
                                                     ))}
                                                 </div>
                                             }

@@ -123,36 +123,43 @@ const Register = () => {
             </div>
 
             {/* ------------------PASSWORD----------------- */}
-            <div className='flex flex-row relative items-center'>
-              <input
-                {...register("password", {
-                  required: "Password é obrigatória",
-                  validate: validatePassword,
-                })}
-                type={showPassword ? "text" : "password"}
-                placeholder='Password'
-                className='border border-gray-300 rounded w-full h-8 pl-1' />
+            <div>
+              <div className='flex flex-row relative items-center'>
+                <input
+                  {...register("password", {
+                    required: "Password é obrigatória",
+                    validate: validatePassword,
+                  })}
+                  type={showPassword ? "text" : "password"}
+                  placeholder='Password'
+                  className='border border-gray-300 rounded w-full h-8 pl-1' />
+
+                <button className="absolute left-[270px]  text-2xl" type="button" onClick={() => { setShowPassword(!showPassword) }}>
+                  {showPassword ? <AiTwotoneEyeInvisible /> : <AiTwotoneEye />}
+                </button>
+              </div>
               {errors.password && <div className='text-red-500'>{errors.password.message}</div>}
-              <button className="absolute left-[270px]  text-2xl" type="button" onClick={() => { setShowPassword(!showPassword) }}>
-                {showPassword ? <AiTwotoneEyeInvisible /> : <AiTwotoneEye />}
-              </button>
             </div>
 
             {/* ------------------CONFIRMAÇÃO DE PASSWORD----------------- */}
-            <div className='flex flex-row relative items-center'>
-              <input
-                {...register('confirmPassword', {
-                  required: 'Confirmação de senha é obrigatória',
-                  validate: validateConfirmPassword,
-                })}
-                type={showConfirmPassword ? "text" : "password"}
-                placeholder="Confirm Password"
-                className="border border-gray-300 rounded w-full h-8 pl-1" />
+            <div>
+              <div className='flex flex-row relative items-center'>
+                <input
+                  {...register('confirmPassword', {
+                    required: 'Confirmação de senha é obrigatória',
+                    validate: validateConfirmPassword,
+                  })}
+                  type={showConfirmPassword ? "text" : "password"}
+                  placeholder="Confirm Password"
+                  className="border border-gray-300 rounded w-full h-8 pl-1" />
+
+                <button className="absolute left-[270px]  text-2xl" type="button" onClick={() => { setShowConfirmPassword(!showConfirmPassword) }}>
+                  {showConfirmPassword ? <AiTwotoneEyeInvisible /> : <AiTwotoneEye />}
+                </button>
+              </div>
               {errors.confirmPassword && <div className="text-red-500">{errors.confirmPassword.message}</div>}
-              <button className="absolute left-[270px]  text-2xl" type="button" onClick={() => { setShowConfirmPassword(!showConfirmPassword) }}>
-                {showConfirmPassword ? <AiTwotoneEyeInvisible /> : <AiTwotoneEye />}
-              </button>
             </div>
+
           </div>
           {isLoading && <div>Loading...</div>}
 

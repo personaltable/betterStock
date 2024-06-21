@@ -78,11 +78,12 @@ const Login = () => {
                   type={showPassword ? "text" : "password"}
                   placeholder='Password'
                   className='border border-gray-300 rounded w-full h-8 pl-1' />
-                {errors.password && <div className='text-red-500'>{errors.password.message}</div>}
+
                 <button className="absolute left-[270px]  text-2xl" type="button" onClick={() => { setShowPassword(!showPassword) }}>
                   {showPassword ? <AiTwotoneEyeInvisible /> : <AiTwotoneEye />}
                 </button>
               </div>
+              {errors.password && <div className='text-red-500'>{errors.password.message}</div>}
               <div className='mb-4'>Esqueceu a  <Link className="text-blue-600" to="/ForgotPassword">senha</Link>?</div>
             </div>
 
