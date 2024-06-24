@@ -8,8 +8,13 @@ import { AiFillDashboard } from "react-icons/ai";
 import { GiCardboardBoxClosed } from "react-icons/gi";
 import { FaUserCircle } from "react-icons/fa";
 import { IoIosLogOut } from "react-icons/io";
-import { AiOutlineProduct } from "react-icons/ai";
+import { AiFillProduct } from "react-icons/ai";
 import { FaUsersCog } from "react-icons/fa";
+import { FaTruckRampBox } from "react-icons/fa6";
+import { IoReceipt } from "react-icons/io5";
+
+
+
 
 function SideBar() {
 
@@ -52,13 +57,17 @@ function SideBar() {
         )}
 
         {userInfo && (userInfo.role === 'admin' || userInfo.role === 'employee') && (
-          <div className='flex flex-row items-center gap-2'><AiOutlineProduct /><Link to="/CategoryPage">Produtos</Link></div>
+          <div className='flex flex-row items-center gap-2'><AiFillProduct /><Link to="/CategoryPage">Produtos</Link></div>
+        )}
+
+        {userInfo && (userInfo.role === 'admin' || userInfo.role === 'employee') && (
+          <div className='flex flex-row items-center gap-2'><IoReceipt /><Link to="/salesHistory">Histórico de Vendas</Link></div>
         )}
 
         {userInfo && (userInfo.role === 'admin' || userInfo.role === 'stock manager') && (
           <>
             <div className='flex flex-row items-center gap-2'><GiCardboardBoxClosed /><Link to="/stock">Stock</Link></div>
-            <div className='flex flex-row items-center gap-2'><FaUserCircle /><Link to="/history">Histórico</Link></div>
+            <div className='flex flex-row items-center gap-2'><FaTruckRampBox /><Link to="/history">Movimentos</Link></div>
           </>
         )}
 
