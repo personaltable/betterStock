@@ -7,7 +7,7 @@ const initialState = {
     columns: ['Nome', 'Categoria', 'Informação', 'Preço', 'Data / Hora', 'Criador', 'Reposição', 'Stock'],
     filters: false,
     searchName: '',
-    searchStock: '',
+    searchStock: { stockChoice: 'Exato', stockInput: undefined, stockSecondInput: undefined },
     searchCategory: '',
     searchUser: '',
     searchPrice: '',
@@ -55,9 +55,12 @@ const productsSlice = createSlice({
         },
         setSearchName: (state, action) => {
             state.searchName = action.payload;
+
         },
         setSearchStock: (state, action) => {
-            state.searchStock = action.payload;
+            state.searchStock.stockChoice = action.payload.stockChoice;
+            state.searchStock.stockInput = action.payload.stockInput;
+            state.searchStock.stockSecondInput = action.payload.stockSecondInput;
         },
         setSearchCategory: (state, action) => {
             state.searchCategory = action.payload;

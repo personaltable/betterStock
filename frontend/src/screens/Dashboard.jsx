@@ -9,15 +9,23 @@ import DropdownCheck from '../components/Dropdown/DropdownCheck';
 import PieChart from '../components/charts/pieChart';
 import BarChart from '../components/charts/barChart';
 import Tooltip from '../components/containers/ToolTip';
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import { IoSettingsOutline } from "react-icons/io5";
 import { CiCircleQuestion } from "react-icons/ci";
-import { setSearchReStock } from '../slices/productsSlice';
+import { setSearchReStock, setSearchStock } from '../slices/productsSlice';
 
 const Dashboard = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  const searchStock = useSelector((state) => state.productsList.searchStock);
+
+  const handleLowStockClick = () => {
+    dispatch(setSearchStock({ stockChoice: 'Abaixo', stockInput: 20 }))
+    console.log(searchStock)
+    navigate(`/Stock`);
+  }
 
   const handleReStockClick = () => {
     dispatch(setSearchReStock("Necessária"))
@@ -166,7 +174,7 @@ const Dashboard = () => {
 
             {columnsOptionsBody.includes("Produtos stock mais baixo") ? (
               <ContainerBody>
-                <div className='flex flex-col'>
+                <div onClick={() => { handleLowStockClick() }} className='flex flex-col cursor-pointer'>
                   <div className='flex flex-row justify-between mb-4'>
                     <div className='text-base font-semibold'>Produtos com stock mais baixo</div>
                     <Tooltip content="Nesta área, você encontrará os produtos com a menor quantidade de stock disponível, ajudando a identificar itens que podem precisar de reposição imediata." className='z-20'><CiCircleQuestion /></Tooltip>

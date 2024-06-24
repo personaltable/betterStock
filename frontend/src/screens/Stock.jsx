@@ -65,9 +65,13 @@ const Stock = () => {
   };
 
   //Stock
+
+  const stockChoiceSlice = useSelector((state) => state.productsList.searchStock.stockChoice);
+  const stockInputSlice = useSelector((state) => state.productsList.searchStock.stockInput);
+
   const stockFilterList = ["Exato", "Entre", "Acima", "Abaixo"];
-  const [stockChoice, setStockChoice] = useState('Exato');
-  const [stockInput, setStockInput] = useState('');
+  const [stockChoice, setStockChoice] = useState(stockChoiceSlice);
+  const [stockInput, setStockInput] = useState(stockInputSlice);
   const [stockSecondInput, setStockSecondInput] = useState('');
 
   useEffect(() => {
