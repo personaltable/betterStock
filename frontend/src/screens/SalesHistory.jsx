@@ -28,7 +28,9 @@ const SalesHistory = () => {
             const userName = user.name;
             const productQuantity = sale.information.map(info => `${info.product.name}: ${info.quantity}`).join(', ');
             const total = `${sale.information.reduce((sum, info) => sum + (info.product.price * info.quantity), 0)} €`;
-            const profit = `${sale.information.reduce((sum, info) => sum + (info.product.price - info.product.originalPrice * info.quantity), 0)} €`;
+            const profit = `${sale.information.reduce((sum, info) => {
+                return sum + ((info.product.price - info.product.originalPrice) * info.quantity);
+            }, 0).toFixed(2)} €`;
 
             if (!acc[reference]) {
                 acc[reference] = { reference, user: userName, productQuantity, total, profit };
