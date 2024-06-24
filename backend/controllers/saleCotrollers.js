@@ -4,7 +4,7 @@ import Sales from "../models/saleModel.js";
 const getSales = asyncHandler(async (req, res) => {
     const sales = await Sales.find()
         .populate("user", "name")
-        .populate("information.product", "name");
+        .populate("information.product");
 
     res.status(200).json(sales);
 });
