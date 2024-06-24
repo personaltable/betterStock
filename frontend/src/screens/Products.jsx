@@ -135,7 +135,6 @@ const Products = () => {
         return Object.keys(errors).length === 0;
     };
 
-    console.log(formData)
     const fetchCreateClient = async (e) => {
         e.preventDefault();
         if (!validate()) return;
@@ -251,18 +250,20 @@ const Products = () => {
         }
     };
 
+    const createRandomRef = () => {
+        let resultRef = Math.floor(Math.random() * 900000000) + 100000000;
+        return resultRef;
+    };
+
     const { userInfo } = useSelector((state) => state.auth)
 
     const createPDF = async (nifConfirmation) => {
-
         const productInfo = cartItems;
         const clientInfo = { name: invoiceName, nif: invoiceNIF };
         const staffInfo = userInfo.name;
+        const randomRef = createRandomRef();
 
-        console.log(nifConfirmation, productInfo, staffInfo)
-        console.log(`Client info: ${clientInfo}`)
-
-        PDF(nifConfirmation, productInfo, staffInfo, clientInfo)
+        PDF(nifConfirmation, productInfo, staffInfo, clientInfo, randomRef)
     }
 
     const handleInvoiceChoice = async (choice) => {
@@ -281,6 +282,7 @@ const Products = () => {
             for (const item of cartItems) {
                 const productId = item._id;
                 const updatedStock = item.stock - item.quantity;
+                console.log(cartItems)
 
                 const response = await axios.put(`http://localhost:5555/api/products/store/${productId}`, { stock: updatedStock });
 
@@ -297,7 +299,6 @@ const Products = () => {
                     console.error(`Erro ao atualizar o stock: Status ${response.status}`);
                 }
             }
-
             createPDF(choice);
 
             setProducts(updatedProducts);

@@ -10,6 +10,7 @@ import actionsRoutes from "./routes/actionsRoutes.js";
 import connectDB from "./config/db.js";
 import cors from "cors";
 import clientRoutes from "./routes/clientRoutes.js";
+import salesRoutes from "./routes/salesRoutes.js";
 
 connectDB();
 
@@ -29,6 +30,7 @@ app.use(cookieParser());
 
 app.use("/api/users", userRoutes);
 app.use("/api/clients", clientRoutes);
+app.use("/api/sales", salesRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/actions", actionsRoutes);
 

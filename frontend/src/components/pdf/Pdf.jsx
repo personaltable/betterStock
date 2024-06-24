@@ -4,7 +4,7 @@ import { format } from 'date-fns';
 
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
-function PDF(nifConfirmation, productInfo, staffInfo, clientInfo) {
+function PDF(nifConfirmation, productInfo, staffInfo, clientInfo, randomRef) {
     let acao;
 
     if (nifConfirmation === true) {
@@ -24,6 +24,12 @@ function PDF(nifConfirmation, productInfo, staffInfo, clientInfo) {
                     fontSize: 15,
                     bold: true,
                     margin: [30, 20, 0, 10] // margem esquerda, superior, direita, inferior
+                },
+                {
+                    text: `Referencia: ${randomRef}`,
+                    alignment: 'center',
+                    margin: [0, 20, 30, 10],
+                    fontSize: 10
                 },
                 {
                     text: currentDateTime,
