@@ -26,4 +26,18 @@ const registerClient = asyncHandler(async (req, res) => {
   res.status(201).json(savedClient);
 });
 
-export { getClients, registerClient };
+const deleteClients = asyncHandler(async (req, res) => {
+  const clientId = req.params.id; // Assuming the client ID is passed as a route parameter
+
+  // Find client by ID and delete
+  const deletedClient = await Client.findByIdAndDelete(clientId);
+
+  if (deletedClient) {
+    res.status(200).json({ message: "Cliente deletado com sucesso" });
+  } else {
+    res.status(404);
+    throw new Error("Cliente não encontrado");
+  }
+});
+
+export { getClients, registerClient, deleteClients };
