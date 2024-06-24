@@ -2,7 +2,9 @@ import asyncHandler from "express-async-handler";
 import Sales from "../models/saleModel.js";
 
 const getSales = asyncHandler(async (req, res) => {
-    const sales = await Sales.find();
+    const sales = await Sales.find()
+        .populate("user", "name")
+        .populate("information.product", "name");
 
     res.status(200).json(sales);
 });
