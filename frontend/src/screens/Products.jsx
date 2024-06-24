@@ -35,6 +35,8 @@ const Products = () => {
     const [users, setUsers] = useState([]); // State for user list
     const [clients, setClients] = useState([]); // State for clients list
     const [isAddModalOpen, setIsAddModalOpen] = useState(false); // Adicionar estado para controlar modal de adicionar cliente
+    // const [saleData, setSaleData] = useState({});
+    const [saleRef, setSaleRef] = useState("");
 
     useEffect(() => {
         const fetchCategoryName = async () => {
@@ -251,20 +253,40 @@ const Products = () => {
     };
 
     const createRandomRef = () => {
-        let resultRef = Math.floor(Math.random() * 900000000) + 100000000;
+        const resultRef = Math.floor(Math.random() * 900000000) + 100000000;
         return resultRef;
     };
 
     const { userInfo } = useSelector((state) => state.auth)
 
     const createPDF = async (nifConfirmation) => {
-        const productInfo = cartItems;
-        const clientInfo = { name: invoiceName, nif: invoiceNIF };
-        const staffInfo = userInfo.name;
-        const randomRef = createRandomRef();
+        const randomRef = createRandomRef(); // Generate random reference
+        const productInfo = cartItems; // Assuming cartItems is defined elsewhere
+        const clientInfo = { name: invoiceName, nif: invoiceNIF }; // Assuming invoiceName and invoiceNIF are defined
+        const staffInfo = userInfo.name; // Assuming userInfo is defined and has a name field
+        const userId = userInfo._id; // Assuming userInfo is defined and has an _id field
 
-        PDF(nifConfirmation, productInfo, staffInfo, clientInfo, randomRef)
+        const salesInfo = cartItems.map(item => ({
+            product: item._id,
+            quantity: item.quantity
+        }));
+
+        const saleData = { randomRef, salesInfo, userId };
+        console.log(saleData);
+
+        try {
+            // Post sales data to API
+            await axios.post('http://localhost:5555/api/sales', saleData);
+            console.log("Sales data posted:", saleData);
+
+            // Generate PDF after successful API call
+            PDF(nifConfirmation, productInfo, staffInfo, clientInfo, randomRef);
+        } catch (error) {
+            console.error("Error posting sales data:", error);
+            // Handle error, e.g., show user a message
+        }
     }
+
 
     const handleInvoiceChoice = async (choice) => {
 
@@ -282,9 +304,11 @@ const Products = () => {
             for (const item of cartItems) {
                 const productId = item._id;
                 const updatedStock = item.stock - item.quantity;
-                console.log(cartItems)
+
 
                 const response = await axios.put(`http://localhost:5555/api/products/store/${productId}`, { stock: updatedStock });
+
+
 
                 clearClientInfo();
                 if (response.status === 200) {
@@ -299,6 +323,9 @@ const Products = () => {
                     console.error(`Erro ao atualizar o stock: Status ${response.status}`);
                 }
             }
+
+
+
             createPDF(choice);
 
             setProducts(updatedProducts);
@@ -720,7 +747,7 @@ const Products = () => {
                         <div className="flex justify-around mt-5">
                             <button
                                 className="bg-green-500 text-white px-4 py-2 rounded"
-                                onClick={() => handleInvoiceChoice(true)}
+                                onClick={() => [handleInvoiceChoice(true)]}
                             >
                                 Sim
                             </button>
